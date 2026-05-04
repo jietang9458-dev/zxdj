@@ -1,0 +1,14 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "projectname": "zhongxing-drama",
+  "description": "中星短剧小程序包装",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true
+  },
+  "compileType": "miniprogram"
+}

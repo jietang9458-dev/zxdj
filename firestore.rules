@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (request.auth.token.email == 'jietang9458@gmail.com' && request.auth.token.email_verified == true)
+      );
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Entities Validation
+    function isValidShortDrama(data) {
+      return data.keys().hasAll(['title', 'imageUrl']) &&
+             data.title is string && data.title.size() <= 200 &&
+             data.imageUrl is string && data.imageUrl.size() <= 2000 &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 5000)) &&
+             (!('status' in data) || (data.status is string && data.status.size() <= 50));
+    }
+
+    function isValidFilmingBase(data) {
+      return data.keys().hasAll(['title', 'imageUrl']) &&
+             data.title is string && data.title.size() <= 400 &&
+             data.imageUrl is string && data.imageUrl.size() <= 2000 &&
+             (!('location' in data) || (data.location is string && data.location.size() <= 500)) &&
+             (!('region' in data) || (data.region is string && data.region.size() <= 100)) &&
+             (!('tags' in data) || (data.tags is list && data.tags.size() <= 10));
+    }
+
+    function isValidPageContent(data) {
+      return data.keys().size() > 0 && 
+             data.keys().hasAny(['banners', 'categories', 'logo', 'name', 'slogan', 'config', 'title', 'subtitle']);
+    }
+
+    // Rules
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      // Write only from console or specific backend (not handled here)
+    }
+
+    match /dramas/{dramaId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidShortDrama(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /bases/{baseId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidFilmingBase(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /pages/{pageId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidPageContent(incoming());
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // Testing connection helper
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}
