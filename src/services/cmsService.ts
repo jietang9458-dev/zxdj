@@ -1,17 +1,3 @@
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  getDocs, 
-  setDoc, 
-  updateDoc,
-  deleteDoc,
-  query, 
-  where,
-  getDocFromServer
-} from 'firebase/firestore';
-import { db, auth } from '../lib/firebase';
-
 export enum OperationType {
   CREATE = 'create',
   UPDATE = 'update',
@@ -21,199 +7,125 @@ export enum OperationType {
   WRITE = 'write',
 }
 
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId?: string | null;
-    email?: string | null;
-    emailVerified?: boolean | null;
-  }
-}
-
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-    },
-    operationType,
-    path
-  };
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
+const API_BASE = '/api';
 
 export async function testConnection() {
   try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error: any) {
-    if (error.message?.includes('offline')) {
-      console.error("Please check your Firebase configuration.");
-    }
+    await fetch(`${API_BASE}/pages/test`);
+  } catch (error) {
+    console.error("Please check your API configuration.");
   }
 }
 
 // Generic Content CMS
 export async function getPageContent(pageId: string) {
-  const path = `pages/${pageId}`;
   try {
-    const docRef = doc(db, path);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
+    const res = await fetch(`${API_BASE}/pages/${pageId}`);
+    return await res.json();
   } catch (error) {
-    handleFirestoreError(error, OperationType.GET, path);
+    console.error(error);
+    return null;
   }
 }
 
 export async function updatePageContent(pageId: string, data: any) {
-  const path = `pages/${pageId}`;
   try {
-    const docRef = doc(db, path);
-    await setDoc(docRef, data, { merge: true });
+    await fetch(`${API_BASE}/pages/${pageId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
   } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, path);
+    console.error(error);
   }
 }
 
 // Dramas
 export async function getDramas() {
-  const path = 'dramas';
-  try {
-    const querySnapshot = await getDocs(collection(db, path));
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, path);
-  }
+  const res = await fetch(`${API_BASE}/dramas`);
+  return await res.json();
 }
 
 export async function updateDrama(id: string, data: any) {
-  const path = `dramas/${id}`;
-  try {
-    await updateDoc(doc(db, path), data);
-  } catch (error) {
-    handleFirestoreError(error, OperationType.UPDATE, path);
-  }
+  await fetch(`${API_BASE}/dramas/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
 }
 
 export async function addDrama(data: any) {
-  const path = 'dramas';
-  try {
-    const docRef = doc(collection(db, path));
-    await setDoc(docRef, data);
-    return docRef.id;
-  } catch (error) {
-    handleFirestoreError(error, OperationType.CREATE, path);
-  }
+  const res = await fetch(`${API_BASE}/dramas`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  const json = await res.json();
+  return json.id;
 }
 
 export async function deleteDrama(id: string) {
-  const path = `dramas/${id}`;
-  try {
-    await deleteDoc(doc(db, path));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.DELETE, path);
-  }
+  await fetch(`${API_BASE}/dramas/${id}`, { method: 'DELETE' });
 }
 
 // Bases
 export async function getBases() {
-  const path = 'bases';
-  try {
-    const querySnapshot = await getDocs(collection(db, path));
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, path);
-  }
+  const res = await fetch(`${API_BASE}/bases`);
+  return await res.json();
 }
 
 export async function updateBase(id: string, data: any) {
-  const path = `bases/${id}`;
-  try {
-    await updateDoc(doc(db, path), data);
-  } catch (error) {
-    handleFirestoreError(error, OperationType.UPDATE, path);
-  }
+  await fetch(`${API_BASE}/bases/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
 }
 
 export async function addBase(data: any) {
-  const path = 'bases';
-  try {
-    const docRef = doc(collection(db, path));
-    await setDoc(docRef, data);
-    return docRef.id;
-  } catch (error) {
-    handleFirestoreError(error, OperationType.CREATE, path);
-  }
+  const res = await fetch(`${API_BASE}/bases`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  const json = await res.json();
+  return json.id;
 }
 
 export async function deleteBase(id: string) {
-  const path = `bases/${id}`;
-  try {
-    await deleteDoc(doc(db, path));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.DELETE, path);
-  }
+  await fetch(`${API_BASE}/bases/${id}`, { method: 'DELETE' });
 }
 
 // Products
 export async function getProducts() {
-  const path = 'products';
-  try {
-    const querySnapshot = await getDocs(collection(db, path));
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, path);
-  }
+  const res = await fetch(`${API_BASE}/products`);
+  return await res.json();
 }
 
 export async function updateProduct(id: string, data: any) {
-  const path = `products/${id}`;
-  try {
-    await updateDoc(doc(db, path), data);
-  } catch (error) {
-    handleFirestoreError(error, OperationType.UPDATE, path);
-  }
+  await fetch(`${API_BASE}/products/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
 }
 
 export async function addProduct(data: any) {
-  const path = 'products';
-  try {
-    const docRef = doc(collection(db, path));
-    await setDoc(docRef, data);
-    return docRef.id;
-  } catch (error) {
-    handleFirestoreError(error, OperationType.CREATE, path);
-  }
+  const res = await fetch(`${API_BASE}/products`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  const json = await res.json();
+  return json.id;
 }
 
 export async function deleteProduct(id: string) {
-  const path = `products/${id}`;
-  try {
-    await deleteDoc(doc(db, path));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.DELETE, path);
-  }
+  await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
 }
 
 export async function isAdmin() {
-  if (!auth.currentUser) return false;
-  
-  // Allow the current user's email as an admin directly
-  const ADMIN_EMAILS = ['jietang9458@gmail.com'];
-  if (auth.currentUser.email && ADMIN_EMAILS.includes(auth.currentUser.email)) {
-    return true;
-  }
-
-  const path = `admins/${auth.currentUser.uid}`;
-  try {
-    const docRef = doc(db, path);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists();
-  } catch (error) {
-    return false;
-  }
+  // Simulating an admin context without Firebase
+  // Always true for local editing now or use simple local storage
+  return localStorage.getItem('isAdmin') === 'true';
 }

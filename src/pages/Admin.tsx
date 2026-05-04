@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCMS } from '../context/CMSContext';
 import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase, updateBase, deleteBase, addProduct, updateProduct, deleteProduct } from '../services/cmsService';
-import { auth } from '../lib/firebase';
-import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'firebase/auth';
 import { motion } from 'motion/react';
 import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink } from 'lucide-react';
 
@@ -31,29 +29,21 @@ export default function Admin() {
   const [starclubData, setStarclubData] = useState(pages.starclub || { banner: '', title: '', subtitle: '' });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const adminStatus = await isAdmin();
-        setIsAuthorized(adminStatus);
-      } else {
-        setIsAuthorized(false);
-      }
-      setCheckingAuth(false);
-    });
-    return unsubscribe;
-  }, []);
-
-  const handleLogin = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+    async function checkAuth() {
       const adminStatus = await isAdmin();
       setIsAuthorized(adminStatus);
-      if (!adminStatus) {
-        alert("你不是管理员。请在Firebase控制台添加你的UID到admins集合中。");
-      }
-    } catch (error) {
-      console.error(error);
+      setCheckingAuth(false);
+    }
+    checkAuth();
+  }, []);
+
+  const handleLogin = () => {
+    const pwd = prompt("请输入管理员密码 (admin123):");
+    if (pwd === 'admin123') {
+      localStorage.setItem('isAdmin', 'true');
+      setIsAuthorized(true);
+    } else {
+      alert("密码错误");
     }
   };
 
@@ -168,14 +158,14 @@ export default function Admin() {
         <h1 className="text-[24px] font-black text-[#1A1108] mb-2">后台管理</h1>
         <p className="text-[#A69984] text-center mb-4">请登录管理员账号以管理应用内容</p>
         <p className="text-[11px] text-red-500 bg-red-50 p-3 rounded-lg mb-8 max-w-xs text-center border border-red-100">
-          注意：你需要先在 Firebase 控制台建立 "admins" 集合，并添加一个以你的 UID 为文档 ID 的文档，才能获得授权。
+          请输入管理员密码进行操作 (admin123)。
         </p>
         <button 
           onClick={handleLogin}
           className="flex items-center gap-2 bg-[#1A1108] text-white px-8 py-4 rounded-2xl font-bold shadow-xl active:scale-95 transition-all"
         >
           <LogIn size={20} />
-          谷歌登录
+          系统登录
         </button>
       </div>
     );
