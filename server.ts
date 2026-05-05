@@ -3,6 +3,26 @@ import { createServer as createViteServer } from "vite";
 import Database from 'better-sqlite3';
 import cors from 'cors';
 import path from 'path';
+import multer from 'multer';
+import fs from 'fs';
+
+// Ensure uploads directory exists
+const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Multer config
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir)
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, uniqueSuffix + path.extname(file.originalname))
+  }
+})
+const upload = multer({ storage: storage })
 
 const app = express();
 const PORT = 3000;
@@ -38,6 +58,18 @@ db.exec(`
 `);
 
 // API Routes
+
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    res.status(400).json({ error: 'No file uploaded' });
+    return;
+  }
+  // Return the path relative to public
+  res.json({ url: \`/uploads/\${req.file.filename}\` });
+});
+
+// Serve uploads statically to ensure they reflect immediately in both dev/prod
+app.use('/uploads', express.static(uploadDir));
 
 // Pages
 app.get('/api/pages/:id', (req, res) => {

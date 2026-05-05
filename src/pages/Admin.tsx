@@ -2,32 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCMS } from '../context/CMSContext';
-import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase, updateBase, deleteBase, addProduct, updateProduct, deleteProduct } from '../services/cmsService';
+import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase, updateBase, deleteBase, addProduct, updateProduct, deleteProduct, uploadFile } from '../services/cmsService';
 import { motion } from 'motion/react';
 import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft, Upload } from 'lucide-react';
 
 const ImageUploadButton = ({ value, onChange, className, children }: { value: string, onChange: (url: string) => void, className?: string, children?: React.ReactNode }) => {
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("图片太大，请选择 5MB 以下的图片");
+      if (file.size > 50 * 1024 * 1024) {
+        alert("图片太大，请选择 50MB 以下的图片");
         return;
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onChange(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      setUploading(true);
+      try {
+        const url = await uploadFile(file);
+        onChange(url);
+      } catch (err: any) {
+        alert("上传失败: " + err.message);
+      } finally {
+        setUploading(false);
+      }
     }
     // reset the input value so the same file can be selected again
     e.target.value = '';
   };
 
   return (
-    <label className={`cursor-pointer ${className || ''}`}>
+    <label className={`cursor-pointer ${className || ''} ${uploading ? 'opacity-50 pointer-events-none relative' : ''}`}>
       {children}
-      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+      {uploading && <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10 font-bold text-xs">...</div>}
+      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
     </label>
   );
 };
@@ -208,13 +215,18 @@ export default function Admin() {
         onSubmit: async (data: any) => {
           if (!data.title || !data.imageUrl) return alert("请填写完整信息");
           setLoading(true);
-          if (initialData) {
-            await updateDrama(initialData.id, data);
-          } else {
-            await addDrama(data);
+          try {
+            if (initialData) {
+              await updateDrama(initialData.id, data);
+            } else {
+              await addDrama(data);
+            }
+            await refresh();
+          } catch (e: any) {
+            alert("保存失败: " + e.message);
+          } finally {
+            setLoading(false);
           }
-          await refresh();
-          setLoading(false);
         }
       }
     });
@@ -236,19 +248,24 @@ export default function Admin() {
         onSubmit: async (data: any) => {
           if (!data.title || !data.imageUrl) return alert("请填写完整信息");
           setLoading(true);
-          const formattedData = {
-            ...data,
-            tags: data.tagsStr ? data.tagsStr.split(',').map((t:string) => t.trim()) : data.tags || []
-          };
-          delete formattedData.tagsStr;
-          
-          if (initialData) {
-            await updateBase(initialData.id, formattedData);
-          } else {
-            await addBase(formattedData);
+          try {
+            const formattedData = {
+              ...data,
+              tags: data.tagsStr ? data.tagsStr.split(',').map((t:string) => t.trim()) : data.tags || []
+            };
+            delete formattedData.tagsStr;
+            
+            if (initialData) {
+              await updateBase(initialData.id, formattedData);
+            } else {
+              await addBase(formattedData);
+            }
+            await refresh();
+          } catch(e:any) {
+            alert("保存失败: " + e.message);
+          } finally {
+            setLoading(false);
           }
-          await refresh();
-          setLoading(false);
         }
       }
     });
@@ -268,13 +285,18 @@ export default function Admin() {
         onSubmit: async (data: any) => {
           if (!data.title || !data.imageUrl) return alert("请填写完整信息");
           setLoading(true);
-          if (initialData) {
-            await updateProduct(initialData.id, data);
-          } else {
-            await addProduct(data);
+          try {
+            if (initialData) {
+              await updateProduct(initialData.id, data);
+            } else {
+              await addProduct(data);
+            }
+            await refresh();
+          } catch(e:any) {
+            alert("保存失败: " + e.message);
+          } finally {
+            setLoading(false);
           }
-          await refresh();
-          setLoading(false);
         }
       }
     });
@@ -283,25 +305,40 @@ export default function Admin() {
   const handleDeleteDrama = async (id: string) => {
     if (!confirm("确定删除吗？")) return;
     setLoading(true);
-    await deleteDrama(id);
-    await refresh();
-    setLoading(false);
+    try {
+      await deleteDrama(id);
+      await refresh();
+    } catch(e:any) {
+      alert("删除失败: " + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteBase = async (id: string) => {
     if (!confirm("确定删除吗？")) return;
     setLoading(true);
-    await deleteBase(id);
-    await refresh();
-    setLoading(false);
+    try {
+      await deleteBase(id);
+      await refresh();
+    } catch(e:any) {
+      alert("删除失败: " + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteProduct = async (id: string) => {
     if (!confirm("确定删除吗？")) return;
     setLoading(true);
-    await deleteProduct(id);
-    await refresh();
-    setLoading(false);
+    try {
+      await deleteProduct(id);
+      await refresh();
+    } catch(e:any) {
+      alert("删除失败: " + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (checkingAuth) {

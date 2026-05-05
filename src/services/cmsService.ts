@@ -17,6 +17,18 @@ export async function testConnection() {
   }
 }
 
+export async function uploadFile(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(`${API_BASE}/upload`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) throw new Error("Upload failed");
+  const json = await res.json();
+  return json.url;
+}
+
 // Generic Content CMS
 export async function getPageContent(pageId: string) {
   try {
