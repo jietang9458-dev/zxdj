@@ -37,6 +37,20 @@ export default function Admin() {
     checkAuth();
   }, []);
 
+  useEffect(() => {
+    setHomeBanners(pages.home?.banners || []);
+    setHomeCategories(pages.home?.categories || []);
+    setAppLogo(pages.settings?.logo || '');
+    setAppName(pages.settings?.name || '中星短剧');
+    setAppSlogan(pages.settings?.slogan || '联动你我 · 链接未来');
+    setCopyrightData(pages.copyright || { banner: '', title: '', subtitle: '', news: [] });
+    setProductionData(pages.production || { banner: '', title: '', subtitle: '', projects: [] });
+    setActorsData(pages.actors || { banners: [], title: '', subtitle: '' });
+    setTourismData(pages.tourism || { banner: '', title: '', subtitle: '', groups: [] });
+    setInvestData(pages.invest || { banner: '', title: '', subtitle: '' });
+    setStarclubData(pages.starclub || { banner: '', title: '', subtitle: '' });
+  }, [pages]);
+
   const handleLogin = () => {
     const pwd = prompt("请输入管理员密码 (admin123):");
     if (pwd === 'admin123') {
@@ -257,9 +271,16 @@ export default function Admin() {
                     onChange={(e) => setAppLogo(e.target.value)}
                     className="flex-1 px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 transition-all border border-gray-50"
                   />
-                  <div className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center">
+                  <button 
+                    onClick={() => {
+                      const url = prompt("请输入图片 URL:", appLogo);
+                      if (url !== null) setAppLogo(url);
+                    }}
+                    title="点击修改图片"
+                    className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer"
+                  >
                     {appLogo ? <img src={appLogo} className="w-full h-full object-cover" alt="" /> : <ImageIcon className="text-gray-300" />}
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
