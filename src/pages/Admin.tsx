@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCMS } from '../context/CMSContext';
 import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase, updateBase, deleteBase, addProduct, updateProduct, deleteProduct } from '../services/cmsService';
 import { motion } from 'motion/react';
-import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink } from 'lucide-react';
+import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft } from 'lucide-react';
 
 export default function Admin() {
   const { pages, dramas, bases, products, refresh } = useCMS();
@@ -151,56 +151,80 @@ export default function Admin() {
 
   if (!isAuthorized) {
     return (
-      <div className="min-h-screen bg-[#FAF9F6] flex flex-col items-center justify-center p-6">
-        <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-6">
-          <Lock className="text-orange-600" size={32} />
+      <div className="min-h-screen bg-[#F3F4F6] flex flex-col items-center justify-center p-6">
+        <div className="bg-white p-10 rounded-[32px] shadow-sm border border-gray-100 w-full max-w-md flex flex-col items-center">
+          <div className="w-16 h-16 bg-[#D4AF37]/10 rounded-full flex items-center justify-center mb-6">
+            <Lock className="text-[#D4AF37]" size={32} />
+          </div>
+          <h1 className="text-2xl font-black text-[#1A1108] mb-2">中星后台登录</h1>
+          <p className="text-[#A69984] text-center mb-6">请登录系统以管理应用内容</p>
+          <div className="w-full bg-orange-50/50 p-4 rounded-2xl mb-8 border border-orange-100/50 text-center">
+            <p className="text-xs text-orange-600 font-medium">请输入管理员密码进行操作 (admin123)</p>
+          </div>
+          <button 
+            onClick={handleLogin}
+            className="w-full flex items-center justify-center gap-2 bg-[#1A1108] hover:bg-black text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg hover:shadow-xl"
+          >
+            <LogIn size={20} />
+            系统登录
+          </button>
         </div>
-        <h1 className="text-[24px] font-black text-[#1A1108] mb-2">后台管理</h1>
-        <p className="text-[#A69984] text-center mb-4">请登录管理员账号以管理应用内容</p>
-        <p className="text-[11px] text-red-500 bg-red-50 p-3 rounded-lg mb-8 max-w-xs text-center border border-red-100">
-          请输入管理员密码进行操作 (admin123)。
-        </p>
-        <button 
-          onClick={handleLogin}
-          className="flex items-center gap-2 bg-[#1A1108] text-white px-8 py-4 rounded-2xl font-bold shadow-xl active:scale-95 transition-all"
-        >
-          <LogIn size={20} />
-          系统登录
-        </button>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-[#FAF9F6] pb-20">
-      <Header title="后台管理系统" dark />
-      
-      {/* Tabs */}
-      <div className="flex gap-4 px-5 mt-6 overflow-x-auto pb-4 scrollbar-hide">
-        {['settings', 'home', 'copyright', 'production', 'actors', 'tourism', 'invest', 'starclub', 'dramas', 'bases', 'products'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab as any)}
-            className={`px-6 py-2 rounded-full text-[14px] font-bold whitespace-nowrap transition-all shadow-sm ${
-              activeTab === tab ? 'bg-[#1A1108] text-white' : 'bg-white text-[#A69984] border border-gray-100'
-            }`}
-          >
-            {tab === 'home' ? '首页轮播' : 
-             tab === 'dramas' ? '短剧管理' : 
-             tab === 'bases' ? '基地管理' : 
-             tab === 'products' ? '商城管理' : 
-             tab === 'copyright' ? '版权中心' :
-             tab === 'production' ? '制作中心' :
-             tab === 'actors' ? '演员中心' :
-             tab === 'tourism' ? '文旅中心' :
-             tab === 'invest' ? '招商合作' :
-             tab === 'starclub' ? '明星俱乐部' :
-             '全局设置'}
-          </button>
-        ))}
-      </div>
+  const tabs = [
+    { id: 'settings', label: '全局设置', icon: Settings },
+    { id: 'home', label: '首页配置', icon: Home },
+    { id: 'copyright', label: '版权中心', icon: Shield },
+    { id: 'production', label: '制作中心', icon: Video },
+    { id: 'actors', label: '演员中心', icon: Users },
+    { id: 'tourism', label: '文旅中心', icon: Plane },
+    { id: 'invest', label: '招商合作', icon: PiggyBank },
+    { id: 'starclub', label: '明星俱乐部', icon: Star },
+    { id: 'dramas', label: '短剧管理', icon: Film },
+    { id: 'bases', label: '基地管理', icon: Map },
+    { id: 'products', label: '商城管理', icon: ShoppingBag },
+  ];
 
-      <div className="px-5 mt-4">
+  return (
+    <div className="min-h-screen bg-[#F3F4F6] flex">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen sticky top-0 shrink-0">
+        <div className="h-16 flex items-center px-6 border-b border-gray-100">
+           <LayoutDashboard className="text-[#D4AF37] mr-3" size={24} />
+           <span className="text-[18px] font-black text-[#1A1108]">中星后台管理</span>
+        </div>
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`w-full flex items-center px-4 py-3 rounded-xl transition-all text-sm font-bold ${
+                activeTab === tab.id 
+                  ? 'bg-[#1A1108] text-white shadow-md' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+               <tab.icon className={`mr-3 ${activeTab === tab.id ? 'text-[#D4AF37]' : 'text-gray-400'}`} size={20} />
+               {tab.label}
+            </button>
+          ))}
+        </nav>
+        <div className="p-4 border-t border-gray-100 flex justify-center">
+            <Link to="/" className="text-sm font-bold text-gray-500 hover:text-[#D4AF37] flex items-center gap-2">
+               <ChevronLeft size={16} /> 返回前端前台
+            </Link>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto h-screen p-8 lg:p-10">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-black text-[#1A1108]">{tabs.find(t=>t.id===activeTab)?.label}</h2>
+          </div>
+
         {activeTab === 'settings' && (
           <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 space-y-6">
             <h3 className="font-black text-[#1A1108]">全局品牌设置</h3>
@@ -555,36 +579,38 @@ export default function Admin() {
           <div className="space-y-4">
             <div className="flex justify-between items-center px-2">
               <h3 className="font-black text-[#1A1108]">短剧列表 ({dramas.length})</h3>
-              <button onClick={handleCreateDrama} className="bg-blue-600 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2">
+              <button onClick={handleCreateDrama} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
                 <Plus size={16} /> 添加短剧
               </button>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {dramas.map((drama) => (
-              <div key={drama.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex gap-4">
+              <div key={drama.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex gap-4 transition-all hover:shadow-md">
                 <div className="w-20 h-28 rounded-xl overflow-hidden bg-gray-50 shrink-0">
                   <img src={drama.imageUrl} className="w-full h-full object-cover" alt="" />
                 </div>
                 <div className="flex-1 flex flex-col justify-between py-1">
                   <div>
                     <h4 className="font-black text-[15px]">{drama.title}</h4>
-                    <p className="text-[11px] text-[#A69984] mt-1 line-clamp-2">ID: {drama.id}</p>
+                    <p className="text-[11px] text-[#A69984] mt-1 break-all">ID: {drama.id}</p>
                   </div>
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-3 mt-2">
                     <button 
                       onClick={() => {
                         const title = prompt("修改标题:", drama.title) || drama.title;
                         const imageUrl = prompt("修改图片URL:", drama.imageUrl) || drama.imageUrl;
                         updateDrama(drama.id, { title, imageUrl }).then(refresh);
                       }}
-                      className="text-blue-500 text-[12px] font-bold"
+                      className="text-blue-500 hover:text-blue-600 text-[12px] font-bold"
                     >
                       编辑
                     </button>
-                    <button onClick={() => handleDeleteDrama(drama.id)} className="text-red-500 text-[12px] font-bold">删除</button>
+                    <button onClick={() => handleDeleteDrama(drama.id)} className="text-red-500 hover:text-red-600 text-[12px] font-bold">删除</button>
                   </div>
                 </div>
               </div>
             ))}
+            </div>
           </div>
         )}
 
@@ -592,12 +618,13 @@ export default function Admin() {
           <div className="space-y-4 pb-10">
             <div className="flex justify-between items-center px-2">
               <h3 className="font-black text-[#1A1108]">基地列表 ({bases.length})</h3>
-              <button onClick={handleCreateBase} className="bg-blue-600 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2">
+              <button onClick={handleCreateBase} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
                 <Plus size={16} /> 添加基地
               </button>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {bases.map((base) => (
-              <div key={base.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex gap-4">
+              <div key={base.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex gap-4 transition-all hover:shadow-md">
                 <div className="w-24 h-24 rounded-2xl overflow-hidden bg-gray-50 shrink-0">
                   <img src={base.imageUrl} className="w-full h-full object-cover" alt="" />
                 </div>
@@ -608,7 +635,7 @@ export default function Admin() {
                       <MapPin size={10} /> {base.location}
                     </div>
                   </div>
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-3 mt-2">
                     <button 
                       onClick={() => {
                         const title = prompt("修改标题:", base.title) || base.title;
@@ -619,15 +646,16 @@ export default function Admin() {
                         const tags = tagsInput?.split(',').map(t => t.trim()) || base.tags;
                         updateBase(base.id, { title, location, region, imageUrl, tags }).then(refresh);
                       }}
-                      className="text-blue-500 text-[12px] font-bold"
+                      className="text-blue-500 hover:text-blue-600 text-[12px] font-bold"
                     >
                       编辑内容
                     </button>
-                    <button onClick={() => handleDeleteBase(base.id)} className="text-red-500 text-[12px] font-bold">删除</button>
+                    <button onClick={() => handleDeleteBase(base.id)} className="text-red-500 hover:text-red-600 text-[12px] font-bold">删除</button>
                   </div>
                 </div>
               </div>
             ))}
+            </div>
           </div>
         )}
 
@@ -635,12 +663,13 @@ export default function Admin() {
           <div className="space-y-4 pb-10">
             <div className="flex justify-between items-center px-2">
               <h3 className="font-black text-[#1A1108]">商城管理 ({products.length})</h3>
-              <button onClick={handleCreateProduct} className="bg-blue-600 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2">
+              <button onClick={handleCreateProduct} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
                 <Plus size={16} /> 添加商品
               </button>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {products.map((product) => (
-              <div key={product.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex gap-4">
+              <div key={product.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex gap-4 transition-all hover:shadow-md">
                 <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-50 shrink-0">
                   <img src={product.imageUrl} className="w-full h-full object-cover" alt="" />
                 </div>
@@ -649,7 +678,7 @@ export default function Admin() {
                     <h4 className="font-black text-[15px]">{product.title}</h4>
                     <p className="text-[13px] text-orange-600 font-bold mt-1">¥{product.price}</p>
                   </div>
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-3 mt-2">
                     <button 
                       onClick={() => {
                         const title = prompt("修改名称:", product.title) || product.title;
@@ -657,18 +686,20 @@ export default function Admin() {
                         const imageUrl = prompt("修改图片URL:", product.imageUrl) || product.imageUrl;
                         updateProduct(product.id, { title, price, imageUrl }).then(refresh);
                       }}
-                      className="text-blue-500 text-[12px] font-bold"
+                      className="text-blue-500 hover:text-blue-600 text-[12px] font-bold"
                     >
                       编辑
                     </button>
-                    <button onClick={() => handleDeleteProduct(product.id)} className="text-red-500 text-[12px] font-bold">删除</button>
+                    <button onClick={() => handleDeleteProduct(product.id)} className="text-red-500 hover:text-red-600 text-[12px] font-bold">删除</button>
                   </div>
                 </div>
               </div>
             ))}
+            </div>
           </div>
         )}
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
