@@ -66,7 +66,7 @@ export function Production() {
                 </div>
               </div>
               <button 
-                onClick={() => navigate(`/drama/${i}`)} 
+                onClick={() => navigate(`/production/project/${i}`)} 
                 className="bg-[#8B6E4E]/10 text-[#8B6E4E] px-4 py-2 rounded-xl text-[12px] font-black border border-[#8B6E4E]/20 active:scale-90 transition-transform"
               >
                 详情

@@ -94,7 +94,7 @@ export function CopyrightPurchase() {
                     <span className="p-1 px-1.5 bg-[#8B6E4E]/10 rounded text-[9px] font-black text-[#8B6E4E] uppercase">Premium</span>
                     <h4 className="font-black text-[14px] text-[#1A1108] dark:text-[#E6D5B8]">{drama.title}</h4>
                   </div>
-                  <p className="text-[11px] text-[#A69984] mt-1 leading-relaxed line-clamp-2">{drama.desc}</p>
+                  <p className="text-[11px] text-[#A69984] mt-1 leading-relaxed">{drama.desc}</p>
                 </div>
                 <button 
                   onClick={() => navigate('/copyright/purchase-instructions')}
@@ -449,31 +449,11 @@ export function ServiceFlow() {
 }
 
 export function LearningArt() {
-  const trainingInfo = [
-    {
-      title: '演员培训开班信息',
-      batches: [
-        { name: '精品演员进阶班（第12期）', time: '2024-06-15 开课', duration: '30天脱产培训' },
-        { name: '明星短剧雏鹰计划（夏季班）', time: '2024-07-01 开课', duration: '15天封闭式集训' }
-      ],
-      icon: <Users className="text-orange-500" />
-    },
-    {
-      title: '摄像培训开班信息',
-      batches: [
-        { name: '短剧摄影构图与灯光班', time: '2024-06-20 开课', duration: '10天专项提升课' },
-        { name: '独立摄像导演班（大师课）', time: '2024-07-10 开课', duration: '20天实操外景课' }
-      ],
-      icon: <Video className="text-blue-500" />
-    },
-    {
-      title: 'AI短剧制作培训开班信息',
-      batches: [
-        { name: 'AI工具链流制作实战班', time: '2024-06-25 开课', duration: '7天极速通关营' },
-        { name: 'AI数字人与场景建模进阶班', time: '2024-07-15 开课', duration: '12天核心技术课' }
-      ],
-      icon: <Star className="text-purple-500" />
-    }
+  const { pages } = useCMS();
+  const actorsData = pages.actors || {};
+  const classes = actorsData.classes && actorsData.classes.length > 0 ? actorsData.classes : [
+    { title: '少儿演艺周末班', desc: '形体、台词、表演基础', date: '每月初开班', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop' },
+    { title: '青年演员特训营', desc: '剧组实战、进阶表演', date: '寒暑假开班', imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop' }
   ];
 
   return (
@@ -486,26 +466,18 @@ export function LearningArt() {
           <p className="text-[#A69984] text-[13px]">从中星开始，完成从爱好者到专业人士的蜕变</p>
         </div>
 
-        <div className="space-y-6">
-          {trainingInfo.map((info, i) => (
-            <div key={i} className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-black/20 flex items-center justify-center">
-                  {React.cloneElement(info.icon as React.ReactElement, { size: 20 })}
-                </div>
-                <h3 className="text-[17px] font-black text-[#1A1108] dark:text-[#E6D5B8]">{info.title}</h3>
+        <div className="space-y-4">
+          {classes.map((cls: any, i: number) => (
+            <div key={i} className="flex gap-4 p-5 bg-white dark:bg-[#2A1D0F] rounded-[32px] shadow-sm border border-gray-50 dark:border-white/5">
+              <div className="w-20 h-24 rounded-2xl bg-gray-100 overflow-hidden shrink-0 shadow-sm border border-gray-100">
+                <img src={cls.imageUrl} alt="" className="w-full h-full object-cover" />
               </div>
-              
-              <div className="space-y-4">
-                {info.batches.map((batch, idx) => (
-                  <div key={idx} className="p-4 bg-gray-50 dark:bg-black/10 rounded-2xl border border-dashed border-gray-200 dark:border-white/5">
-                    <h4 className="text-[14px] font-bold text-[#1A1108] dark:text-white mb-2">{batch.name}</h4>
-                    <div className="flex justify-between items-center text-[12px]">
-                      <span className="text-[#8B6E4E] font-medium">{batch.time}</span>
-                      <span className="text-[#A69984]">{batch.duration}</span>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex-1 flex flex-col justify-center">
+                <h4 className="font-black text-[16px] text-[#1A1108] dark:text-white mb-1.5">{cls.title}</h4>
+                <p className="text-[12px] text-[#4A443E] dark:text-[#A69984] mb-3 leading-relaxed line-clamp-2">{cls.desc}</p>
+                <div className="text-[11px] text-[#D4AF37] font-bold bg-[#D4AF37]/10 px-3 py-1 rounded-lg self-start">
+                  {cls.date || '随时开班'}
+                </div>
               </div>
             </div>
           ))}
@@ -908,8 +880,10 @@ export function MyRegistrations() {
 }
 
 export function AuditionProjectList() {
+  const { pages } = useCMS();
   const navigate = useNavigate();
-  const auditionProjects = [
+  const actorsData = pages.actors || {};
+  const auditionProjects = actorsData.auditions && actorsData.auditions.length > 0 ? actorsData.auditions : [
     {
       id: '1',
       title: '逆袭之星途璀璨',
@@ -941,10 +915,10 @@ export function AuditionProjectList() {
       <Header title="海选项目列表" dark />
       <div className="p-6">
         <div className="space-y-6">
-          {auditionProjects.map((project) => (
+          {auditionProjects.map((project: any, index: number) => (
             <div 
-              key={project.id} 
-              onClick={() => navigate(`/drama/${project.id}`)}
+              key={project.id || index} 
+              onClick={() => navigate(project.id ? `/drama/${project.id}` : '#')}
               className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 flex flex-col active:scale-[0.98] transition-transform"
             >
               <div className="flex gap-4 p-5">

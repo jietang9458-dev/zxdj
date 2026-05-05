@@ -18,7 +18,7 @@ import BaseDetail from './pages/BaseDetail';
 import Mine from './pages/Mine';
 import Mall from './pages/Mall';
 import { Production, Actors, Tourism, TourismGroups, FilmingExperience, StarClub, Investment, LiveFilming } from './pages/MiscPages';
-import { DramaDetail, ActorDetail, PostDetail, ProductDetail } from './pages/Details';
+import { DramaDetail, ActorDetail, PostDetail, ProductDetail, PrepProjectDetail } from './pages/Details';
 import { CopyrightPurchase, SalesModel, CopyrightLibrary, CopyrightPublicity, ServiceFlow, PurchaseInstructions, FullCopyrightInstructions, CopyrightRights, AuditionRegistration, GeneralRegistration, MyRegistrations, LearningArt, AuditionProjectList } from './pages/SubPages';
 import MallCategory from './pages/MallSubPages';
 import Discover from './pages/Discover';
@@ -49,6 +49,7 @@ export default function App() {
                     <Route path="/mine" element={<Mine />} />
                     <Route path="/copyright" element={<Copyright />} />
                     <Route path="/production" element={<Production />} />
+                    <Route path="/production/project/:id" element={<PrepProjectDetail />} />
                     <Route path="/actors" element={<Actors />} />
                     <Route path="/tourism" element={<Tourism />} />
                     <Route path="/tourism/groups" element={<TourismGroups />} />

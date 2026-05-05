@@ -77,6 +77,12 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
                     </div>
                   </ImageUploadButton>
                 </div>
+              ) : field.type === 'textarea' ? (
+                <textarea 
+                  value={data[field.key] || ''}
+                  onChange={(e) => setData({...data, [field.key]: e.target.value})}
+                  className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 min-h-[100px]"
+                />
               ) : field.type === 'number' ? (
                 <input 
                   type="number"
@@ -993,9 +999,10 @@ export default function Admin() {
                     onChange={(items: any) => setProductionData({...productionData, projectsInPrep: items})}
                     setDialogState={setDialogState}
                     schema={[
-                      { key: 'imageUrl', label: '项目封面 (必填)', type: 'image' },
-                      { key: 'title', label: '项目名称 (必填)', type: 'text' },
-                      { key: 'desc', label: '相关文字内容', type: 'text' }
+                      { key: 'imageUrl', label: '项目海报 (必填)', type: 'image' },
+                      { key: 'title', label: '片名 (必填)', type: 'text' },
+                      { key: 'desc', label: '项目介绍', type: 'textarea' },
+                      { key: 'team', label: '主创团队', type: 'text' }
                     ]}
                   />
                 )}

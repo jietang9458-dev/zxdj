@@ -65,12 +65,12 @@ export default function Discover() {
 
   const newsData = pages.news || {};
   const cmsPosts = [
-    ...(newsData.shortDramaNews || []).map((n: any, i: number) => ({ id: `sd_${i}`, t: n.title, u: '短剧资讯', d: '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '短剧资讯' })),
-    ...(newsData.bts || []).map((n: any, i: number) => ({ id: `bts_${i}`, t: n.title, u: '拍摄花絮', d: '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '拍摄花絮' })),
-    ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, u: '成功案例', d: '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '成功案例' }))
+    ...(newsData.shortDramaNews || []).map((n: any, i: number) => ({ id: `sd_${i}`, t: n.title, u: '短剧资讯', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '短剧资讯' })),
+    ...(newsData.bts || []).map((n: any, i: number) => ({ id: `bts_${i}`, t: n.title, u: '拍摄花絮', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '拍摄花絮' })),
+    ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, u: '成功案例', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '成功案例' }))
   ];
   
-  const allPosts = cmsPosts.length > 0 ? cmsPosts : DISCOVER_POSTS;
+  const allPosts = [...cmsPosts, ...DISCOVER_POSTS];
 
   const filteredPosts = (activeTab === '推荐' 
     ? allPosts 

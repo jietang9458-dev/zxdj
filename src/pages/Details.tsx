@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import Header from '../components/Header';
 import { useUser } from '../context/UserContext';
+import { useCMS } from '../context/CMSContext';
 import { Heart, Share2, Play, Star, MapPin, ShoppingBag, MessageSquare, ChevronRight, CheckCircle2, User } from 'lucide-react';
 import { HOT_DRAMAS, MALL_PRODUCTS } from '../constants';
 import { motion } from 'motion/react';
@@ -325,6 +326,67 @@ export function ProductDetail() {
           >
             立即购买
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PrepProjectDetail() {
+  const { id } = useParams();
+  const { pages } = useCMS();
+  const projectIdx = parseInt(id || '0');
+  const productionData = pages.production || {};
+  const projects = productionData.projectsInPrep || productionData.config?.projects || [
+    { title: '都市甜宠新剧', desc: '筹备中', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop' },
+    { title: '悬疑探案短剧', desc: '筹备中', imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop' },
+    { title: '古装传奇短剧', desc: '筹备中', imageUrl: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=100&h=100&fit=crop' }
+  ];
+  const project = projects[projectIdx] || projects[0];
+
+  return (
+    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-screen pb-28">
+      <Header title={project.title || project.t} dark />
+      
+      <div className="w-full aspect-[3/4] relative overflow-hidden bg-black mt-2 shadow-sm">
+        <img 
+          src={project.imageUrl || project.i} 
+          alt="" 
+          className="w-full h-full object-cover" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+      </div>
+
+      <div className="px-5 mt-6 space-y-8">
+        <div>
+          <h1 className="text-2xl font-black text-[#1A1108] dark:text-white leading-tight">
+            {project.title || project.t}
+          </h1>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="bg-[#D4AF37]/10 text-[#D4AF37] px-2.5 py-1 rounded-md text-[11px] font-black tracking-wide">
+              正在筹备
+            </span>
+          </div>
+        </div>
+
+        {project.team && (
+          <div>
+            <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white flex items-center gap-2 mb-4">
+              <User className="text-[#8B6E4E]" size={20} /> 主创团队
+            </h3>
+            <div className="bg-white dark:bg-[#2A1D0F] p-5 rounded-3xl shadow-sm border border-gray-50 dark:border-white/5 text-[14px] text-[#4A443E] dark:text-[#A69984] leading-relaxed whitespace-pre-wrap">
+              {project.team}
+            </div>
+          </div>
+        )}
+
+        <div>
+          <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white flex items-center gap-2 mb-4">
+            <MessageSquare className="text-[#8B6E4E]" size={20} /> 项目介绍
+          </h3>
+          <div className="bg-white dark:bg-[#2A1D0F] p-5 rounded-3xl shadow-sm border border-gray-50 dark:border-white/5 text-[14px] text-[#4A443E] dark:text-[#A69984] leading-relaxed whitespace-pre-wrap">
+            {project.desc || project.d}
+          </div>
         </div>
       </div>
     </div>

@@ -35,11 +35,11 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
       
       const [
         homeContent, copyrightContent, productionContent, actorsContent,
-        mallContent, settingsContent, tourismContent, investContent, starclubContent,
+        mallContent, settingsContent, tourismContent, investContent, starclubContent, newsContent,
         dbDramas, dbBases, dbProducts, dbLiveStreams, dbFeedbacks, dbCourseRegistrations, dbUsers
       ] = await Promise.all([
         getPageContent('home'), getPageContent('copyright'), getPageContent('production'), getPageContent('actors'),
-        getPageContent('mall'), getPageContent('settings'), getPageContent('tourism'), getPageContent('invest'), getPageContent('starclub'),
+        getPageContent('mall'), getPageContent('settings'), getPageContent('tourism'), getPageContent('invest'), getPageContent('starclub'), getPageContent('news'),
         getDramas(), getBases(), getProducts(), getLiveStreams(), getFeedbacks(), getCourseRegistrations(), getUsers()
       ]);
 
@@ -52,7 +52,8 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
         settings: settingsContent || { logo: '' },
         tourism: tourismContent || {},
         invest: investContent || {},
-        starclub: starclubContent || {}
+        starclub: starclubContent || {},
+        news: newsContent || {}
       });
 
       if (dbDramas !== null) setDramas(dbDramas.length > 0 ? dbDramas : []);
