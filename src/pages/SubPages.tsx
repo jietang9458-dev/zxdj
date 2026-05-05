@@ -314,14 +314,16 @@ export function SalesModel() {
 }
 
 export function CopyrightLibrary() {
+  const { pages } = useCMS();
+  const libraryItems = pages.copyright?.libraryItems || HOT_DRAMAS.concat(HOT_DRAMAS);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('全部');
   const cats = ['全部', '现代都市', '古装玄幻', '悬疑惊悚', '年代励志'];
-  const baseDramas = HOT_DRAMAS.concat(HOT_DRAMAS).map((d, i) => ({ ...d, cat: cats[(i % 4) + 1] }));
+  const baseDramas = libraryItems.map((d: any, i: number) => ({ ...d, cat: d.cat || cats[(i % 4) + 1] }));
   
-  const filtered = baseDramas.filter(d => {
+  const filtered = baseDramas.filter((d: any) => {
     if (activeTab !== '全部' && d.cat !== activeTab) return false;
-    if (searchQuery && !d.title.includes(searchQuery)) return false;
+    if (searchQuery && !d.title?.includes(searchQuery)) return false;
     return true;
   });
 
@@ -366,6 +368,20 @@ export function CopyrightLibrary() {
 }
 
 export function CopyrightPublicity() {
+  const { pages } = useCMS();
+  const announcements = pages.copyright?.announcements || [
+    { 
+      title: '《逆袭星途》（暂定名，名称修改不影响法律效力）', 
+      content: '主要故事内容（示例）：一个现代白领失业后，受生活压力无意间穿越到山海经的世界里，与各种怪兽搏斗，征服了7个怪兽，怪兽化身为女人和他生活在一起的故事。', 
+      date: '2024-05-12'
+    },
+    { 
+      title: '《我的室友是大佬》版权公示', 
+      content: '主要故事内容（示例）：合租生活引发的爆笑故事，平凡少女与神秘大佬的同居日常。', 
+      date: '2024-05-20'
+    }
+  ];
+
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
       <Header title="版权公示" dark />
@@ -375,36 +391,13 @@ export function CopyrightPublicity() {
             <ShieldCheck className="text-green-500" /> 版权确权信息公示
           </h3>
           <div className="space-y-6">
-            {[
-              { 
-                t: '《逆袭星途》（暂定名，名称修改不影响法律效力）', 
-                content: '主要故事内容（示例）：一个现代白领失业后，受生活压力无意间穿越到山海经的世界里，与各种怪兽搏斗，征服了7个怪兽，怪兽化身为女人和他生活在一起的故事。', 
-                id: '对应短剧版权编号（示例）：ZXDJ (B) 01020001~ZXDJ (B) 01020100。',
-                date: '2024-05-12',
-                ic: <LayoutList className="text-[#D4AF37]" size={18} />,
-                img: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=200&h=200&fit=crop'
-              },
-              { 
-                t: '《我的室友是大佬》版权公示', 
-                content: '主要故事内容（示例）：合租生活引发的爆笑故事，平凡少女与神秘大佬的同居日常。', 
-                id: '对应短剧版权编号（示例）：ZXDJ (A) 0023 001~050。',
-                date: '2024-05-20',
-                ic: <LayoutList className="text-blue-400" size={18} />,
-                img: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=200&h=200&fit=crop'
-              }
-            ].map((m, i) => (
-              <div key={i} className="flex gap-4 pb-6 border-b border-gray-50 dark:border-white/5 last:border-0 last:pb-0">
-                <div className="w-16 h-20 rounded-xl overflow-hidden shadow-sm shrink-0 border border-gray-100">
-                  <img src={m.img} alt="" className="w-full h-full object-cover" />
+            {announcements.map((m: any, i: number) => (
+              <div key={i} className="flex flex-col gap-2 pb-6 border-b border-gray-50 dark:border-white/5 last:border-0 last:pb-0">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white leading-snug pr-4">{m.title}</h4>
+                  <p className="text-[11px] text-[#A69984] font-bold shrink-0">{m.date}</p>
                 </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white leading-snug pr-4">{m.t}</h4>
-                    <p className="text-[11px] text-[#A69984] font-bold shrink-0">{m.date}</p>
-                  </div>
-                  <p className="text-[12px] text-[#4A443E] dark:text-[#A69984] font-medium leading-relaxed mb-2 line-clamp-2">{m.content}</p>
-                  <p className="text-[12px] text-[#D4AF37] font-black">{m.id}</p>
-                </div>
+                <p className="text-[12px] text-[#4A443E] dark:text-[#A69984] font-medium leading-relaxed mb-2">{m.content}</p>
               </div>
             ))}
           </div>

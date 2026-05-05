@@ -6,6 +6,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import Header from '../components/Header';
 import { useUser } from '../context/UserContext';
+import { useCMS } from '../context/CMSContext';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,6 +40,7 @@ const DISCOVER_POSTS = [
 export default function Discover() {
   const navigate = useNavigate();
   const { profile } = useUser();
+  const { pages } = useCMS();
   const [activeTab, setActiveTab] = useState('推荐');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -61,10 +63,19 @@ export default function Discover() {
 
   const urlSearchQuery = new URLSearchParams(window.location.search).get('q') || searchQuery;
 
+  const newsData = pages.news || {};
+  const cmsPosts = [
+    ...(newsData.shortDramaNews || []).map((n: any, i: number) => ({ id: `sd_${i}`, t: n.title, u: '短剧资讯', d: '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '短剧资讯' })),
+    ...(newsData.bts || []).map((n: any, i: number) => ({ id: `bts_${i}`, t: n.title, u: '拍摄花絮', d: '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '拍摄花絮' })),
+    ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, u: '成功案例', d: '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '成功案例' }))
+  ];
+  
+  const allPosts = cmsPosts.length > 0 ? cmsPosts : DISCOVER_POSTS;
+
   const filteredPosts = (activeTab === '推荐' 
-    ? DISCOVER_POSTS 
-    : DISCOVER_POSTS.filter(p => p.cat === activeTab)
-  ).filter(p => !urlSearchQuery || p.title?.includes(urlSearchQuery) || p.desc?.includes(urlSearchQuery) || p.user.includes(urlSearchQuery));
+    ? allPosts 
+    : allPosts.filter(p => p.cat === activeTab)
+  ).filter(p => !urlSearchQuery || p.t?.includes(urlSearchQuery) || p.u?.includes(urlSearchQuery));
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

@@ -6,7 +6,7 @@ import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase
   addLiveStream, updateLiveStream, deleteLiveStream
  } from '../services/cmsService';
 import { motion } from 'motion/react';
-import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft, Upload, MessageSquare, FileText, Wifi, UserCheck } from 'lucide-react';
+import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft, Upload, MessageSquare, FileText, Wifi, UserCheck, PenTool } from 'lucide-react';
 
 const ImageUploadButton = ({ value, onChange, className, children }: { value: string, onChange: (url: string) => void, className?: string, children?: React.ReactNode }) => {
   const [uploading, setUploading] = useState(false);
@@ -112,6 +112,73 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
           </button>
         </div>
       </div>
+    </div>
+  );
+};
+
+const AdminListEditor = ({ title, items = [], onChange, schema, setDialogState }: any) => {
+  return (
+    <div className="space-y-4 pt-6 border-t border-gray-100">
+      <div className="flex justify-between items-center">
+        <h4 className="font-bold text-[#1A1108]">{title}</h4>
+        <button 
+          onClick={() => setDialogState({
+            isOpen: true,
+            config: {
+              title: `添加 - ${title}`,
+              fields: schema,
+              initialData: {},
+              onSubmit: async (data: any) => {
+                onChange([data, ...items]);
+              }
+            }
+          })} 
+          className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 hover:bg-blue-100"
+        >
+          <Plus size={14} /> 添加
+        </button>
+      </div>
+      {items.length === 0 ? <p className="text-[12px] text-gray-400">暂无内容</p> : (
+        <div className="space-y-2">
+          {items.map((item: any, i: number) => (
+            <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+              {item.imageUrl || item.image || item.banner ? (
+                <img src={item.imageUrl || item.image || item.banner} className="w-12 h-12 object-cover rounded-lg" alt="" />
+              ) : null}
+              <div className="flex-1 min-w-0">
+                <h5 className="font-bold text-[13px] text-[#1A1108] truncate">{item.title || item.name || '未命名'}</h5>
+                <p className="text-[11px] text-gray-500 truncate">{item.desc || item.subtitle || item.content || item.date || ''}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setDialogState({
+                    isOpen: true,
+                    config: {
+                      title: `编辑 - ${title}`,
+                      fields: schema,
+                      initialData: item,
+                      onSubmit: async (data: any) => {
+                        const newItems = [...items];
+                        newItems[i] = data;
+                        onChange(newItems);
+                      }
+                    }
+                  })}
+                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                >
+                  <PenTool size={14} />
+                </button>
+                <button 
+                  onClick={() => onChange(items.filter((_: any, idx: number) => idx !== i))}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -893,7 +960,110 @@ export default function Admin() {
                         className="w-full px-5 py-4 bg-gray-50 rounded-2xl min-h-[200px] outline-none border border-gray-50 font-mono text-xs"
                       />
                     </div>
+
+                    <AdminListEditor 
+                      title="版权库内容管理"
+                      items={copyrightData.libraryItems || []}
+                      onChange={(items: any) => setCopyrightData({...copyrightData, libraryItems: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'title', label: '片名 (必填)', type: 'text' },
+                        { key: 'desc', label: '相关文字内容', type: 'text' }
+                      ]}
+                    />
+                    <AdminListEditor 
+                      title="版权确权信息公告"
+                      items={copyrightData.announcements || []}
+                      onChange={(items: any) => setCopyrightData({...copyrightData, announcements: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'title', label: '公告标题 (必填)', type: 'text' },
+                        { key: 'content', label: '相关文字内容', type: 'text' },
+                        { key: 'date', label: '发布日期', type: 'text' }
+                      ]}
+                    />
                   </div>
+                )}
+
+                {activeTab === 'production' && (
+                  <AdminListEditor 
+                    title="正在筹备项目"
+                    items={productionData.projectsInPrep || []}
+                    onChange={(items: any) => setProductionData({...productionData, projectsInPrep: items})}
+                    setDialogState={setDialogState}
+                    schema={[
+                      { key: 'imageUrl', label: '项目封面 (必填)', type: 'image' },
+                      { key: 'title', label: '项目名称 (必填)', type: 'text' },
+                      { key: 'desc', label: '相关文字内容', type: 'text' }
+                    ]}
+                  />
+                )}
+
+                {activeTab === 'actors' && (
+                  <>
+                    <AdminListEditor 
+                      title="正在海选"
+                      items={actorsData.auditions || []}
+                      onChange={(items: any) => setActorsData({...actorsData, auditions: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '活动封面 (可选)', type: 'image' },
+                        { key: 'title', label: '项目名称 (必填)', type: 'text' },
+                        { key: 'desc', label: '相关文字内容', type: 'text' }
+                      ]}
+                    />
+                    <AdminListEditor 
+                      title="我要学艺-开班信息"
+                      items={actorsData.classes || []}
+                      onChange={(items: any) => setActorsData({...actorsData, classes: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '课程封面 (可选)', type: 'image' },
+                        { key: 'title', label: '班级名称 (必填)', type: 'text' },
+                        { key: 'desc', label: '相关文字内容', type: 'text' },
+                        { key: 'date', label: '开班时间', type: 'text' }
+                      ]}
+                    />
+                  </>
+                )}
+
+                {activeTab === 'news' && (
+                  <>
+                    <AdminListEditor 
+                      title="短剧资讯"
+                      items={(newsData as any).shortDramaNews || []}
+                      onChange={(items: any) => setNewsData({...(newsData as any), shortDramaNews: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'title', label: '资讯标题 (必填)', type: 'text' },
+                        { key: 'desc', label: '文字内容', type: 'text' }
+                      ]}
+                    />
+                    <AdminListEditor 
+                      title="拍摄花絮"
+                      items={(newsData as any).bts || []}
+                      onChange={(items: any) => setNewsData({...(newsData as any), bts: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'title', label: '标题 (必填)', type: 'text' },
+                        { key: 'desc', label: '文字内容', type: 'text' }
+                      ]}
+                    />
+                    <AdminListEditor 
+                      title="成功案例"
+                      items={(newsData as any).successCases || []}
+                      onChange={(items: any) => setNewsData({...(newsData as any), successCases: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'title', label: '案例标题 (必填)', type: 'text' },
+                        { key: 'desc', label: '文字内容', type: 'text' }
+                      ]}
+                    />
+                  </>
                 )}
 
                 <div className="space-y-2 mt-4">

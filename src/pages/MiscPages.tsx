@@ -50,19 +50,19 @@ export function Production() {
       <div className="mx-5 mt-10 p-6 bg-white dark:bg-[#2A1D0F] rounded-[32px] shadow-sm border border-gray-50 dark:border-white/5 mb-10">
         <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-6">正在筹备</h3>
         <div className="space-y-6">
-          {(pageData.config?.projects || [
-            { t: '都市甜宠新剧', d: '筹备中', i: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop' },
-            { t: '悬疑探案短剧', d: '筹备中', i: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop' },
-            { t: '古装传奇短剧', d: '筹备中', i: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=100&h=100&fit=crop' }
+          {(pageData.projectsInPrep || pageData.config?.projects || [
+            { title: '都市甜宠新剧', desc: '筹备中', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop' },
+            { title: '悬疑探案短剧', desc: '筹备中', imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop' },
+            { title: '古装传奇短剧', desc: '筹备中', imageUrl: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=100&h=100&fit=crop' }
           ]).map((item: any, i: number) => (
             <div key={i} className="flex justify-between items-center group">
               <div className="flex gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden shadow-inner">
-                  <img src={item.i} alt="" className="w-full h-full object-cover" />
+                  <img src={item.imageUrl || item.i} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex flex-col justify-center">
-                  <h4 className="font-black text-[14px] text-[#1A1108]">{item.t}</h4>
-                  <p className="text-[12px] text-[#A69984] mt-0.5">{item.d}</p>
+                  <h4 className="font-black text-[14px] text-[#1A1108] dark:text-white max-w-[140px] truncate">{item.title || item.t}</h4>
+                  <p className="text-[12px] text-[#A69984] mt-0.5">{item.desc || item.d}</p>
                 </div>
               </div>
               <button 
@@ -173,7 +173,7 @@ export function Actors() {
         ))}
       </div>
 
-      <div className="p-6 mb-10">
+      <div className="p-6 mb-4">
         <div className="flex justify-between items-center mb-6 px-1">
           <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white">正在海选</h3>
           <span 
@@ -184,12 +184,43 @@ export function Actors() {
           </span>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          {HOT_DRAMAS.map((drama, i) => (
-            <div key={i} onClick={() => navigate(`/drama/${drama.id}`)} className="text-center group cursor-pointer">
+          {(pageData.auditions || HOT_DRAMAS).map((item: any, i: number) => (
+            <div key={i} onClick={() => navigate(item.id ? `/drama/${item.id}` : '#')} className="text-center group cursor-pointer">
               <div className="aspect-[3/4] rounded-2xl bg-gray-200 mb-2.5 overflow-hidden shadow-md">
-                <img src={drama.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <img src={item.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               </div>
-              <span className="text-[12px] font-black text-[#1A1108] dark:text-[#E6D5B8] line-clamp-1">{drama.title}</span>
+              <span className="text-[12px] font-black text-[#1A1108] dark:text-[#E6D5B8] line-clamp-1">{item.title}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="p-6 mb-10">
+        <div className="flex justify-between items-center mb-6 px-1">
+          <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white">我要学艺 - 开班信息</h3>
+          <span 
+            onClick={() => navigate('/audition/learning')}
+            className="text-[13px] text-[#A69984] font-bold cursor-pointer"
+          >
+            更多 &gt;
+          </span>
+        </div>
+        <div className="space-y-4">
+          {(pageData.classes || [
+            { title: '少儿演艺周末班', desc: '形体、台词、表演基础', date: '每月初开班', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop' },
+            { title: '青年演员特训营', desc: '剧组实战、进阶表演', date: '寒暑假开班', imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop' }
+          ]).map((cls: any, i: number) => (
+            <div key={i} className="flex gap-4 p-4 bg-white dark:bg-[#2A1D0F] rounded-2xl shadow-sm border border-gray-50 dark:border-white/5">
+              <div className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden shrink-0">
+                <img src={cls.imageUrl} alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-black text-[14px] text-[#1A1108] dark:text-white">{cls.title}</h4>
+                <p className="text-[12px] text-[#A69984] mt-1 line-clamp-1">{cls.desc}</p>
+                <div className="text-[10px] text-[#D4AF37] font-bold mt-1 bg-[#D4AF37]/10 px-2 py-0.5 rounded inline-block">
+                  {cls.date}
+                </div>
+              </div>
             </div>
           ))}
         </div>
