@@ -29,12 +29,12 @@ export const HOT_DRAMAS: ShortDrama[] = [
 ];
 
 export const BASES: BaseItem[] = [
-  { id: '1', title: '中国盐田山海都市片场', location: '深圳 · 盐田', imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&h=450&fit=crop', tags: ['海景基地', '现代都市'] },
-  { id: '2', title: '横店影视城拍摄基地', location: '浙江 · 横店', imageUrl: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?q=80&w=800&h=450&fit=crop', tags: ['古装基地', '影视城'] },
-  { id: '4', title: '中星短剧（恩施）影视基地', location: '恩施 · 地心谷', imageUrl: 'https://images.unsplash.com/photo-1510711789248-087061cda288?q=80&w=800&h=450&fit=crop', tags: ['峡谷奇观', '实景拍摄'] },
-  { id: '5', title: '中星短剧（宜昌）影视基地', location: '宜昌 · 王昭君故里', imageUrl: 'https://images.unsplash.com/photo-1515286558661-39726207049c?q=80&w=800&h=450&fit=crop', tags: ['古风建筑', '文化胜地'] },
-  { id: '6', title: '中星短剧（成都）影视基地', location: '成都 · 太古里', imageUrl: 'https://images.unsplash.com/photo-1565507425126-70e0600a946b?q=80&w=800&h=450&fit=crop', tags: ['繁华都市', '潮流地标'] },
-  { id: '7', title: '中星短剧（云南）影视基地', location: '云南 · 大理', imageUrl: 'https://images.unsplash.com/photo-1527685238219-c848674c3766?q=80&w=800&h=450&fit=crop', tags: ['苍山洱海', '古城风韵'] },
+  { id: '1', title: '中国盐田山海都市片场', location: '深圳 · 盐田', imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&h=450&fit=crop', tags: ['海景基地', '现代都市'], region: '华南' },
+  { id: '2', title: '横店影视城拍摄基地', location: '浙江 · 横店', imageUrl: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?q=80&w=800&h=450&fit=crop', tags: ['古装基地', '影视城'], region: '华东' },
+  { id: '4', title: '中星短剧（恩施）影视基地', location: '恩施 · 地心谷', imageUrl: 'https://images.unsplash.com/photo-1510711789248-087061cda288?q=80&w=800&h=450&fit=crop', tags: ['峡谷奇观', '实景拍摄'], region: '华中' },
+  { id: '5', title: '中星短剧（宜昌）影视基地', location: '宜昌 · 王昭君故里', imageUrl: 'https://images.unsplash.com/photo-1515286558661-39726207049c?q=80&w=800&h=450&fit=crop', tags: ['古风建筑', '文化胜地'], region: '华中' },
+  { id: '6', title: '中星短剧（成都）影视基地', location: '成都 · 太古里', imageUrl: 'https://images.unsplash.com/photo-1565507425126-70e0600a946b?q=80&w=800&h=450&fit=crop', tags: ['繁华都市', '潮流地标'], region: '西南' },
+  { id: '7', title: '中星短剧（云南）影视基地', location: '云南 · 大理', imageUrl: 'https://images.unsplash.com/photo-1527685238219-c848674c3766?q=80&w=800&h=450&fit=crop', tags: ['苍山洱海', '古城风韵'], region: '西南' },
 ];
 
 export const DISCOVER_NEWS = [

@@ -20,7 +20,7 @@ export default function BaseList() {
 
   const currentBases = (bases.length > 0 ? bases : BASES).map(b => ({ ...b, region: b.region || '华南' }));
   const availableRegions = Array.from(new Set(currentBases.map(b => b.region)));
-  const regionsToDisplay = availableRegions.length > 0 ? availableRegions : REGIONS;
+  const regionsToDisplay = Array.from(new Set([...REGIONS, ...availableRegions]));
 
   const [activeRegion, setActiveRegion] = useState(regionsToDisplay[0]);
 

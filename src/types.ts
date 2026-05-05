@@ -30,6 +30,7 @@ export interface BaseItem {
   location: string;
   imageUrl: string;
   tags: string[];
+  region?: string;
 }
 
 export interface ActivityItem {

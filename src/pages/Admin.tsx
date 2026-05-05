@@ -583,33 +583,50 @@ export default function Admin() {
                 <Plus size={16} /> 添加短剧
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {dramas.map((drama) => (
-              <div key={drama.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex gap-4 transition-all hover:shadow-md">
-                <div className="w-20 h-28 rounded-xl overflow-hidden bg-gray-50 shrink-0">
-                  <img src={drama.imageUrl} className="w-full h-full object-cover" alt="" />
-                </div>
-                <div className="flex-1 flex flex-col justify-between py-1">
-                  <div>
-                    <h4 className="font-black text-[15px]">{drama.title}</h4>
-                    <p className="text-[11px] text-[#A69984] mt-1 break-all">ID: {drama.id}</p>
-                  </div>
-                  <div className="flex justify-end gap-3 mt-2">
-                    <button 
-                      onClick={() => {
-                        const title = prompt("修改标题:", drama.title) || drama.title;
-                        const imageUrl = prompt("修改图片URL:", drama.imageUrl) || drama.imageUrl;
-                        updateDrama(drama.id, { title, imageUrl }).then(refresh);
-                      }}
-                      className="text-blue-500 hover:text-blue-600 text-[12px] font-bold"
-                    >
-                      编辑
-                    </button>
-                    <button onClick={() => handleDeleteDrama(drama.id)} className="text-red-500 hover:text-red-600 text-[12px] font-bold">删除</button>
-                  </div>
-                </div>
-              </div>
-            ))}
+            <div className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50/50 border-b border-gray-100 text-[13px] text-gray-500">
+                  <tr>
+                    <th className="py-4 px-6 font-medium w-32">封面</th>
+                    <th className="py-4 px-6 font-medium">短剧名称</th>
+                    <th className="py-4 px-6 font-medium text-gray-400">ID</th>
+                    <th className="py-4 px-6 text-right font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                {dramas.map((drama) => (
+                  <tr key={drama.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="w-14 h-20 rounded-lg overflow-hidden bg-gray-50">
+                        <img src={drama.imageUrl} className="w-full h-full object-cover" alt="" />
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 font-bold text-[#1A1108]">{drama.title}</td>
+                    <td className="py-4 px-6 text-[12px] font-mono text-gray-400 max-w-[200px] truncate">{drama.id}</td>
+                    <td className="py-4 px-6 text-right">
+                      <div className="flex items-center justify-end gap-4">
+                        <button 
+                          onClick={() => {
+                            const title = prompt("修改标题:", drama.title) || drama.title;
+                            const imageUrl = prompt("修改图片URL:", drama.imageUrl) || drama.imageUrl;
+                            updateDrama(drama.id, { title, imageUrl }).then(refresh);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 text-[13px] font-bold transition-colors"
+                        >
+                          编辑
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteDrama(drama.id)} 
+                          className="text-red-500 hover:text-red-700 text-[13px] font-bold transition-colors"
+                        >
+                          删除
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -622,39 +639,71 @@ export default function Admin() {
                 <Plus size={16} /> 添加基地
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {bases.map((base) => (
-              <div key={base.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex gap-4 transition-all hover:shadow-md">
-                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-gray-50 shrink-0">
-                  <img src={base.imageUrl} className="w-full h-full object-cover" alt="" />
-                </div>
-                <div className="flex-1 flex flex-col justify-between py-1">
-                  <div>
-                    <h4 className="font-black text-[15px]">{base.title}</h4>
-                    <div className="flex items-center gap-1 text-[11px] text-[#A69984] mt-1">
-                      <MapPin size={10} /> {base.location}
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-3 mt-2">
-                    <button 
-                      onClick={() => {
-                        const title = prompt("修改标题:", base.title) || base.title;
-                        const location = prompt("修改地点:", base.location) || base.location;
-                        const region = prompt("修改大区:", base.region || '华南') || base.region;
-                        const imageUrl = prompt("修改图片URL:", base.imageUrl) || base.imageUrl;
-                        const tagsInput = prompt("修改标签 (逗号分隔):", base.tags?.join(',')) || base.tags?.join(',');
-                        const tags = tagsInput?.split(',').map(t => t.trim()) || base.tags;
-                        updateBase(base.id, { title, location, region, imageUrl, tags }).then(refresh);
-                      }}
-                      className="text-blue-500 hover:text-blue-600 text-[12px] font-bold"
-                    >
-                      编辑内容
-                    </button>
-                    <button onClick={() => handleDeleteBase(base.id)} className="text-red-500 hover:text-red-600 text-[12px] font-bold">删除</button>
-                  </div>
-                </div>
-              </div>
-            ))}
+            <div className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50/50 border-b border-gray-100 text-[13px] text-gray-500">
+                  <tr>
+                    <th className="py-4 px-6 font-medium w-36">图片</th>
+                    <th className="py-4 px-6 font-medium">基地名称</th>
+                    <th className="py-4 px-6 font-medium">地点</th>
+                    <th className="py-4 px-6 font-medium">大区</th>
+                    <th className="py-4 px-6 font-medium">标签</th>
+                    <th className="py-4 px-6 text-right font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                {bases.map((base) => (
+                  <tr key={base.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="w-20 h-14 rounded-lg overflow-hidden bg-gray-50">
+                        <img src={base.imageUrl} className="w-full h-full object-cover" alt="" />
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 font-bold text-[#1A1108]">{base.title}</td>
+                    <td className="py-4 px-6 text-[13px] text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <MapPin size={12} className="text-gray-400" />
+                        {base.location}
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 text-[13px] text-gray-600">{base.region || '华南'}</td>
+                    <td className="py-4 px-6">
+                      <div className="flex flex-wrap gap-1">
+                        {base.tags?.map((tag, idx) => (
+                          <span key={idx} className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded text-[10px] font-medium border border-orange-100/50">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 text-right">
+                      <div className="flex items-center justify-end gap-4">
+                        <button 
+                          onClick={() => {
+                            const title = prompt("修改标题:", base.title) || base.title;
+                            const location = prompt("修改地点:", base.location) || base.location;
+                            const region = prompt("修改大区:", base.region || '华南') || base.region;
+                            const imageUrl = prompt("修改图片URL:", base.imageUrl) || base.imageUrl;
+                            const tagsInput = prompt("修改标签 (逗号分隔):", base.tags?.join(',')) || base.tags?.join(',');
+                            const tags = tagsInput?.split(',').map(t => t.trim()) || base.tags;
+                            updateBase(base.id, { title, location, region, imageUrl, tags }).then(refresh);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 text-[13px] font-bold transition-colors"
+                        >
+                          编辑
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteBase(base.id)} 
+                          className="text-red-500 hover:text-red-700 text-[13px] font-bold transition-colors"
+                        >
+                          删除
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -667,34 +716,51 @@ export default function Admin() {
                 <Plus size={16} /> 添加商品
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {products.map((product) => (
-              <div key={product.id} className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex gap-4 transition-all hover:shadow-md">
-                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-50 shrink-0">
-                  <img src={product.imageUrl} className="w-full h-full object-cover" alt="" />
-                </div>
-                <div className="flex-1 flex flex-col justify-between py-1">
-                  <div>
-                    <h4 className="font-black text-[15px]">{product.title}</h4>
-                    <p className="text-[13px] text-orange-600 font-bold mt-1">¥{product.price}</p>
-                  </div>
-                  <div className="flex justify-end gap-3 mt-2">
-                    <button 
-                      onClick={() => {
-                        const title = prompt("修改名称:", product.title) || product.title;
-                        const price = parseInt(prompt("修改价格:", product.price.toString()) || product.price.toString());
-                        const imageUrl = prompt("修改图片URL:", product.imageUrl) || product.imageUrl;
-                        updateProduct(product.id, { title, price, imageUrl }).then(refresh);
-                      }}
-                      className="text-blue-500 hover:text-blue-600 text-[12px] font-bold"
-                    >
-                      编辑
-                    </button>
-                    <button onClick={() => handleDeleteProduct(product.id)} className="text-red-500 hover:text-red-600 text-[12px] font-bold">删除</button>
-                  </div>
-                </div>
-              </div>
-            ))}
+            <div className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50/50 border-b border-gray-100 text-[13px] text-gray-500">
+                  <tr>
+                    <th className="py-4 px-6 font-medium w-32">商品图</th>
+                    <th className="py-4 px-6 font-medium">商品名称</th>
+                    <th className="py-4 px-6 font-medium">价格</th>
+                    <th className="py-4 px-6 text-right font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                {products.map((product) => (
+                  <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-50 mt-1">
+                        <img src={product.imageUrl} className="w-full h-full object-cover" alt="" />
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 font-bold text-[#1A1108]">{product.title}</td>
+                    <td className="py-4 px-6 font-bold text-orange-600">¥ {product.price}</td>
+                    <td className="py-4 px-6 text-right">
+                      <div className="flex items-center justify-end gap-4">
+                        <button 
+                          onClick={() => {
+                            const title = prompt("修改名称:", product.title) || product.title;
+                            const price = parseInt(prompt("修改价格:", product.price.toString()) || product.price.toString());
+                            const imageUrl = prompt("修改图片URL:", product.imageUrl) || product.imageUrl;
+                            updateProduct(product.id, { title, price, imageUrl }).then(refresh);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 text-[13px] font-bold transition-colors"
+                        >
+                          编辑
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteProduct(product.id)} 
+                          className="text-red-500 hover:text-red-700 text-[13px] font-bold transition-colors"
+                        >
+                          删除
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}

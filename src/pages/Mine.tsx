@@ -10,7 +10,7 @@ export default function Mine() {
   const { profile } = useUser();
   
   const ServiceIcons = [
-    { label: '基础管理', Icon: Settings, path: '/admin' },
+    { label: '咨询反馈', Icon: Headset, path: '/help' },
     { label: '我的钱包', Icon: Wallet, path: '/wallet' },
     { label: '我的收藏', Icon: Star, path: '/favorites' },
     { label: '我的订单', Icon: ShoppingBag, path: '/orders' },
