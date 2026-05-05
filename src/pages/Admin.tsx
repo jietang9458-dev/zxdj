@@ -4,7 +4,96 @@ import Header from '../components/Header';
 import { useCMS } from '../context/CMSContext';
 import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase, updateBase, deleteBase, addProduct, updateProduct, deleteProduct } from '../services/cmsService';
 import { motion } from 'motion/react';
-import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft } from 'lucide-react';
+import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft, Upload } from 'lucide-react';
+
+const ImageUploadButton = ({ value, onChange, className, children }: { value: string, onChange: (url: string) => void, className?: string, children?: React.ReactNode }) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("图片太大，请选择 5MB 以下的图片");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        onChange(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+    // reset the input value so the same file can be selected again
+    e.target.value = '';
+  };
+
+  return (
+    <label className={`cursor-pointer ${className || ''}`}>
+      {children}
+      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+    </label>
+  );
+};
+
+const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: any) => {
+  const [data, setData] = React.useState<any>(initialData || {});
+  
+  React.useEffect(() => {
+    setData(initialData || {});
+  }, [initialData, isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-[32px] p-8 w-full max-w-md shadow-2xl">
+        <h3 className="text-xl font-bold mb-6 text-[#1A1108]">{title}</h3>
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto px-1">
+          {fields.map((field: any) => (
+            <div key={field.key} className="space-y-2">
+              <label className="text-[13px] font-bold text-gray-500">{field.label}</label>
+              {field.type === 'image' ? (
+                <div className="flex gap-3">
+                  <ImageUploadButton 
+                    value={data[field.key] || ''}
+                    onChange={(val) => setData({...data, [field.key]: val})}
+                    className="w-full"
+                  >
+                    <div className="w-full flex items-center justify-center p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100 cursor-pointer min-h-[140px]">
+                      {data[field.key] ? (
+                        <img src={data[field.key]} className="max-h-32 rounded-lg object-contain" alt="" />
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-gray-400">
+                          <Upload size={24} />
+                          <span className="text-[12px] font-bold">点击从电脑上传图片</span>
+                        </div>
+                      )}
+                    </div>
+                  </ImageUploadButton>
+                </div>
+              ) : field.type === 'number' ? (
+                <input 
+                  type="number"
+                  value={data[field.key] || ''}
+                  onChange={(e) => setData({...data, [field.key]: parseInt(e.target.value) || 0})}
+                  className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200"
+                />
+              ) : (
+                <input 
+                  type="text"
+                  value={data[field.key] || ''}
+                  onChange={(e) => setData({...data, [field.key]: e.target.value})}
+                  className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-3 justify-end mt-8">
+          <button onClick={onClose} className="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-colors">取消</button>
+          <button onClick={() => { onSubmit(data); onClose(); }} className="px-6 py-3 bg-[#1A1108] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all">确认保存</button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Admin() {
   const { pages, dramas, bases, products, refresh } = useCMS();
@@ -27,6 +116,8 @@ export default function Admin() {
   const [tourismData, setTourismData] = useState(pages.tourism || { banner: '', title: '', subtitle: '', groups: [] });
   const [investData, setInvestData] = useState(pages.invest || { banner: '', title: '', subtitle: '' });
   const [starclubData, setStarclubData] = useState(pages.starclub || { banner: '', title: '', subtitle: '' });
+  
+  const [dialogState, setDialogState] = useState<{isOpen: boolean; config?: any}>({ isOpen: false, config: null });
 
   useEffect(() => {
     async function checkAuth() {
@@ -67,6 +158,8 @@ export default function Admin() {
       await updatePageContent('home', { banners: homeBanners, categories: homeCategories });
       await refresh();
       alert("首页配置保存成功！");
+    } catch (e: any) {
+      alert("保存失败: " + e.message);
     } finally {
       setLoading(false);
     }
@@ -82,6 +175,8 @@ export default function Admin() {
       });
       await refresh();
       alert("全局设置保存成功！");
+    } catch (e: any) {
+      alert("保存失败: " + e.message);
     } finally {
       setLoading(false);
     }
@@ -93,20 +188,96 @@ export default function Admin() {
       await updatePageContent(pageKey, data);
       await refresh();
       alert("页面内容保存成功！");
+    } catch (e: any) {
+      alert("保存失败: " + e.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateDrama = async () => {
-    const title = prompt("输入短剧名称:");
-    if (!title) return;
-    const imageUrl = prompt("输入封面图URL:");
-    if (!imageUrl) return;
-    setLoading(true);
-    await addDrama({ title, imageUrl });
-    await refresh();
-    setLoading(false);
+  const openDramaDialog = (initialData: any = null) => {
+    setDialogState({
+      isOpen: true,
+      config: {
+        title: initialData ? '编辑短剧' : '添加短剧',
+        initialData: initialData || {},
+        fields: [
+          { key: 'imageUrl', label: '封面图', type: 'image' },
+          { key: 'title', label: '短剧名称', type: 'text' }
+        ],
+        onSubmit: async (data: any) => {
+          if (!data.title || !data.imageUrl) return alert("请填写完整信息");
+          setLoading(true);
+          if (initialData) {
+            await updateDrama(initialData.id, data);
+          } else {
+            await addDrama(data);
+          }
+          await refresh();
+          setLoading(false);
+        }
+      }
+    });
+  };
+
+  const openBaseDialog = (initialData: any = null) => {
+    setDialogState({
+      isOpen: true,
+      config: {
+        title: initialData ? '编辑基地' : '添加基地',
+        initialData: initialData || { region: '华南' },
+        fields: [
+          { key: 'imageUrl', label: '基地图片', type: 'image' },
+          { key: 'title', label: '基地名称', type: 'text' },
+          { key: 'location', label: '地点描述', type: 'text' },
+          { key: 'region', label: '大区 (如 华南)', type: 'text' },
+          { key: 'tagsStr', label: '标签 (逗号分隔)', type: 'text' }
+        ],
+        onSubmit: async (data: any) => {
+          if (!data.title || !data.imageUrl) return alert("请填写完整信息");
+          setLoading(true);
+          const formattedData = {
+            ...data,
+            tags: data.tagsStr ? data.tagsStr.split(',').map((t:string) => t.trim()) : data.tags || []
+          };
+          delete formattedData.tagsStr;
+          
+          if (initialData) {
+            await updateBase(initialData.id, formattedData);
+          } else {
+            await addBase(formattedData);
+          }
+          await refresh();
+          setLoading(false);
+        }
+      }
+    });
+  };
+
+  const openProductDialog = (initialData: any = null) => {
+    setDialogState({
+      isOpen: true,
+      config: {
+        title: initialData ? '编辑商品' : '添加商品',
+        initialData: initialData || {},
+        fields: [
+          { key: 'imageUrl', label: '商品图', type: 'image' },
+          { key: 'title', label: '商品名称', type: 'text' },
+          { key: 'price', label: '价格', type: 'number' }
+        ],
+        onSubmit: async (data: any) => {
+          if (!data.title || !data.imageUrl) return alert("请填写完整信息");
+          setLoading(true);
+          if (initialData) {
+            await updateProduct(initialData.id, data);
+          } else {
+            await addProduct(data);
+          }
+          await refresh();
+          setLoading(false);
+        }
+      }
+    });
   };
 
   const handleDeleteDrama = async (id: string) => {
@@ -117,36 +288,10 @@ export default function Admin() {
     setLoading(false);
   };
 
-  const handleCreateBase = async () => {
-    const title = prompt("输入基地名称:");
-    if (!title) return;
-    const location = prompt("输入地点 (例如: 深圳 · 盐田):");
-    const region = prompt("输入大区 (华南/华中/西南/华东/华北):", "华南");
-    const imageUrl = prompt("输入图片URL:");
-    const tagsInput = prompt("输入标签 (逗号分隔):", "海景基地,现代都市");
-    const tags = tagsInput?.split(',').map(t => t.trim()) || [];
-    setLoading(true);
-    await addBase({ title, location, region, imageUrl, tags });
-    await refresh();
-    setLoading(false);
-  };
-
   const handleDeleteBase = async (id: string) => {
     if (!confirm("确定删除吗？")) return;
     setLoading(true);
     await deleteBase(id);
-    await refresh();
-    setLoading(false);
-  };
-
-  const handleCreateProduct = async () => {
-    const title = prompt("输入产品名称:");
-    if (!title) return;
-    const priceStr = prompt("输入价格 (数字):");
-    const price = parseInt(priceStr || '0');
-    const imageUrl = prompt("输入图片URL:");
-    setLoading(true);
-    await addProduct({ title, price, imageUrl });
     await refresh();
     setLoading(false);
   };
@@ -271,16 +416,13 @@ export default function Admin() {
                     onChange={(e) => setAppLogo(e.target.value)}
                     className="flex-1 px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 transition-all border border-gray-50"
                   />
-                  <button 
-                    onClick={() => {
-                      const url = prompt("请输入图片 URL:", appLogo);
-                      if (url !== null) setAppLogo(url);
-                    }}
-                    title="点击修改图片"
-                    className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer"
+                  <ImageUploadButton 
+                    value={appLogo}
+                    onChange={setAppLogo}
+                    className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition-colors"
                   >
                     {appLogo ? <img src={appLogo} className="w-full h-full object-cover" alt="" /> : <ImageIcon className="text-gray-300" />}
-                  </button>
+                  </ImageUploadButton>
                 </div>
               </div>
             </div>
@@ -359,11 +501,19 @@ export default function Admin() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 shadow-sm border border-gray-100">
+                      <ImageUploadButton 
+                        value={banner.img}
+                        onChange={(val) => {
+                          const newBanners = [...homeBanners];
+                          newBanners[i].img = val;
+                          setHomeBanners(newBanners);
+                        }}
+                        className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 shadow-sm border border-gray-100 hover:bg-gray-100 transition-colors"
+                      >
                         <ImageIcon size={18} className="text-gray-400" />
-                      </div>
+                      </ImageUploadButton>
                       <input 
-                        placeholder="图片URL"
+                        placeholder="图片URL 或 点击左侧图标上传"
                         value={banner.img}
                         onChange={(e) => {
                           const newBanners = [...homeBanners];
@@ -464,33 +614,71 @@ export default function Admin() {
               
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-[#A69984] ml-2">主 Banner 图片 URL</label>
-                  <input 
-                    value={
-                      activeTab === 'copyright' ? copyrightData.banner :
-                      activeTab === 'production' ? productionData.banner :
-                      activeTab === 'tourism' ? tourismData.banner :
-                      activeTab === 'invest' ? investData.banner :
-                      activeTab === 'starclub' ? starclubData.banner :
-                      ''
-                    }
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (activeTab === 'copyright') setCopyrightData({...copyrightData, banner: val});
-                      if (activeTab === 'production') setProductionData({...productionData, banner: val});
-                      if (activeTab === 'tourism') setTourismData({...tourismData, banner: val});
-                      if (activeTab === 'invest') setInvestData({...investData, banner: val});
-                      if (activeTab === 'starclub') setStarclubData({...starclubData, banner: val});
-                    }}
-                    className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 border border-gray-50"
-                  />
+                  <label className="text-[11px] font-bold text-[#A69984] ml-2">主 Banner 图片</label>
+                  <div className="flex gap-3">
+                    <ImageUploadButton 
+                      value={activeTab === 'copyright' ? copyrightData.banner :
+                             activeTab === 'production' ? productionData.banner :
+                             activeTab === 'tourism' ? tourismData.banner :
+                             activeTab === 'invest' ? investData.banner :
+                             activeTab === 'starclub' ? (starclubData as any).banner : ''}
+                      onChange={(val) => {
+                        if (activeTab === 'copyright') setCopyrightData({...copyrightData, banner: val});
+                        if (activeTab === 'production') setProductionData({...productionData, banner: val});
+                        if (activeTab === 'tourism') setTourismData({...tourismData, banner: val});
+                        if (activeTab === 'invest') setInvestData({...investData, banner: val});
+                        if (activeTab === 'starclub') setStarclubData({...(starclubData as any), banner: val});
+                      }}
+                      className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition-colors shrink-0"
+                    >
+                      {(() => {
+                        const val = activeTab === 'copyright' ? copyrightData.banner :
+                                    activeTab === 'production' ? productionData.banner :
+                                    activeTab === 'tourism' ? tourismData.banner :
+                                    activeTab === 'invest' ? investData.banner :
+                                    activeTab === 'starclub' ? (starclubData as any).banner : '';
+                        return val ? <img src={val} className="w-full h-full object-cover" alt="" /> : <ImageIcon className="text-gray-300" />;
+                      })()}
+                    </ImageUploadButton>
+                    <input 
+                      placeholder="图片 URL 或 点击左侧上传"
+                      value={
+                        activeTab === 'copyright' ? copyrightData.banner :
+                        activeTab === 'production' ? productionData.banner :
+                        activeTab === 'tourism' ? tourismData.banner :
+                        activeTab === 'invest' ? investData.banner :
+                        activeTab === 'starclub' ? (starclubData as any).banner :
+                        ''
+                      }
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (activeTab === 'copyright') setCopyrightData({...copyrightData, banner: val});
+                        if (activeTab === 'production') setProductionData({...productionData, banner: val});
+                        if (activeTab === 'tourism') setTourismData({...tourismData, banner: val});
+                        if (activeTab === 'invest') setInvestData({...investData, banner: val});
+                        if (activeTab === 'starclub') setStarclubData({...(starclubData as any), banner: val});
+                      }}
+                      className="flex-1 px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 border border-gray-50"
+                    />
+                  </div>
                   {activeTab === 'actors' && (
                     <div className="space-y-3">
-                      <p className="text-[11px] font-bold text-[#A69984]">多轮播图 (分行输入 URL)</p>
+                      <div className="flex justify-between items-center">
+                        <p className="text-[11px] font-bold text-[#A69984]">多轮播图 (分行输入 URL)</p>
+                        <ImageUploadButton 
+                          value={''}
+                          onChange={(val) => {
+                            setActorsData({...actorsData, banners: [...(actorsData.banners || []), val]});
+                          }}
+                          className="text-blue-600 bg-blue-50 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors flex items-center gap-1"
+                        >
+                          <Upload size={14} /> 添加图片
+                        </ImageUploadButton>
+                      </div>
                       <textarea 
                         value={actorsData.banners?.join('\n')}
                         onChange={(e) => setActorsData({...actorsData, banners: e.target.value.split('\n').filter(Boolean)})}
-                        className="w-full px-5 py-4 bg-gray-50 rounded-2xl min-h-[100px] outline-none border border-gray-50"
+                        className="w-full px-5 py-4 bg-gray-50 rounded-2xl min-h-[100px] outline-none border border-gray-50 text-[10px]"
                       />
                     </div>
                   )}
@@ -600,7 +788,7 @@ export default function Admin() {
           <div className="space-y-4">
             <div className="flex justify-between items-center px-2">
               <h3 className="font-black text-[#1A1108]">短剧列表 ({dramas.length})</h3>
-              <button onClick={handleCreateDrama} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
+              <button onClick={() => openDramaDialog()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
                 <Plus size={16} /> 添加短剧
               </button>
             </div>
@@ -627,11 +815,7 @@ export default function Admin() {
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-4">
                         <button 
-                          onClick={() => {
-                            const title = prompt("修改标题:", drama.title) || drama.title;
-                            const imageUrl = prompt("修改图片URL:", drama.imageUrl) || drama.imageUrl;
-                            updateDrama(drama.id, { title, imageUrl }).then(refresh);
-                          }}
+                          onClick={() => openDramaDialog(drama)}
                           className="text-blue-600 hover:text-blue-800 text-[13px] font-bold transition-colors"
                         >
                           编辑
@@ -656,7 +840,7 @@ export default function Admin() {
           <div className="space-y-4 pb-10">
             <div className="flex justify-between items-center px-2">
               <h3 className="font-black text-[#1A1108]">基地列表 ({bases.length})</h3>
-              <button onClick={handleCreateBase} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
+              <button onClick={() => openBaseDialog()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
                 <Plus size={16} /> 添加基地
               </button>
             </div>
@@ -700,15 +884,7 @@ export default function Admin() {
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-4">
                         <button 
-                          onClick={() => {
-                            const title = prompt("修改标题:", base.title) || base.title;
-                            const location = prompt("修改地点:", base.location) || base.location;
-                            const region = prompt("修改大区:", base.region || '华南') || base.region;
-                            const imageUrl = prompt("修改图片URL:", base.imageUrl) || base.imageUrl;
-                            const tagsInput = prompt("修改标签 (逗号分隔):", base.tags?.join(',')) || base.tags?.join(',');
-                            const tags = tagsInput?.split(',').map(t => t.trim()) || base.tags;
-                            updateBase(base.id, { title, location, region, imageUrl, tags }).then(refresh);
-                          }}
+                          onClick={() => openBaseDialog({...base, tagsStr: base.tags?.join(',')})}
                           className="text-blue-600 hover:text-blue-800 text-[13px] font-bold transition-colors"
                         >
                           编辑
@@ -733,7 +909,7 @@ export default function Admin() {
           <div className="space-y-4 pb-10">
             <div className="flex justify-between items-center px-2">
               <h3 className="font-black text-[#1A1108]">商城管理 ({products.length})</h3>
-              <button onClick={handleCreateProduct} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
+              <button onClick={() => openProductDialog()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
                 <Plus size={16} /> 添加商品
               </button>
             </div>
@@ -760,12 +936,7 @@ export default function Admin() {
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-4">
                         <button 
-                          onClick={() => {
-                            const title = prompt("修改名称:", product.title) || product.title;
-                            const price = parseInt(prompt("修改价格:", product.price.toString()) || product.price.toString());
-                            const imageUrl = prompt("修改图片URL:", product.imageUrl) || product.imageUrl;
-                            updateProduct(product.id, { title, price, imageUrl }).then(refresh);
-                          }}
+                          onClick={() => openProductDialog(product)}
                           className="text-blue-600 hover:text-blue-800 text-[13px] font-bold transition-colors"
                         >
                           编辑
@@ -786,6 +957,13 @@ export default function Admin() {
           </div>
         )}
         </div>
+        {dialogState.isOpen && dialogState.config && (
+          <FormDialog 
+            isOpen={dialogState.isOpen} 
+            onClose={() => setDialogState({ isOpen: false })} 
+            {...dialogState.config}
+          />
+        )}
       </main>
     </div>
   );

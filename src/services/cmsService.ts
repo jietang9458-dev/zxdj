@@ -20,7 +20,7 @@ export async function testConnection() {
 // Generic Content CMS
 export async function getPageContent(pageId: string) {
   try {
-    const res = await fetch(`${API_BASE}/pages/${pageId}`);
+    const res = await fetch(`${API_BASE}/pages/${pageId}?_t=${Date.now()}`);
     return await res.json();
   } catch (error) {
     console.error(error);
@@ -29,29 +29,27 @@ export async function getPageContent(pageId: string) {
 }
 
 export async function updatePageContent(pageId: string, data: any) {
-  try {
-    await fetch(`${API_BASE}/pages/${pageId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-  } catch (error) {
-    console.error(error);
-  }
+  const res = await fetch(`${API_BASE}/pages/${pageId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error("保存失败: " + await res.text());
 }
 
 // Dramas
 export async function getDramas() {
-  const res = await fetch(`${API_BASE}/dramas`);
+  const res = await fetch(`${API_BASE}/dramas?_t=${Date.now()}`);
   return await res.json();
 }
 
 export async function updateDrama(id: string, data: any) {
-  await fetch(`${API_BASE}/dramas/${id}`, {
+  const res = await fetch(`${API_BASE}/dramas/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
+  if (!res.ok) throw new Error(await res.text());
 }
 
 export async function addDrama(data: any) {
@@ -60,6 +58,7 @@ export async function addDrama(data: any) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
+  if (!res.ok) throw new Error(await res.text());
   const json = await res.json();
   return json.id;
 }
@@ -70,16 +69,17 @@ export async function deleteDrama(id: string) {
 
 // Bases
 export async function getBases() {
-  const res = await fetch(`${API_BASE}/bases`);
+  const res = await fetch(`${API_BASE}/bases?_t=${Date.now()}`);
   return await res.json();
 }
 
 export async function updateBase(id: string, data: any) {
-  await fetch(`${API_BASE}/bases/${id}`, {
+  const res = await fetch(`${API_BASE}/bases/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
+  if (!res.ok) throw new Error(await res.text());
 }
 
 export async function addBase(data: any) {
@@ -88,6 +88,7 @@ export async function addBase(data: any) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
+  if (!res.ok) throw new Error(await res.text());
   const json = await res.json();
   return json.id;
 }
@@ -98,16 +99,17 @@ export async function deleteBase(id: string) {
 
 // Products
 export async function getProducts() {
-  const res = await fetch(`${API_BASE}/products`);
+  const res = await fetch(`${API_BASE}/products?_t=${Date.now()}`);
   return await res.json();
 }
 
 export async function updateProduct(id: string, data: any) {
-  await fetch(`${API_BASE}/products/${id}`, {
+  const res = await fetch(`${API_BASE}/products/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
+  if (!res.ok) throw new Error(await res.text());
 }
 
 export async function addProduct(data: any) {
@@ -116,6 +118,7 @@ export async function addProduct(data: any) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
+  if (!res.ok) throw new Error(await res.text());
   const json = await res.json();
   return json.id;
 }
