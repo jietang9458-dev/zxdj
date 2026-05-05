@@ -487,22 +487,29 @@ export function AuditionRegistration() {
     worksLink: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.contact) {
       alert('请填写姓名和联系方式');
       return;
     }
 
-    const registrations = JSON.parse(localStorage.getItem('my_registrations') || '[]');
+    const { addCourseRegistration } = await import('../services/cmsService');
     const newRegistration = {
       ...formData,
-      id: Date.now().toString(),
       status: '审核中',
-      date: new Date().toLocaleDateString()
+      date: new Date().toLocaleDateString(),
+      phone: formData.contact
     };
-    
-    registrations.unshift(newRegistration);
+
+    try {
+      await addCourseRegistration({ ...newRegistration, category: '海选' });
+    } catch(err) {
+      console.error(err);
+    }
+
+    const registrations = JSON.parse(localStorage.getItem('my_registrations') || '[]');
+    registrations.unshift({...newRegistration, id: Date.now().toString()});
     localStorage.setItem('my_registrations', JSON.stringify(registrations));
     
     alert('提交成功！已保存到“我的报名”中。');
@@ -649,23 +656,30 @@ export function GeneralRegistration() {
     projectName: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone || !formData.projectName) {
       alert('请填写姓名、电话和项目名称');
       return;
     }
 
-    const registrations = JSON.parse(localStorage.getItem('my_registrations') || '[]');
+    const { addCourseRegistration } = await import('../services/cmsService');
+
     const newRegistration = {
       ...formData,
-      id: Date.now().toString(),
       status: '已提交',
       date: new Date().toLocaleDateString(),
       contact: formData.phone // Mapping phone to contact for list view
     };
     
-    registrations.unshift(newRegistration);
+    try {
+      await addCourseRegistration({ ...newRegistration, category: '海选/活动' });
+    } catch(err) {
+      console.error(err);
+    }
+
+    const registrations = JSON.parse(localStorage.getItem('my_registrations') || '[]');
+    registrations.unshift({...newRegistration, id: Date.now().toString()});
     localStorage.setItem('my_registrations', JSON.stringify(registrations));
     
     alert('提交成功！我们将尽快与您联系。');

@@ -23,10 +23,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { theme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-[#F0F0F0] dark:bg-black flex justify-center items-center py-0 sm:py-10 antialiased overflow-hidden transition-colors duration-500">
+    <div className="fixed inset-0 bg-[#F0F0F0] dark:bg-black flex justify-center items-center py-0 sm:py-10 antialiased transition-colors duration-500">
       {/* Mobile Frame Container */}
       <div className={cn(
-        "w-full max-w-[430px] h-[932px] sm:h-[844px] shadow-[0_0_100px_rgba(0,0,0,0.1)] relative flex flex-col overflow-hidden sm:rounded-[3.5rem] border-[12px] border-[#1A1A1A] transition-colors duration-300",
+        "w-full h-full sm:max-w-[430px] sm:h-[844px] shadow-[0_0_100px_rgba(0,0,0,0.1)] relative flex flex-col overflow-hidden sm:rounded-[3.5rem] border-0 sm:border-[12px] border-[#1A1A1A] transition-colors duration-300",
         theme === 'dark' ? "bg-[#1A1108]" : "bg-white"
       )}>
         

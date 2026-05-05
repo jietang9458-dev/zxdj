@@ -55,6 +55,25 @@ db.exec(`
     id TEXT PRIMARY KEY,
     data TEXT
   );
+  
+  CREATE TABLE IF NOT EXISTS liveStreams (
+    id TEXT PRIMARY KEY,
+    data TEXT
+  );
+  CREATE TABLE IF NOT EXISTS feedbacks (
+    id TEXT PRIMARY KEY,
+    data TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    data TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS course_registrations (
+    id TEXT PRIMARY KEY,
+    data TEXT
+  );
 `);
 
 // API Routes
@@ -65,7 +84,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     return;
   }
   // Return the path relative to public
-  res.json({ url: \`/uploads/\${req.file.filename}\` });
+  res.json({ url: `/uploads/${req.file.filename}` });
 });
 
 // Serve uploads statically to ensure they reflect immediately in both dev/prod
@@ -88,8 +107,8 @@ app.post('/api/pages/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// Generic Collection Handlers (dramas, bases, products)
-const collections = ['dramas', 'bases', 'products'];
+// Generic Collection Handlers
+const collections = ['dramas', 'bases', 'products', 'liveStreams', 'feedbacks', 'course_registrations', 'users'];
 
 collections.forEach(col => {
   app.get(`/api/${col}`, (req, res) => {

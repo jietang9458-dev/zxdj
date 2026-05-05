@@ -117,12 +117,7 @@ export default function Home() {
             <button className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-[#E6D5B8] active:scale-90 transition-transform">
               <Bell size={20} />
             </button>
-            {/* Capsule Button */}
-            <div className="flex items-center gap-3 px-3 py-1.5 rounded-full border bg-black/20 border-white/10 text-white">
-              <MoreHorizontal size={18} />
-              <div className="w-px h-3 bg-white/10" />
-              <Circle size={14} fill="currentColor" />
-            </div>
+
           </div>
         </div>
 

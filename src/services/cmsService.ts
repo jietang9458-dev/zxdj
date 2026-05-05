@@ -109,6 +109,71 @@ export async function deleteBase(id: string) {
   await fetch(`${API_BASE}/bases/${id}`, { method: 'DELETE' });
 }
 
+export async function getLiveStreams() {
+  const res = await fetch(`${API_BASE}/liveStreams`);
+  if (!res.ok) return null;
+  return await res.json();
+}
+
+export async function addLiveStream(data: any) {
+  const res = await fetch(`${API_BASE}/liveStreams`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+export async function updateLiveStream(id: string, data: any) {
+  const res = await fetch(`${API_BASE}/liveStreams/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+export async function deleteLiveStream(id: string) {
+  const res = await fetch(`${API_BASE}/liveStreams/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+export async function getFeedbacks() {
+  const res = await fetch(`${API_BASE}/feedbacks`);
+  if (!res.ok) return null;
+  return await res.json();
+}
+
+export async function addFeedback(data: any) {
+  const res = await fetch(`${API_BASE}/feedbacks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+export async function getCourseRegistrations() {
+  const res = await fetch(`${API_BASE}/course_registrations`);
+  if (!res.ok) return null;
+  return await res.json();
+}
+
+export async function addCourseRegistration(data: any) {
+  const res = await fetch(`${API_BASE}/course_registrations`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+export async function getUsers() {
+  const res = await fetch(`${API_BASE}/users`);
+  if (!res.ok) return null;
+  return await res.json();
+}
+
 // Products
 export async function getProducts() {
   const res = await fetch(`${API_BASE}/products?_t=${Date.now()}`);

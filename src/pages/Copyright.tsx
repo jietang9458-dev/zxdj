@@ -36,8 +36,8 @@ function ScrollingText({ items }: { items: string[] }) {
 
 export default function Copyright() {
   const navigate = useNavigate();
-  const { dramas, pages } = useCMS();
-  const currentDramas = dramas.length > 0 ? dramas : HOT_DRAMAS;
+  const { dramas, pages, liveStreams } = useCMS();
+  const currentLiveStreams = liveStreams?.length > 0 ? liveStreams : HOT_DRAMAS;
   const pageData = pages.copyright || {};
   
   return (
@@ -83,7 +83,7 @@ export default function Copyright() {
           剧组片场拍摄直播及直播预告
         </h3>
         <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
-          {currentDramas.map((drama, idx) => (
+          {currentLiveStreams.map((drama, idx) => (
             <div 
               key={idx} 
               className="flex-shrink-0 w-36 cursor-pointer active:scale-95 transition-transform"

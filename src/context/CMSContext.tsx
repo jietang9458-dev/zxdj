@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getPageContent, getDramas, getBases, getProducts, testConnection } from '../services/cmsService';
+import { getPageContent, getDramas, getBases, getProducts, testConnection, getLiveStreams, getFeedbacks, getCourseRegistrations, getUsers } from '../services/cmsService';
 import { HOME_CATEGORIES, HOT_DRAMAS, BASES, MALL_PRODUCTS } from '../constants';
 
 interface CMSContextType {
@@ -7,6 +7,10 @@ interface CMSContextType {
   dramas: any[];
   bases: any[];
   products: any[];
+  liveStreams: any[];
+  feedbacks: any[];
+  courseRegistrations: any[];
+  users: any[];
   loading: boolean;
   refresh: () => void;
 }
@@ -18,6 +22,10 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
   const [dramas, setDramas] = useState<any[]>(HOT_DRAMAS);
   const [bases, setBases] = useState<any[]>(BASES);
   const [products, setProducts] = useState<any[]>(MALL_PRODUCTS);
+  const [liveStreams, setLiveStreams] = useState<any[]>(HOT_DRAMAS);
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [courseRegistrations, setCourseRegistrations] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
@@ -25,19 +33,15 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
     try {
       await testConnection();
       
-      const homeContent = await getPageContent('home');
-      const copyrightContent = await getPageContent('copyright');
-      const productionContent = await getPageContent('production');
-      const actorsContent = await getPageContent('actors');
-      const mallContent = await getPageContent('mall');
-      const settingsContent = await getPageContent('settings');
-      const tourismContent = await getPageContent('tourism');
-      const investContent = await getPageContent('invest');
-      const starclubContent = await getPageContent('starclub');
-
-      const dbDramas = await getDramas();
-      const dbBases = await getBases();
-      const dbProducts = await getProducts();
+      const [
+        homeContent, copyrightContent, productionContent, actorsContent,
+        mallContent, settingsContent, tourismContent, investContent, starclubContent,
+        dbDramas, dbBases, dbProducts, dbLiveStreams, dbFeedbacks, dbCourseRegistrations, dbUsers
+      ] = await Promise.all([
+        getPageContent('home'), getPageContent('copyright'), getPageContent('production'), getPageContent('actors'),
+        getPageContent('mall'), getPageContent('settings'), getPageContent('tourism'), getPageContent('invest'), getPageContent('starclub'),
+        getDramas(), getBases(), getProducts(), getLiveStreams(), getFeedbacks(), getCourseRegistrations(), getUsers()
+      ]);
 
       setPages({
         home: homeContent || { banners: [], categories: HOME_CATEGORIES },
@@ -51,9 +55,13 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
         starclub: starclubContent || {}
       });
 
-      if (dbDramas && dbDramas.length > 0) setDramas(dbDramas);
-      if (dbBases && dbBases.length > 0) setBases(dbBases);
-      if (dbProducts && dbProducts.length > 0) setProducts(dbProducts);
+      if (dbDramas !== null) setDramas(dbDramas.length > 0 ? dbDramas : []);
+      if (dbBases !== null) setBases(dbBases.length > 0 ? dbBases : []);
+      if (dbProducts !== null) setProducts(dbProducts.length > 0 ? dbProducts : []);
+      if (dbLiveStreams !== null) setLiveStreams(dbLiveStreams.length > 0 ? dbLiveStreams : []);
+      if (dbFeedbacks !== null) setFeedbacks(dbFeedbacks);
+      if (dbCourseRegistrations !== null) setCourseRegistrations(dbCourseRegistrations);
+      if (dbUsers !== null) setUsers(dbUsers);
 
     } catch (error) {
       console.error("Failed to fetch CMS content", error);
@@ -67,7 +75,7 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <CMSContext.Provider value={{ pages, dramas, bases, products, loading, refresh: fetchData }}>
+    <CMSContext.Provider value={{ pages, dramas, bases, products, liveStreams, feedbacks, courseRegistrations, users, loading, refresh: fetchData }}>
       {children}
     </CMSContext.Provider>
   );

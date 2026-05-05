@@ -339,15 +339,16 @@ export function HelpCenter() {
     }
   }, [messages, showChat]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
     const userMsg = input.trim();
     setMessages(prev => [...prev, { text: userMsg, sender: 'user' }]);
     setInput('');
 
-    setTimeout(() => {
+    setTimeout(async () => {
       let reply = '我正在学习，暂时还不能回答这个问题';
       const lowercaseMsg = userMsg.toLowerCase();
+      let shouldSave = false;
       
       if (lowercaseMsg === '你好' || lowercaseMsg === '您好') {
         reply = '您好！有什么可以帮您？';
@@ -355,6 +356,7 @@ export function HelpCenter() {
         reply = '请将您的联系方式和想合作的项目简单告诉我，我请我们对口的负责人和您联系，感谢您的支持！';
       } else if (/^1[3-9]\d{9}$/.test(userMsg.replace(/\s/g, '')) || (lowercaseMsg.includes('项目') && userMsg.length > 5)) {
         reply = '好的，已经记录您的信息，请耐心等待！';
+        shouldSave = true;
       } else {
         const keywords = ['短剧', '生态链', '星币', '充值', '基地', '文创', '产品', '海选', '报名', '中星', '助手', '拍摄', '发现', '商场', '订单'];
         if (keywords.some(k => lowercaseMsg.includes(k))) {
@@ -364,6 +366,22 @@ export function HelpCenter() {
           else if (lowercaseMsg.includes('基地') || lowercaseMsg.includes('拍摄')) reply = '我们整合了多处优质影视拍摄基地，可以在“发现”板块探索基地详情。';
           else if (lowercaseMsg.includes('文创') || lowercaseMsg.includes('产品') || lowercaseMsg.includes('商场')) reply = '前往“商城”板块可以选购我们的特色产品馆。';
           else reply = '中星短剧生态链致力于为用户提供一站式的数字娱乐与影视周边服务。';
+        } else if (userMsg.length > 7 && (/\d{8,}/.test(userMsg) || lowercaseMsg.includes('电话') || lowercaseMsg.includes('微信'))) {
+          reply = '好的，已经记录您的信息，稍后会有专人联系您！';
+          shouldSave = true;
+        }
+      }
+      
+      if (shouldSave) {
+        try {
+          const { addFeedback } = await import('../services/cmsService');
+          await addFeedback({ 
+            message: userMsg, 
+            phone: userMsg.replace(/\D/g,'').substring(0, 11) || '',
+            date: new Date().toLocaleString()
+          });
+        } catch (err) {
+          console.error("Failed to save feedback", err);
         }
       }
       

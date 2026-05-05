@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCMS } from '../context/CMSContext';
-import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase, updateBase, deleteBase, addProduct, updateProduct, deleteProduct, uploadFile } from '../services/cmsService';
+import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase, updateBase, deleteBase, addProduct, updateProduct, deleteProduct, uploadFile,
+  addLiveStream, updateLiveStream, deleteLiveStream
+ } from '../services/cmsService';
 import { motion } from 'motion/react';
-import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft, Upload } from 'lucide-react';
+import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft, Upload, MessageSquare, FileText, Wifi, UserCheck } from 'lucide-react';
 
 const ImageUploadButton = ({ value, onChange, className, children }: { value: string, onChange: (url: string) => void, className?: string, children?: React.ReactNode }) => {
   const [uploading, setUploading] = useState(false);
@@ -95,7 +97,19 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
         </div>
         <div className="flex gap-3 justify-end mt-8">
           <button onClick={onClose} className="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-colors">取消</button>
-          <button onClick={() => { onSubmit(data); onClose(); }} className="px-6 py-3 bg-[#1A1108] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all">确认保存</button>
+          <button 
+            onClick={async () => { 
+              try {
+                await onSubmit(data); 
+                onClose(); 
+              } catch(e) {
+                console.error(e);
+              }
+            }} 
+            className="px-6 py-3 bg-[#1A1108] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+          >
+            确认保存
+          </button>
         </div>
       </div>
     </div>
@@ -103,8 +117,8 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
 };
 
 export default function Admin() {
-  const { pages, dramas, bases, products, refresh } = useCMS();
-  const [activeTab, setActiveTab] = useState<'home' | 'dramas' | 'bases' | 'products' | 'settings' | 'copyright' | 'production' | 'actors' | 'tourism' | 'invest' | 'starclub'>('home');
+  const { pages, dramas, bases, products, liveStreams, feedbacks, courseRegistrations, users, refresh } = useCMS();
+  const [activeTab, setActiveTab] = useState<'home' | 'dramas' | 'bases' | 'products' | 'liveStreams' | 'feedbacks' | 'courseRegistrations' | 'users' | 'settings' | 'copyright' | 'production' | 'actors' | 'tourism' | 'invest' | 'starclub'>('home');
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -119,7 +133,7 @@ export default function Admin() {
   // Business Pages States
   const [copyrightData, setCopyrightData] = useState(pages.copyright || { banner: '', title: '', subtitle: '', news: [] });
   const [productionData, setProductionData] = useState(pages.production || { banner: '', title: '', subtitle: '', projects: [] });
-  const [actorsData, setActorsData] = useState(pages.actors || { banners: [], title: '', subtitle: '' });
+  const [actorsData, setActorsData] = useState(pages.actors || { banner: '', banners: [], title: '', subtitle: '' });
   const [tourismData, setTourismData] = useState(pages.tourism || { banner: '', title: '', subtitle: '', groups: [] });
   const [investData, setInvestData] = useState(pages.invest || { banner: '', title: '', subtitle: '' });
   const [starclubData, setStarclubData] = useState(pages.starclub || { banner: '', title: '', subtitle: '' });
@@ -143,7 +157,7 @@ export default function Admin() {
     setAppSlogan(pages.settings?.slogan || '联动你我 · 链接未来');
     setCopyrightData(pages.copyright || { banner: '', title: '', subtitle: '', news: [] });
     setProductionData(pages.production || { banner: '', title: '', subtitle: '', projects: [] });
-    setActorsData(pages.actors || { banners: [], title: '', subtitle: '' });
+    setActorsData(pages.actors || { banner: '', banners: [], title: '', subtitle: '' });
     setTourismData(pages.tourism || { banner: '', title: '', subtitle: '', groups: [] });
     setInvestData(pages.invest || { banner: '', title: '', subtitle: '' });
     setStarclubData(pages.starclub || { banner: '', title: '', subtitle: '' });
@@ -180,8 +194,8 @@ export default function Admin() {
         name: appName,
         slogan: appSlogan
       });
-      await refresh();
       alert("全局设置保存成功！");
+      refresh();
     } catch (e: any) {
       alert("保存失败: " + e.message);
     } finally {
@@ -193,8 +207,8 @@ export default function Admin() {
     setLoading(true);
     try {
       await updatePageContent(pageKey, data);
-      await refresh();
       alert("页面内容保存成功！");
+      refresh();
     } catch (e: any) {
       alert("保存失败: " + e.message);
     } finally {
@@ -220,6 +234,36 @@ export default function Admin() {
               await updateDrama(initialData.id, data);
             } else {
               await addDrama(data);
+            }
+            await refresh();
+          } catch (e: any) {
+            alert("保存失败: " + e.message);
+          } finally {
+            setLoading(false);
+          }
+        }
+      }
+    });
+  };
+
+  const openLiveStreamDialog = (initialData: any = null) => {
+    setDialogState({
+      isOpen: true,
+      config: {
+        title: initialData ? '编辑直播预告' : '添加直播预告',
+        initialData: initialData || {},
+        fields: [
+          { key: 'imageUrl', label: '封面图', type: 'image' },
+          { key: 'title', label: '标题', type: 'text' }
+        ],
+        onSubmit: async (data: any) => {
+          if (!data.title || !data.imageUrl) return alert("请填写完整信息");
+          setLoading(true);
+          try {
+            if (initialData) {
+              await updateLiveStream(initialData.id, data);
+            } else {
+              await addLiveStream(data);
             }
             await refresh();
           } catch (e: any) {
@@ -315,6 +359,19 @@ export default function Admin() {
     }
   };
 
+  const handleDeleteLiveStream = async (id: string) => {
+    if (!confirm("确定删除吗？")) return;
+    setLoading(true);
+    try {
+      await deleteLiveStream(id);
+      await refresh();
+    } catch(e:any) {
+      alert("删除失败: " + e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteBase = async (id: string) => {
     if (!confirm("确定删除吗？")) return;
     setLoading(true);
@@ -379,8 +436,12 @@ export default function Admin() {
     { id: 'invest', label: '招商合作', icon: PiggyBank },
     { id: 'starclub', label: '明星俱乐部', icon: Star },
     { id: 'dramas', label: '短剧管理', icon: Film },
+    { id: 'liveStreams', label: '直播及预告', icon: Wifi },
     { id: 'bases', label: '基地管理', icon: Map },
     { id: 'products', label: '商城管理', icon: ShoppingBag },
+    { id: 'users', label: '用户列表', icon: UserCheck },
+    { id: 'courseRegistrations', label: '报名信息', icon: FileText },
+    { id: 'feedbacks', label: '咨询反馈', icon: MessageSquare },
   ];
 
   return (
@@ -656,12 +717,14 @@ export default function Admin() {
                     <ImageUploadButton 
                       value={activeTab === 'copyright' ? copyrightData.banner :
                              activeTab === 'production' ? productionData.banner :
+                             activeTab === 'actors' ? actorsData.banner :
                              activeTab === 'tourism' ? tourismData.banner :
                              activeTab === 'invest' ? investData.banner :
                              activeTab === 'starclub' ? (starclubData as any).banner : ''}
                       onChange={(val) => {
                         if (activeTab === 'copyright') setCopyrightData({...copyrightData, banner: val});
                         if (activeTab === 'production') setProductionData({...productionData, banner: val});
+                        if (activeTab === 'actors') setActorsData({...actorsData, banner: val});
                         if (activeTab === 'tourism') setTourismData({...tourismData, banner: val});
                         if (activeTab === 'invest') setInvestData({...investData, banner: val});
                         if (activeTab === 'starclub') setStarclubData({...(starclubData as any), banner: val});
@@ -671,6 +734,7 @@ export default function Admin() {
                       {(() => {
                         const val = activeTab === 'copyright' ? copyrightData.banner :
                                     activeTab === 'production' ? productionData.banner :
+                                    activeTab === 'actors' ? actorsData.banner :
                                     activeTab === 'tourism' ? tourismData.banner :
                                     activeTab === 'invest' ? investData.banner :
                                     activeTab === 'starclub' ? (starclubData as any).banner : '';
@@ -682,6 +746,7 @@ export default function Admin() {
                       value={
                         activeTab === 'copyright' ? copyrightData.banner :
                         activeTab === 'production' ? productionData.banner :
+                        activeTab === 'actors' ? actorsData.banner :
                         activeTab === 'tourism' ? tourismData.banner :
                         activeTab === 'invest' ? investData.banner :
                         activeTab === 'starclub' ? (starclubData as any).banner :
@@ -691,6 +756,7 @@ export default function Admin() {
                         const val = e.target.value;
                         if (activeTab === 'copyright') setCopyrightData({...copyrightData, banner: val});
                         if (activeTab === 'production') setProductionData({...productionData, banner: val});
+                        if (activeTab === 'actors') setActorsData({...actorsData, banner: val});
                         if (activeTab === 'tourism') setTourismData({...tourismData, banner: val});
                         if (activeTab === 'invest') setInvestData({...investData, banner: val});
                         if (activeTab === 'starclub') setStarclubData({...(starclubData as any), banner: val});
@@ -873,6 +939,56 @@ export default function Admin() {
           </div>
         )}
 
+        {activeTab === 'liveStreams' && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center px-2">
+              <h3 className="font-black text-[#1A1108]">直播及预告列表 ({liveStreams.length})</h3>
+              <button onClick={() => openLiveStreamDialog()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
+                <Plus size={16} /> 添加预告
+              </button>
+            </div>
+            <div className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50/50 border-b border-gray-100 text-[13px] text-gray-500">
+                  <tr>
+                    <th className="py-4 px-6 font-medium w-32">封面</th>
+                    <th className="py-4 px-6 font-medium">标题</th>
+                    <th className="py-4 px-6 font-medium text-gray-400">ID</th>
+                    <th className="py-4 px-6 text-right font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                {liveStreams.map((stream) => (
+                  <tr key={stream.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="py-4 px-6">
+                      <img src={stream.imageUrl} alt="" className="w-16 h-20 object-cover rounded-xl shadow-sm" />
+                    </td>
+                    <td className="py-4 px-6 font-bold text-[#1A1108]">{stream.title}</td>
+                    <td className="py-4 px-6 text-[12px] font-mono text-gray-400 max-w-[200px] truncate">{stream.id}</td>
+                    <td className="py-4 px-6 text-right">
+                      <div className="flex items-center justify-end gap-4">
+                        <button 
+                          onClick={() => openLiveStreamDialog(stream)}
+                          className="text-blue-600 hover:text-blue-800 text-[13px] font-bold transition-colors"
+                        >
+                          编辑
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteLiveStream(stream.id)}
+                          className="text-red-500 hover:text-red-700 text-[13px] font-bold transition-colors"
+                        >
+                          删除
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'bases' && (
           <div className="space-y-4 pb-10">
             <div className="flex justify-between items-center px-2">
@@ -988,6 +1104,114 @@ export default function Admin() {
                     </td>
                   </tr>
                 ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'users' && (
+          <div className="space-y-4 pb-10">
+            <div className="flex justify-between items-center px-2">
+              <h3 className="font-black text-[#1A1108]">用户列表 ({users.length})</h3>
+            </div>
+            <div className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50/50 border-b border-gray-100 text-[13px] text-gray-500">
+                  <tr>
+                    <th className="py-4 px-6 font-medium">用户ID</th>
+                    <th className="py-4 px-6 font-medium">昵称</th>
+                    <th className="py-4 px-6 font-medium">注册时间</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                {users.map((item, idx) => (
+                  <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="py-4 px-6 font-mono text-gray-400">{item.id}</td>
+                    <td className="py-4 px-6 font-bold text-[#1A1108]">{item.nickname || 'Unknown'}</td>
+                    <td className="py-4 px-6 text-gray-500">{item.createdAt || '-'}</td>
+                  </tr>
+                ))}
+                {users.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="py-8 text-center text-gray-400">暂无用户数据</td>
+                  </tr>
+                )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'courseRegistrations' && (
+          <div className="space-y-4 pb-10">
+            <div className="flex justify-between items-center px-2">
+              <h3 className="font-black text-[#1A1108]">报名信息列表</h3>
+            </div>
+            {['海选', '文旅', '培训', '其他'].map(category => {
+              const items = courseRegistrations.filter(r => (r.category || '其他') === category);
+              if (items.length === 0) return null;
+              return (
+                <div key={category} className="mb-8">
+                  <h4 className="font-bold text-[#D4AF37] mb-3 px-2 flex items-center gap-2">- {category}类别</h4>
+                  <div className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+                    <table className="w-full text-left">
+                      <thead className="bg-gray-50/50 border-b border-gray-100 text-[13px] text-gray-500">
+                        <tr>
+                          <th className="py-4 px-6 font-medium">姓名</th>
+                          <th className="py-4 px-6 font-medium">电话</th>
+                          <th className="py-4 px-6 font-medium">报名项目/科目</th>
+                          <th className="py-4 px-6 font-medium">提交时间</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                      {items.map((item, idx) => (
+                        <tr key={item.id || idx} className="hover:bg-gray-50/50 transition-colors">
+                          <td className="py-4 px-6 font-bold text-[#1A1108]">{item.name}</td>
+                          <td className="py-4 px-6 text-gray-600">{item.phone}</td>
+                          <td className="py-4 px-6 text-gray-600">{item.projectName || item.courseName || '-'}</td>
+                          <td className="py-4 px-6 text-gray-500">{item.date || '-'}</td>
+                        </tr>
+                      ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })}
+            {courseRegistrations.length === 0 && (
+              <div className="py-8 text-center text-gray-400">暂无报名数据</div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'feedbacks' && (
+          <div className="space-y-4 pb-10">
+            <div className="flex justify-between items-center px-2">
+              <h3 className="font-black text-[#1A1108]">咨询反馈 (小助手收集)</h3>
+            </div>
+            <div className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50/50 border-b border-gray-100 text-[13px] text-gray-500">
+                  <tr>
+                    <th className="py-4 px-6 font-medium">日期</th>
+                    <th className="py-4 px-6 font-medium">提取手机号</th>
+                    <th className="py-4 px-6 font-medium w-1/2">原始反馈内容</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                {feedbacks.map((item, idx) => (
+                  <tr key={item.id || idx} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="py-4 px-6 text-gray-500 whitespace-nowrap">{item.date || '-'}</td>
+                    <td className="py-4 px-6 font-bold text-blue-600 whitespace-nowrap">{item.phone || '-'}</td>
+                    <td className="py-4 px-6 text-gray-700">{item.message}</td>
+                  </tr>
+                ))}
+                {feedbacks.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="py-8 text-center text-gray-400">暂无反馈数据</td>
+                  </tr>
+                )}
                 </tbody>
               </table>
             </div>
