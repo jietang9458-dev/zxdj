@@ -69,7 +69,7 @@ export default function Mine() {
       </div>
 
       {/* Section: Rights */}
-      <div className="mx-5 mb-10 bg-white dark:bg-[#2A1D0F] rounded-[32px] p-8 shadow-sm border border-gray-50 dark:border-white/5">
+      <div className="mx-5 mb-6 bg-white dark:bg-[#2A1D0F] rounded-[32px] p-8 shadow-sm border border-gray-50 dark:border-white/5">
         <h3 className="text-[16px] font-black text-[#1A1108] dark:text-white mb-8">我的权益</h3>
         <div className="grid grid-cols-4 gap-4">
           {RightsIcons.map((item, idx) => (
@@ -79,6 +79,20 @@ export default function Mine() {
             </div>
           ))}
         </div>
+      </div>
+      
+      {/* Admin Portal Entry */}
+      <div className="flex justify-center pb-12">
+        <button 
+          onClick={() => {
+            // Forcing navigation outside the mobile layout via window location
+            // so that if they were inside iframe, it hard-reloads the layout
+            window.location.href = '/admin';
+          }} 
+          className="text-[11px] text-[#A69984] font-medium opacity-50 hover:opacity-100 transition-opacity"
+        >
+          - 电脑版后台管理入口 -
+        </button>
       </div>
     </div>
   );
