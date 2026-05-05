@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import { Search, PenTool, Sparkles, Diamond } from 'lucide-react';
 import { MALL_PRODUCTS } from '../constants';
@@ -10,7 +10,15 @@ export default function Mall() {
   const navigate = useNavigate();
   const { products } = useCMS();
   const currentProducts = products.length > 0 ? products : MALL_PRODUCTS;
+  const [searchQuery, setSearchQuery] = useState('');
   
+  const allPavilions = [
+    '深圳特色产品馆', '武汉特色产品馆', '成都特色产品馆', '宜昌特色产品馆', '赣州特色产品馆',
+    ...Array(15).fill('XX特色产品馆')
+  ];
+
+  const filteredPavilions = allPavilions.filter(p => !searchQuery || p.includes(searchQuery));
+
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
       <Header title="商城" dark />
@@ -20,7 +28,9 @@ export default function Mall() {
         <div className="relative">
           <input 
             type="text" 
-            placeholder="搜索商品" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="搜索商品馆" 
             className="w-full h-11 pl-11 pr-4 bg-[#F2EDE4] dark:bg-[#2A1D0F] rounded-full text-[13px] outline-none border border-transparent focus:border-[#D4AF37]/30 dark:text-white transition-all placeholder:text-[#A69984]"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A69984]" size={18} />
@@ -62,10 +72,7 @@ export default function Mall() {
       <div className="px-5 mt-10 mb-10">
         <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-6">特色产品馆</h3>
         <div className="grid grid-cols-2 gap-4">
-            {[
-              '深圳特色产品馆', '武汉特色产品馆', '成都特色产品馆', '宜昌特色产品馆', '赣州特色产品馆',
-              ...Array(15).fill('XX特色产品馆')
-            ].map((name, idx) => (
+            {filteredPavilions.map((name, idx) => (
               <div 
                 key={idx} 
                 onClick={() => navigate(`/mall/${encodeURIComponent(name === 'XX特色产品馆' ? `XX${idx + 1}特色产品馆` : name)}`)}

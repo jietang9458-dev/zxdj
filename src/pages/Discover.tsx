@@ -59,14 +59,19 @@ export default function Discover() {
     localStorage.setItem('community_posts', JSON.stringify(communityPosts));
   }, [communityPosts]);
 
-  const filteredPosts = activeTab === '推荐' 
+  const urlSearchQuery = new URLSearchParams(window.location.search).get('q') || searchQuery;
+
+  const filteredPosts = (activeTab === '推荐' 
     ? DISCOVER_POSTS 
-    : DISCOVER_POSTS.filter(p => p.cat === activeTab);
+    : DISCOVER_POSTS.filter(p => p.cat === activeTab)
+  ).filter(p => !urlSearchQuery || p.title?.includes(urlSearchQuery) || p.desc?.includes(urlSearchQuery) || p.user.includes(urlSearchQuery));
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/discover?q=${encodeURIComponent(searchQuery)}`);
+    } else {
+      navigate(`/discover`);
     }
   };
 

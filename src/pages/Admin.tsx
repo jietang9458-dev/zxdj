@@ -118,7 +118,7 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
 
 export default function Admin() {
   const { pages, dramas, bases, products, liveStreams, feedbacks, courseRegistrations, users, refresh } = useCMS();
-  const [activeTab, setActiveTab] = useState<'home' | 'dramas' | 'bases' | 'products' | 'liveStreams' | 'feedbacks' | 'courseRegistrations' | 'users' | 'settings' | 'copyright' | 'production' | 'actors' | 'tourism' | 'invest' | 'starclub'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'dramas' | 'bases' | 'products' | 'liveStreams' | 'feedbacks' | 'courseRegistrations' | 'users' | 'settings' | 'copyright' | 'production' | 'actors' | 'tourism' | 'invest' | 'starclub' | 'news'>('home');
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -137,6 +137,7 @@ export default function Admin() {
   const [tourismData, setTourismData] = useState(pages.tourism || { banner: '', title: '', subtitle: '', groups: [] });
   const [investData, setInvestData] = useState(pages.invest || { banner: '', title: '', subtitle: '' });
   const [starclubData, setStarclubData] = useState(pages.starclub || { banner: '', title: '', subtitle: '' });
+  const [newsData, setNewsData] = useState(pages.news || { shortDramaNews: [], bts: [], successCases: [] });
   
   const [dialogState, setDialogState] = useState<{isOpen: boolean; config?: any}>({ isOpen: false, config: null });
 
@@ -161,6 +162,7 @@ export default function Admin() {
     setTourismData(pages.tourism || { banner: '', title: '', subtitle: '', groups: [] });
     setInvestData(pages.invest || { banner: '', title: '', subtitle: '' });
     setStarclubData(pages.starclub || { banner: '', title: '', subtitle: '' });
+    setNewsData(pages.news || { shortDramaNews: [], bts: [], successCases: [] });
   }, [pages]);
 
   const handleLogin = () => {
@@ -435,6 +437,7 @@ export default function Admin() {
     { id: 'tourism', label: '文旅中心', icon: Plane },
     { id: 'invest', label: '招商合作', icon: PiggyBank },
     { id: 'starclub', label: '明星俱乐部', icon: Star },
+    { id: 'news', label: '资讯中心', icon: FileText },
     { id: 'dramas', label: '短剧管理', icon: Film },
     { id: 'liveStreams', label: '直播及预告', icon: Wifi },
     { id: 'bases', label: '基地管理', icon: Map },
@@ -698,7 +701,7 @@ export default function Admin() {
           </div>
         )}
 
-        {['copyright', 'production', 'actors', 'tourism', 'invest', 'starclub'].includes(activeTab) && (
+        {['copyright', 'production', 'actors', 'tourism', 'invest', 'starclub', 'news'].includes(activeTab) && (
           <div className="space-y-6">
             <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
               <h3 className="font-black text-[#1A1108] mb-4 capitalize">
@@ -707,6 +710,7 @@ export default function Admin() {
                  activeTab === 'actors' ? '演员孵化中心' : 
                  activeTab === 'tourism' ? '文旅体验中心' : 
                  activeTab === 'invest' ? '招商合作页' : 
+                 activeTab === 'news' ? '资讯中心' :
                  '明星俱乐部'} 配置
               </h3>
               
@@ -720,6 +724,7 @@ export default function Admin() {
                              activeTab === 'actors' ? actorsData.banner :
                              activeTab === 'tourism' ? tourismData.banner :
                              activeTab === 'invest' ? investData.banner :
+                             activeTab === 'news' ? (newsData as any).banner :
                              activeTab === 'starclub' ? (starclubData as any).banner : ''}
                       onChange={(val) => {
                         if (activeTab === 'copyright') setCopyrightData({...copyrightData, banner: val});
@@ -728,6 +733,7 @@ export default function Admin() {
                         if (activeTab === 'tourism') setTourismData({...tourismData, banner: val});
                         if (activeTab === 'invest') setInvestData({...investData, banner: val});
                         if (activeTab === 'starclub') setStarclubData({...(starclubData as any), banner: val});
+                        if (activeTab === 'news') setNewsData({...(newsData as any), banner: val});
                       }}
                       className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition-colors shrink-0"
                     >
@@ -737,6 +743,7 @@ export default function Admin() {
                                     activeTab === 'actors' ? actorsData.banner :
                                     activeTab === 'tourism' ? tourismData.banner :
                                     activeTab === 'invest' ? investData.banner :
+                                    activeTab === 'news' ? (newsData as any).banner :
                                     activeTab === 'starclub' ? (starclubData as any).banner : '';
                         return val ? <img src={val} className="w-full h-full object-cover" alt="" /> : <ImageIcon className="text-gray-300" />;
                       })()}
@@ -749,6 +756,7 @@ export default function Admin() {
                         activeTab === 'actors' ? actorsData.banner :
                         activeTab === 'tourism' ? tourismData.banner :
                         activeTab === 'invest' ? investData.banner :
+                        activeTab === 'news' ? (newsData as any).banner :
                         activeTab === 'starclub' ? (starclubData as any).banner :
                         ''
                       }
@@ -760,6 +768,7 @@ export default function Admin() {
                         if (activeTab === 'tourism') setTourismData({...tourismData, banner: val});
                         if (activeTab === 'invest') setInvestData({...investData, banner: val});
                         if (activeTab === 'starclub') setStarclubData({...(starclubData as any), banner: val});
+                        if (activeTab === 'news') setNewsData({...(newsData as any), banner: val});
                       }}
                       className="flex-1 px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 border border-gray-50"
                     />
@@ -796,6 +805,7 @@ export default function Admin() {
                         activeTab === 'production' ? productionData.title :
                         activeTab === 'actors' ? actorsData.title :
                         activeTab === 'tourism' ? tourismData.title :
+                        activeTab === 'news' ? (newsData as any).title :
                         activeTab === 'invest' ? investData.title :
                         starclubData.title
                       }
@@ -807,6 +817,7 @@ export default function Admin() {
                         if (activeTab === 'tourism') setTourismData({...tourismData, title: val});
                         if (activeTab === 'invest') setInvestData({...investData, title: val});
                         if (activeTab === 'starclub') setStarclubData({...starclubData, title: val});
+                        if (activeTab === 'news') setNewsData({...(newsData as any), title: val});
                       }}
                       className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none border border-gray-50"
                     />
@@ -819,6 +830,7 @@ export default function Admin() {
                         activeTab === 'production' ? productionData.subtitle :
                         activeTab === 'actors' ? actorsData.subtitle :
                         activeTab === 'tourism' ? tourismData.subtitle :
+                        activeTab === 'news' ? (newsData as any).subtitle :
                         activeTab === 'invest' ? investData.subtitle :
                         starclubData.subtitle
                       }
@@ -830,11 +842,59 @@ export default function Admin() {
                         if (activeTab === 'tourism') setTourismData({...tourismData, subtitle: val});
                         if (activeTab === 'invest') setInvestData({...investData, subtitle: val});
                         if (activeTab === 'starclub') setStarclubData({...starclubData, subtitle: val});
+                        if (activeTab === 'news') setNewsData({...(newsData as any), subtitle: val});
                       }}
                       className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none border border-gray-50"
                     />
                   </div>
                 </div>
+
+                {activeTab === 'copyright' && (
+                  <div className="space-y-4 mt-6 border-t border-gray-100 pt-6">
+                    <h4 className="font-bold text-[#1A1108]">短剧版权销售动态</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold text-[#A69984] ml-2">已售罄版号</label>
+                        <textarea
+                          placeholder="例如已售罄的短剧版本编号，每行一条"
+                          value={copyrightData.salesDynamics?.soldOut || ''}
+                          onChange={(e) => setCopyrightData({...copyrightData, salesDynamics: {...(copyrightData.salesDynamics || {}), soldOut: e.target.value}})}
+                          className="w-full h-24 px-5 py-3 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-[#D4AF37]/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold text-[#A69984] ml-2">热销中版号</label>
+                        <textarea
+                          placeholder="例如热销中的短剧版权编号，每行一条"
+                          value={copyrightData.salesDynamics?.hotSelling || ''}
+                          onChange={(e) => setCopyrightData({...copyrightData, salesDynamics: {...(copyrightData.salesDynamics || {}), hotSelling: e.target.value}})}
+                          className="w-full h-24 px-5 py-3 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-[#D4AF37]/50"
+                        />
+                      </div>
+                    </div>
+
+                    <h4 className="font-bold text-[#1A1108] mt-6">热门可购版权</h4>
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-bold text-[#A69984] ml-2 font-mono">
+                        编辑此 JSON 数组进行管理热门可购版权（支持4个板块或以上）
+                      </label>
+                      <textarea
+                        value={JSON.stringify(copyrightData.hotCopyrights || [
+                          { title: 'AI制作短剧', imageUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4628c6bb5?q=80&w=400&h=600&fit=crop', desc: '每部短剧共50份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (A)0021 001~050' },
+                          { title: '精品短剧', imageUrl: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400&h=600&fit=crop', desc: '每部短剧共100份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (B)0101 001~100' },
+                          { title: '明星短剧', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?q=80&w=400&h=600&fit=crop', desc: '每部短剧共200份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (C)0201 001~200，注：明星演员的定义、标准和人选由中星短剧生态链确定，版权购买方不存有异议。' },
+                          { title: '互动影游', imageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=400&h=600&fit=crop', desc: '请联系中星短剧生态链客服咨询详情。' }
+                        ], null, 2)}
+                        onChange={(e) => {
+                          try {
+                            setCopyrightData({...copyrightData, hotCopyrights: JSON.parse(e.target.value)});
+                          } catch (e) {}
+                        }}
+                        className="w-full px-5 py-4 bg-gray-50 rounded-2xl min-h-[200px] outline-none border border-gray-50 font-mono text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-2 mt-4">
                   <label className="text-[11px] font-bold text-[#A69984] ml-2 font-mono">高级配置 (JSON格式 - 用于列表项等)</label>
@@ -844,6 +904,7 @@ export default function Admin() {
                       activeTab === 'production' ? JSON.stringify(productionData.config || {}, null, 2) :
                       activeTab === 'actors' ? JSON.stringify(actorsData.config || {}, null, 2) :
                       activeTab === 'invest' ? JSON.stringify(investData.config || {}, null, 2) :
+                      activeTab === 'news' ? JSON.stringify((newsData as any).config || {}, null, 2) :
                       activeTab === 'starclub' ? JSON.stringify(starclubData.config || {}, null, 2) :
                       JSON.stringify(tourismData.config || {}, null, 2)
                     }
@@ -854,6 +915,7 @@ export default function Admin() {
                         if (activeTab === 'production') setProductionData({...productionData, config: parsed});
                         if (activeTab === 'actors') setActorsData({...actorsData, config: parsed});
                         if (activeTab === 'invest') setInvestData({...investData, config: parsed});
+                        if (activeTab === 'news') setNewsData({...(newsData as any), config: parsed});
                         if (activeTab === 'starclub') setStarclubData({...starclubData, config: parsed});
                         if (activeTab === 'tourism') setTourismData({...tourismData, config: parsed});
                       } catch (err) {
@@ -874,6 +936,7 @@ export default function Admin() {
                                activeTab === 'actors' ? actorsData :
                                activeTab === 'tourism' ? tourismData :
                                activeTab === 'invest' ? investData :
+                               activeTab === 'news' ? newsData :
                                starclubData;
                   handleSavePage(activeTab, data);
                 }}

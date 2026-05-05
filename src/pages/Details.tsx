@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import Header from '../components/Header';
+import { useUser } from '../context/UserContext';
 import { Heart, Share2, Play, Star, MapPin, ShoppingBag, MessageSquare, ChevronRight, CheckCircle2, User } from 'lucide-react';
 import { HOT_DRAMAS, MALL_PRODUCTS } from '../constants';
 import { motion } from 'motion/react';
@@ -270,6 +271,7 @@ export function PostDetail() {
 // 4. 商品详情页
 export function ProductDetail() {
   const { id } = useParams();
+  const { addNotification } = useUser();
   const product = MALL_PRODUCTS.find(p => p.id === id) || MALL_PRODUCTS[0];
 
   return (
@@ -310,7 +312,17 @@ export function ProductDetail() {
           <button className="flex-shrink-0 w-16 h-16 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-[#1A1108] shadow-lg active:scale-95 transition-all">
             <ShoppingBag size={24} />
           </button>
-          <button className="flex-1 h-16 bg-[#1A1108] text-white font-black rounded-2xl shadow-xl shadow-black/20 active:scale-95 transition-all text-[16px]">
+          <button 
+            onClick={() => {
+              addNotification({
+                title: '购买成功',
+                content: `您已成功购买 ${product?.title}，将在两个工作日内发货。`,
+                type: 'purchase'
+              });
+              alert('购买成功');
+            }}
+            className="flex-1 h-16 bg-[#1A1108] text-white font-black rounded-2xl shadow-xl shadow-black/20 active:scale-95 transition-all text-[16px]"
+          >
             立即购买
           </button>
         </div>

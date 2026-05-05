@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import { Search, Filter, ShoppingBag, Star, Crown, Cpu } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { motion } from 'motion/react';
 export default function MallCategory() {
   const { category } = useParams();
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState(new URLSearchParams(window.location.search).get('q') || '');
   
   // 根据路由参数模拟不同的产品数据和标题
   const categoryConfig: { [key: string]: { title: string, banner: string, icon: any } } = {
@@ -49,6 +50,8 @@ export default function MallCategory() {
         <div className="relative flex-1">
           <input 
             type="text" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={`搜索${config.title}`} 
             className="w-full h-11 pl-11 pr-4 bg-white dark:bg-[#2A1D0F] rounded-2xl text-[13px] outline-none shadow-sm font-medium dark:text-white"
           />
@@ -72,7 +75,7 @@ export default function MallCategory() {
 
       {/* Product Grid */}
       <div className="px-5 grid grid-cols-2 gap-4 mb-10">
-        {MALL_PRODUCTS.map((prod, i) => (
+        {MALL_PRODUCTS.filter(p => !searchQuery || p.title.includes(searchQuery)).map((prod, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, y: 20 }}

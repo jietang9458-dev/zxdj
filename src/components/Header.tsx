@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MoreHorizontal, Circle } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useTheme } from '../context/ThemeContext';
@@ -49,15 +49,6 @@ export default function Header({ title, dark: forceDark = false, transparent = f
         </h1>
       </div>
 
-      {/* Mini Program Capsule Button */}
-      <div className={cn(
-        "flex items-center gap-3 px-3 py-1.5 rounded-full border",
-        isDark ? "bg-black/20 border-white/10 text-white" : "bg-white/80 border-gray-200 text-gray-900"
-      )}>
-        <MoreHorizontal size={18} />
-        <div className={cn("w-px h-3", isDark ? "bg-white/10" : "bg-gray-200")} />
-        <Circle size={14} fill="currentColor" />
-      </div>
     </div>
   );
 }

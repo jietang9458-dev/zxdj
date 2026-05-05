@@ -121,6 +121,7 @@ export function Profile() {
 
 // 2. 我的钱包
 export function MyWallet() {
+  const { addNotification } = useUser();
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full">
       <Header title="我的钱包" dark />
@@ -133,7 +134,16 @@ export function MyWallet() {
             <span className="text-[14px] font-bold mb-1">Star Coin</span>
           </div>
           <div className="flex gap-4">
-            <button className="flex-1 h-12 bg-[#D4AF37] text-white rounded-xl font-black text-[14px]">立即充值</button>
+            <button 
+              onClick={() => {
+                addNotification({
+                  title: '充值成功',
+                  content: '您已成功充值 1000 Star Coin。',
+                  type: 'system'
+                });
+                alert('充值成功');
+              }}
+              className="flex-1 h-12 bg-[#D4AF37] text-white rounded-xl font-black text-[14px]">立即充值</button>
             <button className="flex-1 h-12 bg-white/10 backdrop-blur-md text-white rounded-xl font-black text-[14px] border border-white/10">星钻兑换</button>
           </div>
         </div>

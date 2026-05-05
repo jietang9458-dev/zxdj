@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+export interface AppNotification {
+  id: string;
+  title: string;
+  content: string;
+  read: boolean;
+  timestamp: number;
+}
+
 interface UserProfile {
   nickname: string;
   gender: string;
@@ -11,6 +19,9 @@ interface UserProfile {
 interface UserContextType {
   profile: UserProfile;
   updateProfile: (updates: Partial<UserProfile>) => void;
+  notifications: AppNotification[];
+  addNotification: (notification: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => void;
+  markAsRead: (id: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -28,16 +39,38 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
   });
 
+  const [notifications, setNotifications] = useState<AppNotification[]>(() => {
+    const saved = localStorage.getItem('user_notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   useEffect(() => {
     localStorage.setItem('user_profile', JSON.stringify(profile));
   }, [profile]);
+
+  useEffect(() => {
+    localStorage.setItem('user_notifications', JSON.stringify(notifications));
+  }, [notifications]);
 
   const updateProfile = (updates: Partial<UserProfile>) => {
     setProfile(prev => ({ ...prev, ...updates }));
   };
 
+  const addNotification = (notification: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => {
+    setNotifications(prev => [{
+      ...notification,
+      id: Date.now().toString(),
+      timestamp: Date.now(),
+      read: false
+    }, ...prev]);
+  };
+
+  const markAsRead = (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  };
+
   return (
-    <UserContext.Provider value={{ profile, updateProfile }}>
+    <UserContext.Provider value={{ profile, updateProfile, notifications, addNotification, markAsRead }}>
       {children}
     </UserContext.Provider>
   );

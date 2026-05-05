@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCMS } from '../context/CMSContext';
+import { useUser } from '../context/UserContext';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -16,7 +18,8 @@ import { HOT_DRAMAS } from '../constants';
 
 export function CopyrightPurchase() {
   const navigate = useNavigate();
-  const purchaseRecommendations = [
+  const { pages } = useCMS();
+  const purchaseRecommendations = pages.copyright?.hotCopyrights || [
     { 
       title: 'AI制作短剧', 
       imageUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4628c6bb5?q=80&w=400&h=600&fit=crop', 
@@ -32,12 +35,49 @@ export function CopyrightPurchase() {
       imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?q=80&w=400&h=600&fit=crop', 
       desc: '每部短剧共200份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (C)0201 001~200，注：明星演员的定义、标准和人选由中星短剧生态链确定，版权购买方不存有异议。' 
     },
+    { 
+      title: '互动影游', 
+      imageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=400&h=600&fit=crop', 
+      desc: '请联系中星短剧生态链客服咨询详情。' 
+    },
   ];
+
+  const salesDynamics = pages.copyright?.salesDynamics;
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
       <Header title="购买版权" dark />
       <div className="p-6">
+
+        {/* 短剧版权销售动态 */}
+        {salesDynamics && (salesDynamics.soldOut || salesDynamics.hotSelling) && (
+          <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 mb-8">
+            <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-4">短剧版权销售动态</h3>
+            <div className="space-y-4">
+              {salesDynamics.soldOut && (
+                <div className="bg-gray-50 dark:bg-black/20 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
+                  <h4 className="text-[14px] font-bold text-gray-500 mb-2 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />已售罄短剧版权编号
+                  </h4>
+                  <div className="text-[13px] text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed font-mono">
+                    {salesDynamics.soldOut}
+                  </div>
+                </div>
+              )}
+              {salesDynamics.hotSelling && (
+                <div className="bg-orange-50 dark:bg-orange-900/10 p-4 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                  <h4 className="text-[14px] font-bold text-orange-500 mb-2 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />热销中短剧版权编号
+                  </h4>
+                  <div className="text-[13px] text-orange-600 dark:text-orange-400 font-bold whitespace-pre-wrap leading-relaxed font-mono">
+                    {salesDynamics.hotSelling}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 mb-8">
           <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-4">热门可购版权</h3>
           <div className="space-y-4">
@@ -274,21 +314,35 @@ export function SalesModel() {
 }
 
 export function CopyrightLibrary() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('全部');
+  const cats = ['全部', '现代都市', '古装玄幻', '悬疑惊悚', '年代励志'];
+  const baseDramas = HOT_DRAMAS.concat(HOT_DRAMAS).map((d, i) => ({ ...d, cat: cats[(i % 4) + 1] }));
+  
+  const filtered = baseDramas.filter(d => {
+    if (activeTab !== '全部' && d.cat !== activeTab) return false;
+    if (searchQuery && !d.title.includes(searchQuery)) return false;
+    return true;
+  });
+
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
       <Header title="版权库" dark />
       <div className="p-6">
         <div className="relative mb-6">
-          <input type="text" placeholder="搜索版权作品/作者" className="w-full h-12 pl-12 pr-4 bg-white dark:bg-[#2A1D0F] rounded-2xl text-[14px] outline-none shadow-sm font-medium dark:text-white" />
+          <input type="text" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="搜索版权作品/作者" className="w-full h-12 pl-12 pr-4 bg-white dark:bg-[#2A1D0F] rounded-2xl text-[14px] outline-none shadow-sm font-medium dark:text-white" />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
         </div>
         <div className="flex gap-4 mb-6 overflow-x-auto scrollbar-hide">
-          {['全部', '现代都市', '古装玄幻', '悬疑惊悚', '年代励志'].map((t, i) => (
-            <span key={i} className={`whitespace-nowrap px-4 py-2 rounded-xl text-[13px] font-black ${i===0 ? 'bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108]' : 'bg-white dark:bg-[#2A1D0F] text-gray-400'}`}>{t}</span>
+          {cats.map((t, i) => (
+            <span key={i} onClick={() => setActiveTab(t)} className={`cursor-pointer whitespace-nowrap px-4 py-2 rounded-xl text-[13px] font-black ${activeTab === t ? 'bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108]' : 'bg-white dark:bg-[#2A1D0F] text-gray-400'}`}>{t}</span>
           ))}
         </div>
         <div className="grid grid-cols-2 gap-4 mb-10">
-          {HOT_DRAMAS.concat(HOT_DRAMAS).map((drama, i) => (
+          {filtered.map((drama, i) => (
             <div key={i} className="bg-white dark:bg-[#2A1D0F] rounded-[28px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 flex flex-col group cursor-pointer">
               <div className="aspect-[3/4] relative overflow-hidden">
                 <img src={drama.imageUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="" />
@@ -476,6 +530,8 @@ export function LearningArt() {
 
 export function AuditionRegistration() {
   const navigate = useNavigate();
+  const { addCourseRegistration } = useCMS();
+  const { addNotification } = useUser();
   const [formData, setFormData] = useState({
     name: '',
     gender: '男',
@@ -512,6 +568,12 @@ export function AuditionRegistration() {
     registrations.unshift({...newRegistration, id: Date.now().toString()});
     localStorage.setItem('my_registrations', JSON.stringify(registrations));
     
+    addNotification({
+      title: '海选报名成功',
+      content: `您已成功报名参加海选。请保持电话畅通，我们将尽快与您联系。`,
+      type: 'system'
+    });
+
     alert('提交成功！已保存到“我的报名”中。');
     navigate('/user/my-registrations');
   };
@@ -647,6 +709,8 @@ export function AuditionRegistration() {
 
 export function GeneralRegistration() {
   const navigate = useNavigate();
+  const { addCourseRegistration } = useCMS();
+  const { addNotification } = useUser();
   const [formData, setFormData] = useState({
     name: '',
     gender: '男',
@@ -682,6 +746,12 @@ export function GeneralRegistration() {
     registrations.unshift({...newRegistration, id: Date.now().toString()});
     localStorage.setItem('my_registrations', JSON.stringify(registrations));
     
+    addNotification({
+      title: '报名提交成功',
+      content: `您已成功报名 ${formData.projectName}。请留意后续通知。`,
+      type: 'system'
+    });
+
     alert('提交成功！我们将尽快与您联系。');
     navigate(-1);
   };

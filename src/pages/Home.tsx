@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ChevronRight, MoreHorizontal, Circle, Crown, Share2, BookOpen, Film, Users, Warehouse, Camera, Video, Bell } from 'lucide-react';
+import { Search, ChevronRight, Crown, Share2, BookOpen, Film, Users, Warehouse, Camera, Video, Bell, Circle } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -11,10 +11,61 @@ import { motion, AnimatePresence } from 'motion/react';
 import { HOME_CATEGORIES, HOT_DRAMAS, APP_LOGO } from '../constants';
 import Header from '../components/Header';
 import { useCMS } from '../context/CMSContext';
+import { useUser } from '../context/UserContext';
+
+function NotificationModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+  const { notifications, markAsRead } = useUser();
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  useEffect(() => {
+    if (isOpen) {
+      notifications.filter(n => !n.read).forEach(n => markAsRead(n.id));
+    }
+  }, [isOpen, notifications, markAsRead]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end">
+      <motion.div 
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      />
+      <motion.div 
+        initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+        className="relative w-80 bg-white dark:bg-[#1A1108] h-full shadow-2xl overflow-y-auto"
+      >
+        <div className="p-5 border-b border-gray-100 dark:border-white/5 flex justify-between items-center sticky top-0 bg-white/80 dark:bg-[#1A1108]/80 backdrop-blur-md">
+          <h2 className="font-bold text-lg dark:text-white">系统通知</h2>
+          <button onClick={onClose} className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full">关闭</button>
+        </div>
+        <div className="p-4 space-y-4">
+          {notifications.length === 0 ? (
+            <div className="text-center text-gray-400 py-10">暂无通知</div>
+          ) : (
+            notifications.map(n => (
+              <div key={n.id} className="p-4 rounded-2xl bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-white/5">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold text-[14px] text-gray-900 dark:text-white">{n.title}</h3>
+                  <span className="text-[10px] text-gray-500">{new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                </div>
+                <p className="text-[12px] text-gray-600 dark:text-gray-400 tracking-wide">{n.content}</p>
+              </div>
+            ))
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
 export default function Home() {
   const navigate = useNavigate();
   const { pages, dramas, loading } = useCMS();
+  const { notifications } = useUser();
+  const unreadCount = notifications.filter(n => !n.read).length;
+  const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentBanner, setCurrentBanner] = useState(0);
 
@@ -114,8 +165,14 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col gap-2 items-end">
-            <button className="p-2.5 bg-white/5 rounded-xl border border-white/10 text-[#E6D5B8] active:scale-90 transition-transform">
+            <button 
+              onClick={() => setShowNotifications(true)}
+              className="relative p-2.5 bg-white/5 rounded-xl border border-white/10 text-[#E6D5B8] active:scale-90 transition-transform"
+            >
               <Bell size={20} />
+              {unreadCount > 0 && (
+                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-[#1A1108]"></span>
+              )}
             </button>
 
           </div>
@@ -314,6 +371,10 @@ export default function Home() {
           ))}
         </div>
       </div>
+      
+      <AnimatePresence>
+        <NotificationModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
+      </AnimatePresence>
     </div>
   );
 }
