@@ -10,10 +10,14 @@ import { useCMS } from '../context/CMSContext';
 export default function MallCategory() {
   const { category } = useParams();
   const navigate = useNavigate();
-  const { products } = useCMS();
+  const { products, pages } = useCMS();
   const currentProducts = products && products.length > 0 ? products : MALL_PRODUCTS;
   
   const [searchQuery, setSearchQuery] = useState(new URLSearchParams(window.location.search).get('q') || '');
+  
+  // 查找匹配的配置馆数据
+  const pavilions = pages?.mall?.pavilions || [];
+  const matchedPavilion = pavilions.find((p: any) => p.title === category);
   
   // 根据路由参数模拟不同的产品数据和标题
   const categoryConfig: { [key: string]: { title: string, banner: string, icon: any, filterTag: string } } = {
@@ -45,7 +49,7 @@ export default function MallCategory() {
 
   const config = categoryConfig[category || 'creative'] || {
     title: category ? (category.includes('馆') ? category : `${category}馆`) : '特色产品馆',
-    banner: 'https://images.unsplash.com/photo-1541604193435-225878996233?w=800',
+    banner: matchedPavilion?.imageUrl || matchedPavilion?.image || matchedPavilion?.banner || 'https://images.unsplash.com/photo-1541604193435-225878996233?w=800',
     icon: <ShoppingBag size={20} />,
     filterTag: category || ''
   };

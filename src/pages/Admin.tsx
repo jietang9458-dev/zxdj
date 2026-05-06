@@ -1384,9 +1384,17 @@ export default function Admin() {
             <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 mt-6">
               <div className="flex justify-between items-center px-2 mb-4">
                 <h3 className="font-black text-[#1A1108]">商城商品管理 ({products.length})</h3>
-                <button onClick={() => openProductDialog()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
-                  <Plus size={16} /> 添加商品
-                </button>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => {
+                    refresh();
+                    alert('商品数据已同步至小程序');
+                  }} className="bg-black hover:bg-gray-800 text-white px-5 py-2 rounded-xl text-[13px] font-bold transition-colors shadow-lg shadow-black/20">
+                    保存并同步商品
+                  </button>
+                  <button onClick={() => openProductDialog()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
+                    <Plus size={16} /> 添加商品
+                  </button>
+                </div>
               </div>
               <div className="rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
                 <table className="w-full text-left">
