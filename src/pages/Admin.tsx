@@ -408,7 +408,13 @@ export default function Admin() {
           { key: 'originalPrice', label: '原价', type: 'number' },
           { key: 'memberPrice', label: '会员价', type: 'number' },
           { key: 'pavilion', label: '所属产品馆 (如 深圳特色产品馆)', type: 'text' },
-          { key: 'category', label: '所属类别 (如 文创产品)', type: 'text' }
+          { key: 'category', label: '所属类别 (如 文创产品)', type: 'text' },
+          { key: 'detailText', label: '详情文本介绍', type: 'textarea' },
+          { key: 'detailImage1', label: '详情图片1 (可选)', type: 'image' },
+          { key: 'detailImage2', label: '详情图片2 (可选)', type: 'image' },
+          { key: 'detailImage3', label: '详情图片3 (可选)', type: 'image' },
+          { key: 'detailImage4', label: '详情图片4 (可选)', type: 'image' },
+          { key: 'detailImage5', label: '详情图片5 (可选)', type: 'image' }
         ],
         onSubmit: async (data: any) => {
           if (!data.title || !data.imageUrl) return alert("请填写完整信息");

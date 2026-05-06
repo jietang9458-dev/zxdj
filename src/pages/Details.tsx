@@ -274,17 +274,17 @@ export function ProductDetail() {
   const { id } = useParams();
   const { addNotification } = useUser();
   const { products } = useCMS();
-  const currentProducts = products && products.length > 0 ? products : MALL_PRODUCTS;
-  const product = currentProducts.find((p: any) => p.id === id) || currentProducts[0];
+  const currentProducts = products && products.length > 0 ? products : [];
+  const product = currentProducts.find((p: any) => p.id === id) || currentProducts[0] || {};
 
   return (
     <div className="bg-[#FAF9F6] min-h-full pb-32">
-      <Header title="商品详情" transparent dark />
-      <div className="aspect-square w-full relative -mt-24">
+      <Header title="商品详情" />
+      <div className="aspect-square w-full relative">
         <img src={product.imageUrl} alt={product.title} className="w-full h-full object-cover" />
       </div>
 
-      <div className="mx-5 -mt-10 bg-white rounded-[40px] p-8 shadow-xl relative z-10">
+      <div className="mx-5 -mt-6 bg-white rounded-[40px] p-8 shadow-xl relative z-10">
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col">
             {product.originalPrice && (
@@ -293,7 +293,7 @@ export function ProductDetail() {
             <span className="text-[28px] font-black text-[#8B6E4E]">会员价: ¥ {product.memberPrice || product.price}</span>
           </div>
           <div className="flex items-center gap-1 text-[#D4AF37] bg-yellow-50 px-3 py-1.5 rounded-full text-[12px] font-black">
-            <Star size={14} fill="currentColor" /> 热销排行 No.1
+            <Star size={14} fill="currentColor" /> 热销
           </div>
         </div>
         <h1 className="text-[20px] font-black text-[#1A1108] mb-6 leading-tight">{product.title}</h1>
@@ -305,22 +305,16 @@ export function ProductDetail() {
           </div>
         )}
 
-        <div className="space-y-4 mb-10">
-          {[
-            '全球限量发行，具有极高收藏价值',
-            '匠心制作，品质保证',
-            '下单即送品牌专属伴手礼'
-          ].map((text, i) => (
-            <div key={i} className="flex items-center gap-3 text-[13px] text-[#4A443E] font-bold">
-              <CheckCircle2 size={18} className="text-[#D4AF37]" />
-              {text}
-            </div>
-          ))}
-        </div>
-
         <h3 className="text-[17px] font-black text-[#1A1108] mb-6">详情介绍</h3>
         <div className="prose prose-sm text-[#A69984] font-medium leading-relaxed mb-10">
-          <p>这款中星短剧纪念周边，专为忠实影迷打造。采用高品质材料，每一个细节都经过精心雕琢，承载了整个生态链的文化内涵...</p>
+          {product.detailText && (
+            <p className="whitespace-pre-wrap">{product.detailText}</p>
+          )}
+          <div className="flex flex-col gap-4 mt-4">
+            {[product.detailImage1, product.detailImage2, product.detailImage3, product.detailImage4, product.detailImage5].filter(Boolean).map((img, idx) => (
+              <img key={idx} src={img} className="w-full rounded-2xl object-cover" alt="" />
+            ))}
+          </div>
         </div>
 
         <div className="flex gap-4 h-16">
