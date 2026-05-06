@@ -605,7 +605,19 @@ export function LiveFilming() {
 
 export function FilmingExperience() {
   const navigate = useNavigate();
-  const projects = [
+  const { pages } = useCMS();
+  const productionData = pages.production || {};
+  const cmsProjects = productionData.projectsInPrep || [];
+  
+  const projects = cmsProjects.length > 0 ? cmsProjects.map((p: any, i: number) => ({
+    id: i.toString(),
+    title: p.title,
+    director: p.team || '保密',
+    period: '筹备中',
+    location: '待定',
+    image: p.imageUrl,
+    tags: ['影视', '筹备']
+  })) : [
     {
       id: '1',
       title: '《大汉传奇》筹备组',
@@ -639,8 +651,8 @@ export function FilmingExperience() {
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
       <Header title="筹拍项目" dark />
       <div className="p-5 space-y-5">
-        {projects.map((project) => (
-          <div key={project.id} className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 p-4 flex gap-4">
+        {projects.map((project: any) => (
+          <div key={project.id} onClick={() => navigate(`/production/project/${project.id}`)} className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 p-4 flex gap-4 cursor-pointer active:scale-[0.98] transition-transform">
             <div className="w-24 h-32 rounded-2xl overflow-hidden flex-shrink-0 shadow-sm border border-gray-100 dark:border-white/5">
               <img src={project.image} alt="" className="w-full h-full object-cover" />
             </div>

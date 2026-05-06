@@ -4,42 +4,64 @@ import { Search, Filter, ShoppingBag, Star, Crown, Cpu } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MALL_PRODUCTS } from '../constants';
 import { motion } from 'motion/react';
+import { useCMS } from '../context/CMSContext';
 
 // 通用的分类产品列表页面
 export default function MallCategory() {
   const { category } = useParams();
   const navigate = useNavigate();
+  const { products } = useCMS();
+  const currentProducts = products && products.length > 0 ? products : MALL_PRODUCTS;
+  
   const [searchQuery, setSearchQuery] = useState(new URLSearchParams(window.location.search).get('q') || '');
   
   // 根据路由参数模拟不同的产品数据和标题
-  const categoryConfig: { [key: string]: { title: string, banner: string, icon: any } } = {
+  const categoryConfig: { [key: string]: { title: string, banner: string, icon: any, filterTag: string } } = {
     'creative': { 
       title: '文创产品', 
       banner: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800',
-      icon: <Star size={20} />
+      icon: <Star size={20} />,
+      filterTag: '文创产品'
     },
     'specialty': { 
       title: '特色产品', 
       banner: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800',
-      icon: <ShoppingBag size={20} />
+      icon: <ShoppingBag size={20} />,
+      filterTag: '特色产品'
     },
     'star': { 
       title: '明星周边', 
       banner: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800',
-      icon: <Crown size={20} />
+      icon: <Crown size={20} />,
+      filterTag: '明星周边'
     },
     'digital': { 
       title: '数字藏品', 
       banner: 'https://images.unsplash.com/photo-1620712943543-bcc4628c6bb5?w=800',
-      icon: <Cpu size={20} />
+      icon: <Cpu size={20} />,
+      filterTag: '数字藏品'
     }
   };
 
   const config = categoryConfig[category || 'creative'] || {
     title: category ? (category.includes('馆') ? category : `${category}馆`) : '特色产品馆',
     banner: 'https://images.unsplash.com/photo-1541604193435-225878996233?w=800',
-    icon: <ShoppingBag size={20} />
+    icon: <ShoppingBag size={20} />,
+    filterTag: category || ''
   };
+
+  let matchingProducts = currentProducts;
+  if (config.filterTag) {
+    matchingProducts = currentProducts.filter(p => {
+      // If no pavilion or category is set, it's a mock product, show it unless we really want strict filtering
+      // We will do a loose match on the data.
+      if (!p.pavilion && !p.category) return true;
+      return p.category?.includes(config.filterTag) || p.pavilion?.includes(config.filterTag);
+    });
+  }
+
+  // If there are specific pavilion categories
+  const filteredProducts = matchingProducts.filter(p => !searchQuery || p.title.includes(searchQuery));
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
@@ -75,9 +97,9 @@ export default function MallCategory() {
 
       {/* Product Grid */}
       <div className="px-5 grid grid-cols-2 gap-4 mb-10">
-        {MALL_PRODUCTS.filter(p => !searchQuery || p.title.includes(searchQuery)).map((prod, i) => (
+        {filteredProducts.map((prod, i) => (
           <motion.div 
-            key={i}
+            key={prod.id || i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}

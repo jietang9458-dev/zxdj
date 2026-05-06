@@ -12,10 +12,15 @@ export default function Mall() {
   const currentProducts = products.length > 0 ? products : MALL_PRODUCTS;
   const [searchQuery, setSearchQuery] = useState('');
   
-  const allPavilions = [
+  // Extract unique pavilions from CMS products
+  const cmsPavilions = Array.from(new Set((products || []).map((p: any) => p.pavilion).filter(Boolean)));
+  
+  const defaultPavilions = [
     '深圳特色产品馆', '武汉特色产品馆', '成都特色产品馆', '宜昌特色产品馆', '赣州特色产品馆',
     ...Array(15).fill('XX特色产品馆')
   ];
+
+  const allPavilions = cmsPavilions.length > 0 ? cmsPavilions : defaultPavilions;
 
   const filteredPavilions = allPavilions.filter(p => !searchQuery || p.includes(searchQuery));
 

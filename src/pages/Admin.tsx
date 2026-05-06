@@ -362,7 +362,10 @@ export default function Admin() {
           { key: 'title', label: '基地名称', type: 'text' },
           { key: 'location', label: '地点描述', type: 'text' },
           { key: 'region', label: '大区 (如 华南)', type: 'text' },
-          { key: 'tagsStr', label: '标签 (逗号分隔)', type: 'text' }
+          { key: 'tagsStr', label: '标签 (逗号分隔)', type: 'text' },
+          { key: 'introImage', label: '基地介绍图片', type: 'image' },
+          { key: 'introText', label: '基地介绍文字', type: 'textarea' },
+          { key: 'facilities', label: '基地设施', type: 'textarea' }
         ],
         onSubmit: async (data: any) => {
           if (!data.title || !data.imageUrl) return alert("请填写完整信息");
@@ -399,7 +402,9 @@ export default function Admin() {
         fields: [
           { key: 'imageUrl', label: '商品图', type: 'image' },
           { key: 'title', label: '商品名称', type: 'text' },
-          { key: 'price', label: '价格', type: 'number' }
+          { key: 'price', label: '价格', type: 'number' },
+          { key: 'pavilion', label: '所属产品馆 (如 文创馆)', type: 'text' },
+          { key: 'category', label: '所属类别 (如 文创产品)', type: 'text' }
         ],
         onSubmit: async (data: any) => {
           if (!data.title || !data.imageUrl) return alert("请填写完整信息");
@@ -1033,6 +1038,22 @@ export default function Admin() {
                       ]}
                     />
                   </>
+                )}
+
+                {activeTab === 'tourism' && (
+                  <AdminListEditor 
+                    title="影视旅游组团信息"
+                    items={tourismData.groups || []}
+                    onChange={(items: any) => setTourismData({...tourismData, groups: items})}
+                    setDialogState={setDialogState}
+                    schema={[
+                      { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                      { key: 'title', label: '名称 (必填)', type: 'text' },
+                      { key: 'startTime', label: '开机时间', type: 'text' },
+                      { key: 'route', label: '旅游线路', type: 'text' },
+                      { key: 'itinerary', label: '行程安排', type: 'textarea' }
+                    ]}
+                  />
                 )}
 
                 {activeTab === 'news' && (
