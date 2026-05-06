@@ -273,7 +273,9 @@ export function PostDetail() {
 export function ProductDetail() {
   const { id } = useParams();
   const { addNotification } = useUser();
-  const product = MALL_PRODUCTS.find(p => p.id === id) || MALL_PRODUCTS[0];
+  const { products } = useCMS();
+  const currentProducts = products && products.length > 0 ? products : MALL_PRODUCTS;
+  const product = currentProducts.find((p: any) => p.id === id) || currentProducts[0];
 
   return (
     <div className="bg-[#FAF9F6] min-h-full pb-32">
@@ -284,13 +286,25 @@ export function ProductDetail() {
 
       <div className="mx-5 -mt-10 bg-white rounded-[40px] p-8 shadow-xl relative z-10">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-[28px] font-black text-[#8B6E4E]">¥ {product.price}</span>
+          <div className="flex flex-col">
+            {product.originalPrice && (
+              <span className="text-[14px] text-gray-500 line-through">原价: ¥ {product.originalPrice}</span>
+            )}
+            <span className="text-[28px] font-black text-[#8B6E4E]">会员价: ¥ {product.memberPrice || product.price}</span>
+          </div>
           <div className="flex items-center gap-1 text-[#D4AF37] bg-yellow-50 px-3 py-1.5 rounded-full text-[12px] font-black">
             <Star size={14} fill="currentColor" /> 热销排行 No.1
           </div>
         </div>
         <h1 className="text-[20px] font-black text-[#1A1108] mb-6 leading-tight">{product.title}</h1>
         
+        {product.desc && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-2xl">
+            <h3 className="text-[14px] font-black text-[#1A1108] mb-2">商品介绍</h3>
+            <p className="text-[13px] text-[#4A443E] leading-relaxed whitespace-pre-wrap">{product.desc}</p>
+          </div>
+        )}
+
         <div className="space-y-4 mb-10">
           {[
             '全球限量发行，具有极高收藏价值',

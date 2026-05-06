@@ -114,11 +114,16 @@ export default function MallCategory() {
                 </div>
               )}
             </div>
-            <div className="p-4 flex flex-col gap-2">
+            <div className="p-4 flex flex-col gap-1">
               <h4 className="text-[13px] font-bold text-[#1A1108] line-clamp-1">{prod.title}</h4>
-              <div className="flex justify-between items-center">
-                <span className="text-[15px] font-black text-[#8B6E4E]">¥ {prod.price}</span>
-                <span className="text-[10px] text-[#A69984] font-bold">128人付款</span>
+              <div className="flex flex-col gap-y-0.5 mt-1">
+                {prod.originalPrice && (
+                  <span className="text-[10px] text-gray-500 line-through">¥ {prod.originalPrice}</span>
+                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-[15px] font-black text-[#8B6E4E]">¥ {prod.memberPrice || prod.price}</span>
+                  <span className="text-[10px] text-[#A69984] font-bold">128人付款</span>
+                </div>
               </div>
             </div>
           </motion.div>

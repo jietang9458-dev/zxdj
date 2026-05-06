@@ -358,15 +358,15 @@ export function TourismGroups() {
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
       <Header title="影视旅游组团信息" dark />
       <div className="p-5 space-y-6">
-        {groups.map((group) => (
-          <div key={group.id} className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5">
+        {groups.map((group, index) => (
+          <div key={group.id || index} className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5">
             <div className="h-48 overflow-hidden">
-              <img src={group.image} alt="" className="w-full h-full object-cover" />
+              <img src={group.imageUrl || group.image} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-[18px] font-black text-[#1A1108] dark:text-white leading-tight flex-1">{group.project}</h3>
-                <span className="ml-4 text-[#D4AF37] font-black text-[16px]">{group.cost}</span>
+                <h3 className="text-[18px] font-black text-[#1A1108] dark:text-white leading-tight flex-1">{group.title || group.project}</h3>
+                {(group.cost) && <span className="ml-4 text-[#D4AF37] font-black text-[16px]">{group.cost}</span>}
               </div>
               
               <div className="space-y-2.5">
@@ -382,11 +382,11 @@ export function TourismGroups() {
                   </div>
                   <span className="text-[13px] font-bold text-[#5A4F43] dark:text-[#A69984]">旅游线路：{group.route}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-lg bg-[#FAF5EE] dark:bg-[#3A2D1F] flex items-center justify-center text-[#8B6E4E]">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-lg bg-[#FAF5EE] dark:bg-[#3A2D1F] flex items-center justify-center text-[#8B6E4E] shrink-0 mt-0.5">
                     <Users size={14} />
                   </div>
-                  <span className="text-[13px] font-bold text-[#5A4F43] dark:text-[#A69984]">行程安排：{group.duration}</span>
+                  <span className="text-[13px] font-bold text-[#5A4F43] dark:text-[#A69984] leading-relaxed whitespace-pre-wrap">行程安排：{group.itinerary || group.duration}</span>
                 </div>
               </div>
 
@@ -410,11 +410,11 @@ export function StarClub() {
   const pageData = pages.starclub || {};
   
   const defaultActivities = [
-    { t: '明星见面会 · 深圳站', d: '2024-06-15', l: '深圳', i: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200' },
-    { t: '粉丝互动直播', d: '2024-06-18', l: '线上直播', i: 'https://images.unsplash.com/photo-1540575861501-7c91bc177d4c?w=200' }
+    { title: '明星见面会 · 深圳站', time: '2024-06-15', location: '深圳', imageUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200', desc: '在这里与明星亲密互动' },
+    { title: '粉丝互动直播', time: '2024-06-18', location: '线上直播', imageUrl: 'https://images.unsplash.com/photo-1540575861501-7c91bc177d4c?w=200', desc: '云端相聚，畅聊生活' }
   ];
 
-  const activities = (pageData.activities && pageData.activities.length > 0) ? pageData.activities : defaultActivities;
+  const activities = (pageData.events && pageData.events.length > 0) ? pageData.events : defaultActivities;
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
@@ -460,12 +460,13 @@ export function StarClub() {
           {activities.map((item: any, i: number) => (
             <div key={i} className="bg-white dark:bg-[#2A1D0F] p-5 rounded-[32px] flex gap-5 shadow-sm border border-gray-50 dark:border-white/5">
               <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-inner">
-                <img src={item.i} alt="" className="w-full h-full object-cover" />
+                <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 flex flex-col justify-center gap-2">
-                <h4 className="text-[15px] font-black text-[#1A1108]">{item.t}</h4>
-                <p className="text-[12px] text-[#A69984] font-bold">{item.d} {item.l}</p>
-                <div className="flex justify-end">
+                <h4 className="text-[15px] font-black text-[#1A1108]">{item.title}</h4>
+                <p className="text-[12px] text-[#A69984] font-bold line-clamp-1">{item.desc}</p>
+                <p className="text-[11px] text-[#A69984] font-bold">{item.time} {item.location}</p>
+                <div className="flex justify-end mt-1">
                   <button 
                     onClick={() => navigate('/register')}
                     className="bg-[#8B6E4E] text-white px-5 py-1.5 rounded-xl text-[12px] font-black active:scale-90 transition-transform"

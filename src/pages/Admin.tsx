@@ -402,8 +402,10 @@ export default function Admin() {
         fields: [
           { key: 'imageUrl', label: '商品图', type: 'image' },
           { key: 'title', label: '商品名称', type: 'text' },
-          { key: 'price', label: '价格', type: 'number' },
-          { key: 'pavilion', label: '所属产品馆 (如 文创馆)', type: 'text' },
+          { key: 'desc', label: '商品介绍', type: 'textarea' },
+          { key: 'originalPrice', label: '原价', type: 'number' },
+          { key: 'memberPrice', label: '会员价', type: 'number' },
+          { key: 'pavilion', label: '所属产品馆 (如 深圳特色产品馆)', type: 'text' },
           { key: 'category', label: '所属类别 (如 文创产品)', type: 'text' }
         ],
         onSubmit: async (data: any) => {
@@ -1094,6 +1096,22 @@ export default function Admin() {
                   </>
                 )}
 
+                {activeTab === 'starclub' && (
+                  <AdminListEditor 
+                    title="近期活动"
+                    items={(starclubData as any).events || []}
+                    onChange={(items: any) => setStarclubData({...(starclubData as any), events: items})}
+                    setDialogState={setDialogState}
+                    schema={[
+                      { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                      { key: 'title', label: '活动名称 (必填)', type: 'text' },
+                      { key: 'desc', label: '简要介绍', type: 'textarea' },
+                      { key: 'time', label: '时间', type: 'text' },
+                      { key: 'location', label: '地点', type: 'text' }
+                    ]}
+                  />
+                )}
+
                 <div className="space-y-2 mt-4">
                   <label className="text-[11px] font-bold text-[#A69984] ml-2 font-mono">高级配置 (JSON格式 - 用于列表项等)</label>
                   <textarea 
@@ -1346,7 +1364,10 @@ export default function Admin() {
                       </div>
                     </td>
                     <td className="py-4 px-6 font-bold text-[#1A1108]">{product.title}</td>
-                    <td className="py-4 px-6 font-bold text-orange-600">¥ {product.price}</td>
+                    <td className="py-4 px-6 text-[#1A1108]">
+                      {product.originalPrice && <div className="text-[12px] text-gray-500 line-through">原价: ¥ {product.originalPrice}</div>}
+                      <div className="font-bold text-orange-600">会员价: ¥ {product.memberPrice || product.price}</div>
+                    </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-4">
                         <button 

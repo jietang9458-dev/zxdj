@@ -10,18 +10,38 @@ import { useUser } from '../context/UserContext';
 export function Profile() {
   const { profile, updateProfile } = useUser();
   const [editing, setEditing] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        alert("图片太大，请选择小于2MB的图片");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateProfile({ avatar: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
       <Header title="个人资料" dark />
       <div className="p-6">
+        <input 
+          type="file" 
+          accept="image/*" 
+          className="hidden" 
+          ref={fileInputRef}
+          onChange={handleImageUpload} 
+        />
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5">
           {/* Avatar */}
           <div 
-            onClick={() => {
-              const newAvatar = `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000)}?w=100`;
-              updateProfile({ avatar: newAvatar });
-            }}
+            onClick={() => fileInputRef.current?.click()}
             className="flex justify-between items-center px-6 py-5 border-b border-gray-50 dark:border-white/5 active:bg-gray-50 dark:active:bg-white/5 transition-colors cursor-pointer"
           >
             <span className="text-[14px] font-black text-[#1A1108] dark:text-white">头像</span>
