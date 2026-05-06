@@ -14,6 +14,8 @@ export default function MallCategory() {
   const currentProducts = products && products.length > 0 ? products : MALL_PRODUCTS;
   
   const [searchQuery, setSearchQuery] = useState(new URLSearchParams(window.location.search).get('q') || '');
+  const [internalQuery, setInternalQuery] = useState(searchQuery);
+  const [showNoResultMap, setShowNoResultMap] = useState(false);
   
   // 查找匹配的配置馆数据
   const pavilions = pages?.mall?.pavilions || [];
@@ -67,6 +69,15 @@ export default function MallCategory() {
   // If there are specific pavilion categories
   const filteredProducts = matchingProducts.filter(p => !searchQuery || p.title.includes(searchQuery));
 
+  const handleSearch = () => {
+    setSearchQuery(internalQuery);
+    const matches = matchingProducts.filter(p => p.title.includes(internalQuery));
+    if (internalQuery && matches.length === 0) {
+      setShowNoResultMap(true);
+      setTimeout(() => setShowNoResultMap(false), 2000);
+    }
+  };
+
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
       <Header title={config.title.endsWith('馆') ? config.title : config.title} dark />
@@ -76,17 +87,30 @@ export default function MallCategory() {
         <div className="relative flex-1">
           <input 
             type="text" 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={internalQuery}
+            onChange={(e) => setInternalQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder={`搜索${config.title}`} 
-            className="w-full h-11 pl-11 pr-4 bg-white dark:bg-[#2A1D0F] rounded-2xl text-[13px] outline-none shadow-sm font-medium dark:text-white"
+            className="w-full h-11 pl-11 pr-14 bg-white dark:bg-[#2A1D0F] rounded-2xl text-[13px] outline-none shadow-sm font-medium dark:text-white"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+          <button 
+            onClick={handleSearch}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#D4AF37] text-white px-3 py-1.5 rounded-full text-[11px] font-bold shadow-sm"
+          >
+            搜索
+          </button>
         </div>
-        <button className="w-11 h-11 bg-white dark:bg-[#2A1D0F] rounded-2xl flex items-center justify-center text-[#A69984] shadow-sm">
+        <button className="w-11 h-11 bg-white dark:bg-[#2A1D0F] rounded-2xl flex items-center justify-center text-[#A69984] shadow-sm shrink-0">
           <Filter size={18} />
         </button>
       </div>
+
+      {showNoResultMap && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white px-6 py-4 rounded-2xl z-50 text-[14px] font-bold shadow-2xl backdrop-blur-md">
+          该产品还未上线，敬请期待。
+        </div>
+      )}
 
       {/* Banner */}
       <div className="mx-5 mb-8 rounded-[32px] overflow-hidden h-32 relative shadow-lg">

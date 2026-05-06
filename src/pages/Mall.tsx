@@ -11,6 +11,8 @@ export default function Mall() {
   const { products, pages } = useCMS();
   const currentProducts = products.length > 0 ? products : MALL_PRODUCTS;
   const [searchQuery, setSearchQuery] = useState('');
+  const [internalQuery, setInternalQuery] = useState('');
+  const [showNoResultMap, setShowNoResultMap] = useState(false);
   const mallData = pages.mall || {};
   
   // Try to get configured pavilions
@@ -32,6 +34,15 @@ export default function Mall() {
 
   const filteredPavilions = allPavilions.filter((p: any) => !searchQuery || p.title.includes(searchQuery));
 
+  const handleSearch = () => {
+    setSearchQuery(internalQuery);
+    const matches = allPavilions.filter((p: any) => p.title.includes(internalQuery));
+    if (internalQuery && matches.length === 0) {
+      setShowNoResultMap(true);
+      setTimeout(() => setShowNoResultMap(false), 2000);
+    }
+  };
+
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
       <Header title="商城" dark />
@@ -41,14 +52,31 @@ export default function Mall() {
         <div className="relative">
           <input 
             type="text" 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={internalQuery}
+            onChange={(e) => setInternalQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="搜索商品馆" 
             className="w-full h-11 pl-11 pr-4 bg-[#F2EDE4] dark:bg-[#2A1D0F] rounded-full text-[13px] outline-none border border-transparent focus:border-[#D4AF37]/30 dark:text-white transition-all placeholder:text-[#A69984]"
           />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A69984]" size={18} />
+          <Search 
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A69984]" 
+            size={18} 
+          />
+          <button 
+            onClick={handleSearch}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#D4AF37] text-white px-3 py-1.5 rounded-full text-[11px] font-bold shadow-sm"
+          >
+            搜索
+          </button>
         </div>
       </div>
+      
+      {showNoResultMap && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white px-6 py-4 rounded-2xl z-50 text-[14px] font-bold shadow-2xl backdrop-blur-md">
+          该产品还未上线，敬请期待。
+        </div>
+      )}
+
 
       {/* Banner */}
       <div className="mx-5 mt-6 rounded-3xl overflow-hidden h-[180px] relative shadow-xl">

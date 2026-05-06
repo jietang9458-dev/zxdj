@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { HOT_DRAMAS } from '../constants';
 import { useCMS } from '../context/CMSContext';
+import { useUser } from '../context/UserContext';
 
 export function Production() {
   const navigate = useNavigate();
@@ -558,51 +559,115 @@ export function Investment() {
 }
 
 export function LiveFilming() {
+  const { liveStreams } = useCMS();
+  const { addNotification, profile, updateProfile } = useUser();
+
+  // Current time
+  const now = Date.now();
+
+  const liveNow = liveStreams.filter((stream: any) => {
+    if (!stream.liveTime) return false;
+    const time = new Date(stream.liveTime).getTime();
+    return time <= now;
+  });
+
+  const upcoming = liveStreams.filter((stream: any) => {
+    if (!stream.liveTime) return true;
+    const time = new Date(stream.liveTime).getTime();
+    return time > now;
+  });
+
+  const handleLiveClick = (url: string) => {
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      alert('暂无直播链接');
+    }
+  };
+
+  const handleReserve = (e: React.MouseEvent, item: any) => {
+    e.stopPropagation();
+    
+    // Auto record live time to user
+    const existingReservations = profile.reservations || [];
+    if (!existingReservations.find(r => r.id === item.id)) {
+      updateProfile({
+        reservations: [
+          ...existingReservations,
+          { id: item.id || Date.now().toString(), title: item.title, liveTime: item.liveTime }
+        ]
+      });
+    }
+
+    addNotification({
+      title: '直播预约成功',
+      content: `您已经成功预约《${item.title}》直播拍戏，请准时观看。`
+    });
+    alert('预约成功！请关注消息通知。');
+  };
+
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
       <Header title="直播拍戏" dark />
       <div className="p-6">
         <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-6">正在直播</h3>
-        <div className="space-y-6">
-          {[
-            { t: '《逆袭星途》片场直击', u: '1.2w 观看', i: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&fit=crop' },
-            { t: '古装短剧《花月令》拍摄现场', u: '8500 观看', i: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=800&fit=crop' }
-          ].map((item, i) => (
-            <div key={i} className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-50 relative group cursor-pointer">
-              <div className="h-48 relative">
-                <img src={item.i} alt="" className="w-full h-full object-cover" />
-                <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-black flex items-center gap-1.5 animate-pulse">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full" /> LIVE
-                </div>
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30">
-                    <Video size={32} />
+        {liveNow.length === 0 ? (
+          <p className="text-[13px] text-gray-400 font-bold mb-6">暂无正在直播的项目</p>
+        ) : (
+          <div className="space-y-6">
+            {liveNow.map((item: any) => (
+              <div 
+                key={item.id}
+                onClick={() => handleLiveClick(item.liveLink)}
+                className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-50 relative group cursor-pointer hover:shadow-md transition-shadow"
+              >
+                <div className="h-48 relative">
+                  <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
+                  <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-black flex items-center gap-1.5 animate-pulse">
+                    <div className="w-1.5 h-1.5 bg-white rounded-full" /> LIVE
+                  </div>
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30">
+                      <Video size={32} />
+                    </div>
                   </div>
                 </div>
+                <div className="p-6">
+                  <h4 className="text-[15px] font-black text-[#1A1108] mb-1">{item.title}</h4>
+                  <p className="text-[12px] text-[#A69984] font-bold">现在正在直播中</p>
+                </div>
               </div>
-              <div className="p-6">
-                <h4 className="text-[15px] font-black text-[#1A1108] mb-1">{item.t}</h4>
-                <p className="text-[12px] text-[#A69984] font-bold">{item.u}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <h3 className="text-[17px] font-black text-[#1A1108] mt-10 mb-6">直播预告</h3>
-        <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-50 space-y-6">
-          {[
-            { t: '演员海选现场全程直播', d: '明天 14:00' },
-            { t: '短剧导演公开课', d: '06月12日 19:30' }
-          ].map((item, i) => (
-            <div key={i} className="flex justify-between items-center pb-6 last:pb-0 border-b last:border-0 border-gray-50">
-              <div>
-                <h4 className="text-[14px] font-black text-[#1A1108]">{item.t}</h4>
-                <p className="text-[11px] text-[#D4AF37] font-bold mt-1">{item.d}</p>
+        {upcoming.length === 0 ? (
+          <p className="text-[13px] text-gray-400 font-bold">暂无直播预告</p>
+        ) : (
+          <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-50 space-y-6">
+            {upcoming.map((item: any) => (
+              <div 
+                key={item.id} 
+                className="flex justify-between items-center pb-6 last:pb-0 border-b last:border-0 border-gray-50 cursor-pointer"
+                onClick={() => handleLiveClick(item.liveLink)}
+              >
+                <div>
+                  <h4 className="text-[14px] font-black text-[#1A1108]">{item.title}</h4>
+                  <p className="text-[11px] text-[#D4AF37] font-bold mt-1">
+                    {item.liveTime ? new Date(item.liveTime).toLocaleString() : '敬请期待'}
+                  </p>
+                </div>
+                <button 
+                  onClick={(e) => handleReserve(e, item)}
+                  className="px-4 py-2 bg-[#F2EDE4] text-[#8B6E4E] rounded-xl text-[12px] font-black border border-[#8B6E4E]/10"
+                >
+                  预约
+                </button>
               </div>
-              <button className="px-4 py-2 bg-[#F2EDE4] text-[#8B6E4E] rounded-xl text-[12px] font-black border border-[#8B6E4E]/10">预约</button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ interface UserProfile {
   bio: string;
   avatar: string;
   uid: string;
+  reservations?: { id: string; title: string; liveTime?: string }[];
 }
 
 interface UserContextType {

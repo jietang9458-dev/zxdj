@@ -90,6 +90,13 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
                   onChange={(e) => setData({...data, [field.key]: parseInt(e.target.value) || 0})}
                   className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200"
                 />
+              ) : field.type === 'datetime-local' ? (
+                <input 
+                  type="datetime-local"
+                  value={data[field.key] || ''}
+                  onChange={(e) => setData({...data, [field.key]: e.target.value})}
+                  className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200"
+                />
               ) : (
                 <input 
                   type="text"
@@ -331,7 +338,9 @@ export default function Admin() {
         initialData: initialData || {},
         fields: [
           { key: 'imageUrl', label: '封面图', type: 'image' },
-          { key: 'title', label: '标题', type: 'text' }
+          { key: 'title', label: '标题', type: 'text' },
+          { key: 'liveLink', label: '直播链接', type: 'text' },
+          { key: 'liveTime', label: '直播时间', type: 'datetime-local' }
         ],
         onSubmit: async (data: any) => {
           if (!data.title || !data.imageUrl) return alert("请填写完整信息");
@@ -1253,7 +1262,8 @@ export default function Admin() {
                   <tr>
                     <th className="py-4 px-6 font-medium w-32">封面</th>
                     <th className="py-4 px-6 font-medium">标题</th>
-                    <th className="py-4 px-6 font-medium text-gray-400">ID</th>
+                    <th className="py-4 px-6 font-medium">直播时间</th>
+                    <th className="py-4 px-6 font-medium">直播链接</th>
                     <th className="py-4 px-6 text-right font-medium">操作</th>
                   </tr>
                 </thead>
@@ -1264,7 +1274,8 @@ export default function Admin() {
                       <img src={stream.imageUrl} alt="" className="w-16 h-20 object-cover rounded-xl shadow-sm" />
                     </td>
                     <td className="py-4 px-6 font-bold text-[#1A1108]">{stream.title}</td>
-                    <td className="py-4 px-6 text-[12px] font-mono text-gray-400 max-w-[200px] truncate">{stream.id}</td>
+                    <td className="py-4 px-6 text-[#1A1108]">{stream.liveTime ? new Date(stream.liveTime).toLocaleString() : '-'}</td>
+                    <td className="py-4 px-6 text-[#1A1108] max-w-[150px] truncate">{stream.liveLink || '-'}</td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-4">
                         <button 
