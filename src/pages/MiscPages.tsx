@@ -236,20 +236,21 @@ export function Tourism() {
   const pageData = pages.tourism || {};
   
   const defaultCarousel = [
-    "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&fit=crop",
-    "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?q=80&w=800&fit=crop",
-    "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800&fit=crop"
+    { imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&fit=crop", title: "参与短剧拍摄", subtitle: "体验影视文旅" },
+    { imageUrl: "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?q=80&w=800&fit=crop", title: "中国盐田片场", subtitle: "山海都市实景场地" },
+    { imageUrl: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800&fit=crop", title: "影视体验游", subtitle: "明星互动·特色剧组" }
   ];
   
-  const carouselImages = (pageData.banners && pageData.banners.length > 0) ? pageData.banners : (pageData.banner ? [pageData.banner] : defaultCarousel);
+  const carouselBanners = (pageData.banners && pageData.banners.length > 0) ? pageData.banners : (pageData.banner ? [{imageUrl: pageData.banner, title: pageData.title, subtitle: pageData.subtitle}] : defaultCarousel);
+  const currentBanner = carouselBanners[currentIdx] || {};
 
   useEffect(() => {
-    if (carouselImages.length === 0) return;
+    if (carouselBanners.length === 0) return;
     const timer = setInterval(() => {
-      setCurrentIdx((prev) => (prev + 1) % carouselImages.length);
+      setCurrentIdx((prev) => (prev + 1) % carouselBanners.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [carouselImages.length]);
+  }, [carouselBanners.length]);
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
@@ -258,7 +259,7 @@ export function Tourism() {
         <AnimatePresence mode="wait">
           <motion.img
             key={currentIdx}
-            src={carouselImages[currentIdx]}
+            src={currentBanner.imageUrl || currentBanner}
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
@@ -268,16 +269,16 @@ export function Tourism() {
           />
         </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent flex flex-col justify-center px-8 text-white">
-          <h2 className="text-[24px] font-black leading-tight">
-            {pageData.title || "参与短剧拍摄"}<br />{pageData.subtitle ? "" : "体验影视文旅"}
+          <h2 className="text-[24px] font-black leading-tight truncate w-full">
+            {currentBanner.title || "参与短剧拍摄"}
           </h2>
-          <p className="text-[#E6D5B8] text-[13px] mt-2 opacity-90 font-bold">
-            {pageData.subtitle || "深度参与拍摄体验·演员明星互动"}
+          <p className="text-[#E6D5B8] text-[13px] mt-2 opacity-90 font-bold truncate w-full">
+            {currentBanner.subtitle || "深度参与拍摄体验·演员明星互动"}
           </p>
           
           {/* Carousel Indicators */}
           <div className="flex gap-1.5 mt-4">
-            {carouselImages.map((_, i) => (
+            {carouselBanners.map((_: any, i: number) => (
               <div 
                 key={i} 
                 className={`h-1 rounded-full transition-all duration-300 ${i === currentIdx ? 'w-6 bg-[#D4AF37]' : 'w-2 bg-white/30'}`} 

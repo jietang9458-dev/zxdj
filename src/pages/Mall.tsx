@@ -92,7 +92,7 @@ export default function Mall() {
                 className="group relative h-32 rounded-[24px] overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer active:scale-95"
               >
               <img 
-                src={pavilion.imageUrl} 
+                src={pavilion.imageUrl || pavilion.image || pavilion.banner || 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=400&fit=crop'} 
                 alt={pavilion.title}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />

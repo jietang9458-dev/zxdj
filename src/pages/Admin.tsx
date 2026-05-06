@@ -237,6 +237,7 @@ export default function Admin() {
     setInvestData(pages.invest || { banner: '', title: '', subtitle: '' });
     setStarclubData(pages.starclub || { banner: '', title: '', subtitle: '' });
     setNewsData(pages.news || { shortDramaNews: [], bts: [], successCases: [] });
+    setMallData(pages.mall || { pavilions: [] });
   }, [pages]);
 
   const handleLogin = () => {
@@ -1044,19 +1045,32 @@ export default function Admin() {
                 )}
 
                 {activeTab === 'tourism' && (
-                  <AdminListEditor 
-                    title="影视旅游组团信息"
-                    items={tourismData.groups || []}
-                    onChange={(items: any) => setTourismData({...tourismData, groups: items})}
-                    setDialogState={setDialogState}
-                    schema={[
-                      { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
-                      { key: 'title', label: '名称 (必填)', type: 'text' },
-                      { key: 'startTime', label: '开机时间', type: 'text' },
-                      { key: 'route', label: '旅游线路', type: 'text' },
-                      { key: 'itinerary', label: '行程安排', type: 'textarea' }
-                    ]}
-                  />
+                  <>
+                    <AdminListEditor 
+                      title="轮播图配置"
+                      items={tourismData.banners || []}
+                      onChange={(items: any) => setTourismData({...tourismData, banners: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'title', label: '主标题', type: 'text' },
+                        { key: 'subtitle', label: '副标题/描述', type: 'text' }
+                      ]}
+                    />
+                    <AdminListEditor 
+                      title="影视旅游组团信息"
+                      items={tourismData.groups || []}
+                      onChange={(items: any) => setTourismData({...tourismData, groups: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'title', label: '名称 (必填)', type: 'text' },
+                        { key: 'startTime', label: '开机时间', type: 'text' },
+                        { key: 'route', label: '旅游线路', type: 'text' },
+                        { key: 'itinerary', label: '行程安排', type: 'textarea' }
+                      ]}
+                    />
+                  </>
                 )}
 
                 {activeTab === 'news' && (
@@ -1310,7 +1324,7 @@ export default function Admin() {
                         value={base.isHot || '否'}
                         onChange={async (e) => {
                           const newIsHot = e.target.value;
-                          await updateBase(base.id, { isHot: newIsHot });
+                          await updateBase(base.id, { ...base, isHot: newIsHot });
                           refresh();
                         }}
                         className="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
