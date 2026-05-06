@@ -205,6 +205,7 @@ export default function Admin() {
 
   // Business Pages States
   const [copyrightData, setCopyrightData] = useState(pages.copyright || { banner: '', title: '', subtitle: '', news: [] });
+  const [mallData, setMallData] = useState(pages.mall || { pavilions: [] });
   const [productionData, setProductionData] = useState(pages.production || { banner: '', title: '', subtitle: '', projects: [] });
   const [actorsData, setActorsData] = useState(pages.actors || { banner: '', banners: [], title: '', subtitle: '' });
   const [tourismData, setTourismData] = useState(pages.tourism || { banner: '', title: '', subtitle: '', groups: [] });
@@ -1284,7 +1285,7 @@ export default function Admin() {
                     <th className="py-4 px-6 font-medium">基地名称</th>
                     <th className="py-4 px-6 font-medium">地点</th>
                     <th className="py-4 px-6 font-medium">大区</th>
-                    <th className="py-4 px-6 font-medium">标签</th>
+                    <th className="py-4 px-6 font-medium">热门推荐</th>
                     <th className="py-4 px-6 text-right font-medium">操作</th>
                   </tr>
                 </thead>
@@ -1305,13 +1306,18 @@ export default function Admin() {
                     </td>
                     <td className="py-4 px-6 text-[13px] text-gray-600">{base.region || '华南'}</td>
                     <td className="py-4 px-6">
-                      <div className="flex flex-wrap gap-1">
-                        {base.tags?.map((tag, idx) => (
-                          <span key={idx} className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded text-[10px] font-medium border border-orange-100/50">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+                      <select
+                        value={base.isHot || '否'}
+                        onChange={async (e) => {
+                          const newIsHot = e.target.value;
+                          await updateBase(base.id, { isHot: newIsHot });
+                          refresh();
+                        }}
+                        className="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
+                      >
+                        <option value="否">否</option>
+                        <option value="是">是</option>
+                      </select>
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-4">
@@ -1338,15 +1344,38 @@ export default function Admin() {
         )}
 
         {activeTab === 'products' && (
-          <div className="space-y-4 pb-10">
-            <div className="flex justify-between items-center px-2">
-              <h3 className="font-black text-[#1A1108]">商城管理 ({products.length})</h3>
-              <button onClick={() => openProductDialog()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
-                <Plus size={16} /> 添加商品
-              </button>
+          <div className="space-y-6 pb-10">
+            <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-black text-[#1A1108]">特色产品馆配置</h3>
+                <button 
+                  onClick={() => handleSavePage('mall', mallData)} 
+                  className="bg-black hover:bg-gray-800 text-white px-5 py-2 rounded-xl text-[13px] font-bold transition-colors shadow-lg shadow-black/20"
+                >
+                  保存场馆配置
+                </button>
+              </div>
+              <AdminListEditor 
+                title="特色产品馆列表"
+                items={mallData.pavilions || []}
+                onChange={(items: any) => setMallData({...mallData, pavilions: items})}
+                setDialogState={setDialogState}
+                schema={[
+                  { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                  { key: 'title', label: '产品馆名称 (必填)', type: 'text' }
+                ]}
+              />
             </div>
-            <div className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
-              <table className="w-full text-left">
+
+            <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 mt-6">
+              <div className="flex justify-between items-center px-2 mb-4">
+                <h3 className="font-black text-[#1A1108]">商城商品管理 ({products.length})</h3>
+                <button onClick={() => openProductDialog()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[12px] font-bold flex items-center gap-2 transition-colors">
+                  <Plus size={16} /> 添加商品
+                </button>
+              </div>
+              <div className="rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+                <table className="w-full text-left">
                 <thead className="bg-gray-50/50 border-b border-gray-100 text-[13px] text-gray-500">
                   <tr>
                     <th className="py-4 px-6 font-medium w-32">商品图</th>
@@ -1388,6 +1417,7 @@ export default function Admin() {
                 ))}
                 </tbody>
               </table>
+            </div>
             </div>
           </div>
         )}

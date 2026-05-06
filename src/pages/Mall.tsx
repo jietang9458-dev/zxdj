@@ -8,21 +8,29 @@ import { useCMS } from '../context/CMSContext';
 
 export default function Mall() {
   const navigate = useNavigate();
-  const { products } = useCMS();
+  const { products, pages } = useCMS();
   const currentProducts = products.length > 0 ? products : MALL_PRODUCTS;
   const [searchQuery, setSearchQuery] = useState('');
+  const mallData = pages.mall || {};
   
-  // Extract unique pavilions from CMS products
+  // Try to get configured pavilions
+  const configuredPavilions = mallData.pavilions && mallData.pavilions.length > 0 ? mallData.pavilions : [];
+  
+  // Extract unique pavilions from CMS products as fallback
   const cmsPavilions = Array.from(new Set((products || []).map((p: any) => p.pavilion).filter(Boolean)));
   
   const defaultPavilions = [
-    '深圳特色产品馆', '武汉特色产品馆', '成都特色产品馆', '宜昌特色产品馆', '赣州特色产品馆',
-    ...Array(15).fill('XX特色产品馆')
+    { title: '深圳特色产品馆', imageUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef03a74e7f?q=80&w=400&fit=crop' },
+    { title: '武汉特色产品馆', imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=400&fit=crop' },
+    { title: '成都特色产品馆', imageUrl: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=400&fit=crop' },
+    { title: '宜昌特色产品馆', imageUrl: 'https://images.unsplash.com/photo-1512418490979-92798cfecbf2?q=80&w=400&fit=crop' },
   ];
 
-  const allPavilions = cmsPavilions.length > 0 ? cmsPavilions : defaultPavilions;
+  const allPavilions = configuredPavilions.length > 0 ? configuredPavilions : 
+                      cmsPavilions.length > 0 ? cmsPavilions.map((p, idx) => ({ title: p as string, imageUrl: `https://images.unsplash.com/photo-${['1581009146145-b5ef03a74e7f','1504674900247-0877df9cc836','1511919884226-fd3cad34687c'][idx % 3]}?q=80&w=400&fit=crop` })) : 
+                      defaultPavilions;
 
-  const filteredPavilions = allPavilions.filter(p => !searchQuery || p.includes(searchQuery));
+  const filteredPavilions = allPavilions.filter((p: any) => !searchQuery || p.title.includes(searchQuery));
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
@@ -77,29 +85,20 @@ export default function Mall() {
       <div className="px-5 mt-10 mb-10">
         <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-6">特色产品馆</h3>
         <div className="grid grid-cols-2 gap-4">
-            {filteredPavilions.map((name, idx) => (
+            {filteredPavilions.map((pavilion: any, idx: number) => (
               <div 
                 key={idx} 
-                onClick={() => navigate(`/mall/${encodeURIComponent(name === 'XX特色产品馆' ? `XX${idx + 1}特色产品馆` : name)}`)}
+                onClick={() => navigate(`/mall/${encodeURIComponent(pavilion.title)}`)}
                 className="group relative h-32 rounded-[24px] overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer active:scale-95"
               >
               <img 
-                src={`https://images.unsplash.com/photo-${[
-                  '1581009146145-b5ef03a74e7f', // fruit/produce
-                  '1504674900247-0877df9cc836', // food
-                  '1511919884226-fd3cad34687c', // crafts
-                  '1512418490979-92798cfecbf2', // decor
-                  '1550989460-0adf9ea622e2', // store
-                  '1560624056-444268fc36b6', // pottery
-                  '1542838132-92c53300491e', // marketplace
-                  '1563245393-2708304910e5', // shop
-                ][idx % 8]}?q=80&w=400&fit=crop`} 
-                alt={name}
+                src={pavilion.imageUrl} 
+                alt={pavilion.title}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center p-4">
                 <span className="text-white text-[15px] font-black text-center leading-tight drop-shadow-md">
-                  {name}
+                  {pavilion.title}
                 </span>
               </div>
             </div>

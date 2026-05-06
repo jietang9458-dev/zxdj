@@ -231,7 +231,7 @@ export function Actors() {
 
 export function Tourism() {
   const navigate = useNavigate();
-  const { pages } = useCMS();
+  const { pages, bases } = useCMS();
   const [currentIdx, setCurrentIdx] = useState(0);
   const pageData = pages.tourism || {};
   
@@ -306,17 +306,20 @@ export function Tourism() {
       <div className="p-6 mb-10">
         <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-6 px-1">热门基地</h3>
         <div className="grid grid-cols-2 gap-4">
-          {[
-            { t: '中国盐田山海都市片场', l: '深圳 · 盐田', i: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=400&h=250&fit=crop' },
-            { t: '横店影视城', l: '浙江 · 横店', i: 'https://images.unsplash.com/photo-1524230572899-a752b3835840?q=80&w=400&h=250&fit=crop' }
-          ].map((item, i) => (
-            <div key={i} onClick={() => navigate('/base/1')} className="bg-white dark:bg-[#2A1D0F] rounded-[28px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer active:scale-95 transition-all">
+          {(bases && bases.filter((b: any) => b.isHot === '是').length > 0 
+            ? bases.filter((b: any) => b.isHot === '是')
+            : [
+                { id: '1', title: '中国盐田山海都市片场', location: '深圳 · 盐田', imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=400&h=250&fit=crop' },
+                { id: '2', title: '横店影视城', location: '浙江 · 横店', imageUrl: 'https://images.unsplash.com/photo-1524230572899-a752b3835840?q=80&w=400&h=250&fit=crop' }
+              ]
+          ).map((item: any, i: number) => (
+            <div key={item.id || i} onClick={() => navigate(`/base/${item.id}`)} className="bg-white dark:bg-[#2A1D0F] rounded-[28px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer active:scale-95 transition-all">
               <div className="h-32 overflow-hidden">
-                <img src={item.i} alt="" className="w-full h-full object-cover" />
+                <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
               </div>
               <div className="p-4 flex flex-col gap-1">
-                <h4 className="text-[13px] font-black text-[#1A1108] line-clamp-1">{item.t}</h4>
-                <p className="text-[11px] text-[#A69984] font-bold">{item.l}</p>
+                <h4 className="text-[13px] font-black text-[#1A1108] line-clamp-1">{item.title}</h4>
+                <p className="text-[11px] text-[#A69984] font-bold">{item.location}</p>
               </div>
             </div>
           ))}
