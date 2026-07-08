@@ -88,7 +88,7 @@ export default function Home() {
   ];
 
   const banners = (pages.home?.banners && pages.home.banners.length > 0) ? pages.home.banners : defaultBanners;
-  const appSettings = pages.settings || { logo: APP_LOGO, name: '中星短剧生态链' };
+  const appSettings = pages.settings || { logo: APP_LOGO, name: '中星影视生态链' };
 
   useEffect(() => {
     if (banners.length === 0) return;
@@ -152,7 +152,7 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-[24px] font-black text-[#E6D5B8] tracking-tight leading-none mb-1 shadow-glow-gold filter drop-shadow-[0_0_8px_rgba(230,213,184,0.3)]">
-                  {appSettings.name || '中星短剧生态链'}
+                  {appSettings.name || '中星影视生态链'}
                 </h1>
                 <p className="text-[10px] text-[#D4AF37] font-black tracking-[0.3em] opacity-80 uppercase pl-0.5">
                   ZX Eco-Chain Premium

@@ -224,7 +224,7 @@ export function PostDetail() {
       <Header title="资讯详情" />
       <div className="p-8">
         <h1 className="text-[24px] font-black text-[#1A1108] leading-tight mb-6">
-          中星短剧生态链战略发布会圆满成功：开启短剧3.0时代
+          中星影视生态链战略发布会圆满成功：开启短剧3.0时代
         </h1>
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-full bg-[#FAF5EE] flex items-center justify-center text-[#8B6E4E]">
@@ -242,7 +242,7 @@ export function PostDetail() {
 
         <div className="prose prose-sm max-w-none text-[#4A443E] leading-relaxed space-y-4 font-medium">
           <p>
-            2024年6月10日，中星短剧生态链在深圳盐田基地成功举办了夏季战略发布会。本次发布会吸引了来自全国各地的影视制作人、导演、编剧以及投资者。
+            2024年6月10日，中星影视生态链在深圳盐田基地成功举办了夏季战略发布会。本次发布会吸引了来自全国各地的影视制作人、导演、编剧以及投资者。
           </p>
           <p>
             发布会上，公司CEO宣布了“星链计划”，旨在通过整合全产业链资源，为短剧创作者提供从版权购买、拍摄制作到全球发行的全方位支持。

@@ -508,7 +508,7 @@ export function Investment() {
           {pageData.title || "携手合作 共赢未来"}
         </h2>
         <p className="text-[#D4AF37] text-[18px] font-bold mt-3 relative z-10 tracking-widest">
-          {pageData.subtitle || "加入中星短剧生态链"}
+          {pageData.subtitle || "加入中星影视生态链"}
         </p>
       </div>
 

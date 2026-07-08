@@ -358,7 +358,7 @@ export function Settings() {
 export function HelpCenter() {
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState([
-    { text: '您好，我是中星短剧生态链小助手，很高兴为您服务！', sender: 'bot' }
+    { text: '您好，我是中星影视生态链小助手，很高兴为您服务！', sender: 'bot' }
   ]);
   const [input, setInput] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -395,7 +395,7 @@ export function HelpCenter() {
           else if (lowercaseMsg.includes('报名') || lowercaseMsg.includes('海选')) reply = '点击项目详情页中的“我要报名”即可提交参与申请。';
           else if (lowercaseMsg.includes('基地') || lowercaseMsg.includes('拍摄')) reply = '我们整合了多处优质影视拍摄基地，可以在“发现”板块探索基地详情。';
           else if (lowercaseMsg.includes('文创') || lowercaseMsg.includes('产品') || lowercaseMsg.includes('商场')) reply = '前往“商城”板块可以选购我们的特色产品馆。';
-          else reply = '中星短剧生态链致力于为用户提供一站式的数字娱乐与影视周边服务。';
+          else reply = '中星影视生态链致力于为用户提供一站式的数字娱乐与影视周边服务。';
         } else if (userMsg.length > 7 && (/\d{8,}/.test(userMsg) || lowercaseMsg.includes('电话') || lowercaseMsg.includes('微信'))) {
           reply = '好的，已经记录您的信息，稍后会有专人联系您！';
           shouldSave = true;
@@ -475,7 +475,7 @@ export function HelpCenter() {
                     <MessageSquare size={20} />
                   </div>
                   <div>
-                    <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white">中星短剧生态链小助手</h4>
+                    <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white">中星影视生态链小助手</h4>
                     <span className="text-[10px] text-green-500 font-bold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                       当前在线
@@ -645,7 +645,7 @@ export function AboutUs() {
         <div className="w-24 h-24 rounded-[32px] bg-[#1A1108] flex items-center justify-center text-[#D4AF37] shadow-xl mb-6">
           <Star size={48} fill="currentColor" />
         </div>
-        <h2 className="text-[20px] font-black text-[#1A1108] dark:text-white mb-1">中星短剧生态链</h2>
+        <h2 className="text-[20px] font-black text-[#1A1108] dark:text-white mb-1">中星影视生态链</h2>
         <p className="text-[14px] text-[#A69984] font-bold mb-10">Version 1.2.4</p>
         
         <div className="w-full bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5">

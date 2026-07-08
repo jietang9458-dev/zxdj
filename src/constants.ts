@@ -40,7 +40,7 @@ export const BASES: BaseItem[] = [
 export const DISCOVER_NEWS = [
   { id: '1', title: '短剧行业发展趋势分析', date: '2024-06-10', imageUrl: 'https://images.unsplash.com/photo-1454165833767-027508496b60?q=80&w=400&h=300&fit=crop' },
   { id: '2', title: '如何打造爆款短剧', date: '2024-06-08', imageUrl: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=400&h=300&fit=crop' },
-  { id: '3', title: '中星短剧生态链战略发布会', date: '2024-06-05', imageUrl: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=400&h=300&fit=crop' },
+  { id: '3', title: '中星影视生态链战略发布会', date: '2024-06-05', imageUrl: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=400&h=300&fit=crop' },
 ];
 
 export const MALL_PRODUCTS = [

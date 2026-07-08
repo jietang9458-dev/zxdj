@@ -33,12 +33,12 @@ export function CopyrightPurchase() {
     { 
       title: '明星短剧', 
       imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?q=80&w=400&h=600&fit=crop', 
-      desc: '每部短剧共200份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (C)0201 001~200，注：明星演员的定义、标准和人选由中星短剧生态链确定，版权购买方不存有异议。' 
+      desc: '每部短剧共200份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (C)0201 001~200，注：明星演员的定义、标准和人选由中星影视生态链确定，版权购买方不存有异议。' 
     },
     { 
       title: '互动影游', 
       imageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=400&h=600&fit=crop', 
-      desc: '请联系中星短剧生态链客服咨询详情。' 
+      desc: '请联系中星影视生态链客服咨询详情。' 
     },
   ];
 
@@ -161,7 +161,7 @@ export function PurchaseInstructions() {
         <div className="mt-10 p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
           <h5 className="text-[14px] font-black text-orange-800 dark:text-orange-400 mb-2">特别提醒</h5>
           <p className="text-[12px] text-orange-700 dark:text-orange-300 leading-relaxed font-bold">
-            所有版权交易均与中星短剧生态链官方产生。如遇私下交易请及时反馈和投诉，私下交易产生的所有风险，平台概不负责，同时平台保留追究法律责任的权利。
+            所有版权交易均与中星影视生态链官方产生。如遇私下交易请及时反馈和投诉，私下交易产生的所有风险，平台概不负责，同时平台保留追究法律责任的权利。
           </p>
         </div>
       </div>
@@ -240,8 +240,8 @@ export function FullCopyrightInstructions() {
 
 export function CopyrightRights() {
   const rights = [
-    "成为中星短剧生态链的联合制片人，销售推广中星短剧生态链的版权和其他业务，享受销售的佣金和平台公司奖励。",
-    "颁发电子版“中星短剧生态链的联合制片人”牌匾，牌匾内有个人的照片和名字。",
+    "成为中星影视生态链的联合制片人，销售推广中星影视生态链的版权和其他业务，享受销售的佣金和平台公司奖励。",
+    "颁发电子版“中星影视生态链的联合制片人”牌匾，牌匾内有个人的照片和名字。",
     "每份版权按照票房版权方收益的（A: AI短剧2%，B：精品短剧1%，C：明星短剧0.5%）比例，长期享受版权收益，每月支付一次。",
     "销售佣金每份版权2000元。",
     "完成销售三份版权后公司奖励4000元。",
@@ -259,7 +259,7 @@ export function CopyrightRights() {
         <div className="bg-[#1A1108] dark:bg-[#2A1D0F] p-8 rounded-[32px] mb-8 text-center text-white">
           <TrendingUp className="text-[#D4AF37] mx-auto mb-4" size={40} />
           <h2 className="text-[20px] font-black mb-2">联合制片人十大权益</h2>
-          <p className="text-[#A69984] text-[13px]">加入中星短剧生态链，开启财富增长新引擎</p>
+          <p className="text-[#A69984] text-[13px]">加入中星影视生态链，开启财富增长新引擎</p>
         </div>
 
         <div className="space-y-4">
@@ -289,7 +289,7 @@ export function SalesModel() {
           {[
             { t: '区域子公司管理模式', d: '针对中星短剧地方影视文化服务中心、代理公司进行全方位的业务赋能与区域管理支持。', i: <Briefcase className="text-orange-500"/> },
             { t: '分销代理模式', d: '成为地方（中星短剧XX影视文化服务中心）代理销售 or 平台、团队代理，享受高额销售返佣和平台分红。', i: <Users className="text-blue-500"/> },
-            { t: '销售模式', d: '凡是购买一份短剧版权者，获得电子版”中星短剧生态链联合制片人“牌匾，牌匾里有本人的照片和名字。就可以直接销售中星短剧生态链的短剧版权，首次直接销售3份版权就全额回本（每销售一份，佣金2000元；完成销售3份，平台公司奖励4000元；销售的3份版权中，其中2份各自再销售3份，平台公司再奖励2000元。）。完成以上9份版权销售。即为完成一组销售，可收益12000元。完成一组销售后，开启另一组销售，完成3组销售后，平台公司随机奖励一份版权，与购买的版权享受同等权益。', i: <TrendingUp className="text-green-500"/> }
+            { t: '销售模式', d: '凡是购买一份短剧版权者，获得电子版”中星影视生态链联合制片人“牌匾，牌匾里有本人的照片和名字。就可以直接销售中星影视生态链的短剧版权，首次直接销售3份版权就全额回本（每销售一份，佣金2000元；完成销售3份，平台公司奖励4000元；销售的3份版权中，其中2份各自再销售3份，平台公司再奖励2000元。）。完成以上9份版权销售。即为完成一组销售，可收益12000元。完成一组销售后，开启另一组销售，完成3组销售后，平台公司随机奖励一份版权，与购买的版权享受同等权益。', i: <TrendingUp className="text-green-500"/> }
           ].map((m, i) => (
             <div key={i} className="flex gap-6 items-start">
               <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#2A1D0F] shadow-sm animate-shadow-pulse flex items-center justify-center flex-shrink-0">

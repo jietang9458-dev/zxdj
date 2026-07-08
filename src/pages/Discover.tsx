@@ -29,7 +29,7 @@ const INITIAL_COMMUNITY_POSTS = [
 ];
 
 const DISCOVER_POSTS = [
-  { id: 0, t: '中星短剧生态链战略发布会圆满成功', u: '官方小助手', d: '2小时前', l: 124, c: 56, img: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400', cat: '推荐' },
+  { id: 0, t: '中星影视生态链战略发布会圆满成功', u: '官方小助手', d: '2小时前', l: 124, c: 56, img: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400', cat: '推荐' },
   { id: 1, t: '如何高效完成短剧拍摄？资深导演经验分享', u: '影人周刊', d: '5小时前', l: 89, c: 23, img: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=400', cat: '互动交流' },
   { id: 2, t: '短剧版权保护进入新阶段：AI技术赋能监测', u: '法务观察', d: '1天前', l: 456, c: 120, img: 'https://images.unsplash.com/photo-1589252392322-450144a11b05?w=400', cat: '短剧资讯' },
   { id: 3, t: '新兴短剧演员招募计划正式启动！', u: '演员孵化中心', d: '1天前', l: 1200, c: 340, img: 'https://images.unsplash.com/photo-1543533966-70e9f09280a6?w=400', cat: '拍摄花絮' },
