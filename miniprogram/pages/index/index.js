@@ -14,7 +14,7 @@ Page({
       path: '/api/pages/home', // 对应你Express中编写的路由
       method: 'GET',
       header: {
-        'X-WX-SERVICE': 'zxys', // 替换为你的云托管服务名称
+        'X-WX-SERVICE': 'express-server', // 替换为你的云托管服务名称
       },
       data: {
         // 你的请求参数
