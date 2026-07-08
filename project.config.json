@@ -1,5 +1,6 @@
 {
   "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "projectname": "zhongxing-drama",
   "description": "中星短剧小程序包装",
   "appid": "touristappid",
