@@ -10,11 +10,11 @@ Page({
     defaultAvatar: defaultAvatarUrl
   },
   onLoad(options) {
-    // 自动清理一次缓存，确保能看到弹窗
-    const isFirstTime = wx.getStorageSync('isFirstTime_v3');
+    console.log('页面加载 onLoad');
+    const isFirstTime = wx.getStorageSync('isFirstTime_v4');
     if (!isFirstTime) {
       wx.clearStorageSync();
-      wx.setStorageSync('isFirstTime_v3', true);
+      wx.setStorageSync('isFirstTime_v4', true);
     }
     
     const hasLogin = wx.getStorageSync('hasLogin');
@@ -73,6 +73,7 @@ Page({
       url += '?' + params.join('&');
     }
     
+    console.log('准备进入 Webview，URL:', url);
     this.setData({ hasLogin: true, finalUrl: url });
   },
   onWebviewLoad() {
