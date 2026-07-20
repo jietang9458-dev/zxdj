@@ -579,7 +579,7 @@ export function LiveFilming() {
 
   const handleLiveClick = (url: string) => {
     if (url) {
-      window.open(url, '_blank');
+      window.location.href = url;
     } else {
       alert('暂无直播链接');
     }

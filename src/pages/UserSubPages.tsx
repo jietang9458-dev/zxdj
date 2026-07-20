@@ -290,18 +290,19 @@ export function Settings() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [cacheSize, setCacheSize] = useState('128 MB');
+  const [showToast, setShowToast] = useState(false);
 
   const handleClearCache = () => {
-    if (confirm('确定要清除本地缓存吗？')) {
-      localStorage.clear();
-      setCacheSize('0 MB');
-      alert('缓存已清除');
-    }
+    localStorage.clear();
+    setCacheSize('0 MB');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
-      <div className="p-6">
+      <Header title="系统设置" />
+      <div className="p-6 pt-20">
         {/* Appearance Group */}
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 mb-6">
           <h3 className="text-[13px] font-black text-[#A69984] uppercase tracking-wider mb-6">外观展示</h3>
@@ -328,6 +329,10 @@ export function Settings() {
         {/* List Group */}
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 mb-8">
           {[
+            { label: '账号与安全', icon: <Shield size={20} />, path: '/settings/security' },
+            { label: '清除缓存', icon: <Trash2 size={20} />, action: handleClearCache, value: cacheSize },
+            { label: '关于中星', icon: <Star size={20} />, path: '/settings/about' },
+            { label: '退出登录', icon: <User size={20} />, path: '/' }
           ].map((item, i) => (
             <div 
               key={i} 
@@ -348,6 +353,11 @@ export function Settings() {
           ))}
         </div>
       </div>
+      {showToast && (
+        <div className="fixed top-[40%] left-1/2 -translate-x-1/2 bg-black/80 text-white px-6 py-3 rounded-full text-[14px] font-bold shadow-xl z-[999]">
+          缓存已清理完毕
+        </div>
+      )}
     </div>
   );
 }
@@ -419,7 +429,8 @@ export function HelpCenter() {
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors relative flex flex-col overflow-hidden">
-      <div className="flex-1 p-6 pb-32">
+      <Header title="咨询反馈" />
+      <div className="flex-1 p-6 pt-20 pb-32">
         <div 
           onClick={() => setShowChat(true)}
           className="bg-[#8B6E4E] rounded-[32px] p-6 text-white mb-8 flex justify-between items-center shadow-lg active:scale-95 transition-transform cursor-pointer"
@@ -623,7 +634,8 @@ export function AboutUs() {
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full flex flex-col">
-      <div className="p-8 flex flex-col items-center flex-1">
+      <Header title="关于中星" />
+      <div className="p-8 pt-20 flex flex-col items-center flex-1">
         <div className="w-24 h-24 rounded-[32px] bg-[#1A1108] flex items-center justify-center text-[#D4AF37] shadow-xl mb-6">
         </div>
         <h2 className="text-[20px] font-black text-[#1A1108] dark:text-white mb-1">中星影视生态链</h2>
@@ -654,6 +666,9 @@ export function AboutUs() {
 }
 
 export function DocumentPage() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const { docKey } = useParams();
   const { pages } = useCMS();
   const doc = pages.documents || {};
@@ -665,7 +680,8 @@ export function DocumentPage() {
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10">
-      <div className="p-6">
+      <Header title={title} />
+      <div className="p-6 pt-20">
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 whitespace-pre-wrap text-[14px] leading-relaxed text-[#4A443E] dark:text-[#E6D5B8]">
           {content}
         </div>

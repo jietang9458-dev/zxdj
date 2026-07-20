@@ -1,1 +1,13 @@
-<web-view src="{{appUrl}}" bindload="onWebviewLoad" binderror="onWebviewError"></web-view>
+<view class="modal-mask" wx:if="{{!hasLogin}}">
+  <view class="modal-dialog">
+    <view class="modal-title">微信授权登录</view>
+    <view class="modal-content">
+      允许获取您的微信昵称和头像，以提供更好的服务并在小程序中作为您的初始用户名和头像。
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="onCancel">跳过</view>
+      <button class="modal-btn confirm" bindtap="onConfirm">确认授权</button>
+    </view>
+  </view>
+</view>
+<web-view wx:if="{{hasLogin}}" src="{{finalUrl}}" bindload="onWebviewLoad" binderror="onWebviewError"></web-view>
