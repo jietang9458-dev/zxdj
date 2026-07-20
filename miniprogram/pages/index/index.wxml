@@ -1,17 +1,16 @@
-<view class="modal-mask" wx:if="{{!hasLogin}}">
-  <view class="modal-dialog">
-    <view class="modal-title">获取您的昵称和头像</view>
-    <view class="modal-content">
-      <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
-        <image class="avatar" src="{{avatarUrl || defaultAvatar}}"></image>
-        <view class="avatar-hint">点击选择</view>
-      </button>
-      <input type="nickname" class="weui-input" placeholder="请输入或获取昵称" bindblur="onInputNickname" bindchange="onInputNickname" />
-    </view>
-    <view class="modal-footer">
-      <view class="modal-btn cancel" bindtap="onCancel">跳过</view>
-      <button class="modal-btn confirm" bindtap="onConfirm">确认进入</button>
-    </view>
+<view class="container" wx:if="{{!showWebview}}">
+  <view class="header">
+    <text class="title">中星短剧</text>
+    <text class="subtitle">欢迎体验</text>
+  </view>
+  
+  <button class="enter-btn" bindtap="enterApp">点击进入应用</button>
+  
+  <view class="tips">
+    <text style="color:#D4AF37; margin-bottom:8px;">如果点击后白屏，请按以下步骤排查：</text>
+    <text>1. 您的开发者工具网络似乎有代理报错。请点击右上角【设置】->【代理设置】，选择【不使用任何代理】然后重启工具。</text>
+    <text>2. 请在右上角【详情】->【本地设置】中勾选【不校验合法域名、web-view(业务域名)...】</text>
   </view>
 </view>
-<web-view wx:if="{{hasLogin}}" src="{{finalUrl}}" bindload="onWebviewLoad" binderror="onWebviewError"></web-view>
+
+<web-view wx:if="{{showWebview}}" src="{{finalUrl}}" bindload="onWebviewLoad" binderror="onWebviewError"></web-view>
