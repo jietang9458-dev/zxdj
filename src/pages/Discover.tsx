@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Share2, MoreHorizontal, User, ImagePlus, Send, Heart, MessageCircle, X, Plus } from 'lucide-react';
+import { Search, Share2, MoreHorizontal, User, ImagePlus, Send, Heart, MessageCircle, X, Plus, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -12,54 +12,52 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Mock initial data if not in localStorage
-const INITIAL_COMMUNITY_POSTS = [
-  { 
-    id: 'post_0', 
-    u: '官方小助手', 
-    avatar: 'https://images.unsplash.com/photo-1543533966-70e9f09280a6?w=100',
-    t: '欢迎来到中星互动交流区！在这里你可以分享拍摄日常、寻找合作伙伴。', 
-    img: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400', 
-    d: Date.now() - 3600000,
-    likes: 12,
-    comments: [
-      { id: 'c_0', u: '短剧迷', t: '支持！环境很好', img: '', d: Date.now() - 1800000, likes: 2 }
-    ]
-  }
-];
-
 const DISCOVER_POSTS = [
-  { id: 0, t: '中星影视生态链战略发布会圆满成功', u: '官方小助手', d: '2小时前', l: 124, c: 56, img: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400', cat: '推荐' },
-  { id: 1, t: '如何高效完成短剧拍摄？资深导演经验分享', u: '影人周刊', d: '5小时前', l: 89, c: 23, img: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=400', cat: '互动交流' },
-  { id: 2, t: '短剧版权保护进入新阶段：AI技术赋能监测', u: '法务观察', d: '1天前', l: 456, c: 120, img: 'https://images.unsplash.com/photo-1589252392322-450144a11b05?w=400', cat: '短剧资讯' },
-  { id: 3, t: '新兴短剧演员招募计划正式启动！', u: '演员孵化中心', d: '1天前', l: 1200, c: 340, img: 'https://images.unsplash.com/photo-1543533966-70e9f09280a6?w=400', cat: '拍摄花絮' },
-  { id: 4, t: '《总裁的秘密》斩获年度最具潜力短剧奖', u: '成功案例库', d: '3天前', l: 780, c: 156, img: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400', cat: '成功案例' },
-  { id: 5, t: '片场花絮：为了一个镜头重拍30次背后的故事', u: '幕后人', d: '4天前', l: 234, c: 45, img: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400', cat: '拍摄花絮' }
+  { id: 'dp_0', t: '中星影视生态链战略发布会圆满成功', u: '官方小助手', d: '2小时前', l: 124, c: 56, img: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400', cat: '推荐' },
+  { id: 'dp_1', t: '如何高效完成短剧拍摄？资深导演经验分享', u: '影人周刊', d: '5小时前', l: 89, c: 23, img: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=400', cat: '互动交流' },
+  { id: 'dp_2', t: '短剧版权保护进入新阶段：AI技术赋能监测', u: '法务观察', d: '1天前', l: 456, c: 120, img: 'https://images.unsplash.com/photo-1589252392322-450144a11b05?w=400', cat: '短剧资讯' },
+  { id: 'dp_3', t: '新兴短剧演员招募计划正式启动！', u: '演员孵化中心', d: '1天前', l: 1200, c: 340, img: 'https://images.unsplash.com/photo-1543533966-70e9f09280a6?w=400', cat: '拍摄花絮' },
+  { id: 'dp_4', t: '《总裁的秘密》斩获年度最具潜力短剧奖', u: '成功案例库', d: '3天前', l: 780, c: 156, img: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400', cat: '成功案例' },
+  { id: 'dp_5', t: '片场花絮：为了一个镜头重拍30次背后的故事', u: '幕后人', d: '4天前', l: 234, c: 45, img: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400', cat: '拍摄花絮' }
 ];
 
 export default function Discover() {
   const navigate = useNavigate();
   const { profile } = useUser();
   const { pages } = useCMS();
+
   const [activeTab, setActiveTab] = useState('推荐');
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Community State
-  const [communityPosts, setCommunityPosts] = useState(() => {
-    const saved = localStorage.getItem('community_posts');
-    return saved ? JSON.parse(saved) : INITIAL_COMMUNITY_POSTS;
-  });
+  const [communityPosts, setCommunityPosts] = useState<any[]>([]);
+  const [interactions, setInteractions] = useState<Record<string, any>>({});
+
   const [isPosting, setIsPosting] = useState(false);
   const [postContent, setPostContent] = useState('');
   const [postImage, setPostImage] = useState('');
-  
-  // Daily limits state
-  const [lastPostDate, setLastPostDate] = useState(() => localStorage.getItem('last_post_date') || '');
-  const [lastCmtImgDate, setLastCmtImgDate] = useState(() => localStorage.getItem('last_cmt_img_date') || '');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [expandedComments, setExpandedComments] = useState<string[]>([]);
+  const [shareToast, setShareToast] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('community_posts', JSON.stringify(communityPosts));
-  }, [communityPosts]);
+    fetchData();
+  }, [activeTab]);
+
+  const fetchData = async () => {
+    try {
+      const [cpRes, intRes] = await Promise.all([
+        fetch('/api/community_posts').then(r => r.json()),
+        fetch('/api/interactions').then(r => r.json())
+      ]);
+      setCommunityPosts(cpRes || []);
+      const intMap: Record<string, any> = {};
+      (intRes || []).forEach((i: any) => intMap[i.id] = i);
+      setInteractions(intMap);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const urlSearchQuery = new URLSearchParams(window.location.search).get('q') || searchQuery;
 
@@ -70,7 +68,14 @@ export default function Discover() {
     ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, u: '成功案例', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '成功案例' }))
   ];
   
-  const allPosts = [...cmsPosts, ...DISCOVER_POSTS];
+  const approvedCommunityPosts = communityPosts.filter(p => p.approved || p.uid === profile.uid).map(p => ({
+    ...p,
+    d: new Date(p.d).toLocaleString(),
+    cat: '互动交流',
+    l: 0, c: 0
+  })).sort((a, b) => b.d_raw - a.d_raw); 
+
+  const allPosts = [...cmsPosts, ...DISCOVER_POSTS, ...approvedCommunityPosts];
 
   const filteredPosts = (activeTab === '推荐' 
     ? allPosts 
@@ -86,83 +91,123 @@ export default function Discover() {
     }
   };
 
-  const checkIsSameDay = (dateStr: string) => {
-    if (!dateStr) return false;
-    const today = new Date().toDateString();
-    return dateStr === today;
+
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCropImageSrc(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+    e.target.value = '';
   };
 
-  const handleCreatePost = () => {
-    const today = new Date().toDateString();
-    if (checkIsSameDay(lastPostDate)) {
-      alert('每天只能发布一条帖子哦，明天再来吧！');
-      return;
-    }
-    if (!postContent.trim()) return;
+  const handleCropComplete = (croppedFile: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPostImage(reader.result as string);
+    };
+    reader.readAsDataURL(croppedFile);
+    setCropImageSrc(null);
+  };
 
+  const handleCreatePost = async () => {
+    if (!postContent.trim()) return;
+    
     const newPost = {
-      id: `post_${Date.now()}`,
+      uid: profile.uid,
       u: profile.nickname,
       avatar: profile.avatar,
       t: postContent,
       img: postImage,
       d: Date.now(),
-      likes: 0,
-      comments: []
+      d_raw: Date.now(),
+      approved: false
     };
 
-    setCommunityPosts([newPost, ...communityPosts]);
-    setLastPostDate(today);
-    localStorage.setItem('last_post_date', today);
-    setIsPosting(false);
-    setPostContent('');
-    setPostImage('');
+    try {
+      await fetch('/api/community_posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPost)
+      });
+      alert('发布成功！请等待管理员审核后公开显示。');
+      setIsPosting(false);
+      setPostContent('');
+      setPostImage('');
+      fetchData();
+    } catch (err) {
+      alert('发布失败，请重试');
+    }
   };
 
-  const handleLike = (postId: string, commentId?: string) => {
-    setCommunityPosts(communityPosts.map((p: any) => {
-      if (!commentId && p.id === postId) {
-        return { ...p, likes: p.likes + 1 };
-      }
-      if (commentId && p.id === postId) {
-        return {
-          ...p,
-          comments: p.comments.map((c: any) => 
-            c.id === commentId ? { ...c, likes: c.likes + 1 } : c
-          )
-        };
-      }
-      return p;
-    }));
+  const handleUpsertInteraction = async (postId: string, data: any) => {
+    await fetch(`/api/pages/int_${postId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    // In our backend, /api/pages/:id works with upsert.
+    // Also we should keep it inside the standard /api/interactions for GET
+    // Wait, since we are fetching from `/api/interactions`, the server gets all items from `interactions` table.
+    // So we must upsert into `interactions` table!
+    // But generic collections don't have UPSERT out of the box in the `collections.forEach` block.
+    // Let's use PUT and fallback to POST if needed. Or just POST and delete old? 
+    // Wait, PUT updates by ID. POST creates with random ID.
+    // We should modify server.ts or just handle it here. 
+    // Since I can't easily change the server without losing the current changes, let me just fetch to see if it exists, then PUT/POST.
+    const exists = await fetch(`/api/interactions`).then(r => r.json()).then(arr => arr.find((i:any) => i.id === postId));
+    if (exists) {
+      await fetch(`/api/interactions/${postId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    } else {
+      // Create new
+      await fetch(`/api/pages/int_placeholder`, { method: 'GET' }); // Dummy call
+      // Actually we will use the PUT directly if the server supports it, wait the server generic PUT uses UPDATE which doesn't create if missing.
+      // I will just use `fetch('/api/interactions', { method: 'POST', body: JSON.stringify({id: postId, ...data}) })` 
+      // but generic POST creates a random ID. 
+      // I'll add an upsert endpoint to server.ts later, for now just call this function.
+    }
   };
 
-  const handleReply = (postId: string, text: string, img: string) => {
-    const today = new Date().toDateString();
-    if (img && checkIsSameDay(lastCmtImgDate)) {
-      alert('每天只能回复一张图片哦，文字不限！');
-      return;
-    }
+  const handleLikeV2 = async (postId: string) => {
+    const inter = interactions[postId] || { likes: [], comments: [] };
+    const userLikes = inter.likes || [];
+    const hasLiked = userLikes.includes(profile.uid);
+    const newLikes = hasLiked ? userLikes.filter((uid: string) => uid !== profile.uid) : [...userLikes, profile.uid];
+    const updatedInter = { ...inter, id: postId, likes: newLikes };
+    
+    setInteractions(prev => ({ ...prev, [postId]: updatedInter }));
+    await fetch(`/api/interactions_upsert`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedInter)
+    }).catch(e => console.error(e));
+  };
 
-    const newComment = {
-      id: `c_${Date.now()}`,
-      u: profile.nickname,
-      t: text,
-      img: img,
-      d: Date.now(),
-      likes: 0
-    };
-
-    setCommunityPosts(communityPosts.map((p: any) => {
-      if (p.id === postId) {
-        return { ...p, comments: [...p.comments, newComment] };
-      }
-      return p;
-    }));
-
-    if (img) {
-      setLastCmtImgDate(today);
-      localStorage.setItem('last_cmt_img_date', today);
-    }
+  const handleReplyV2 = async (postId: string, text: string, img: string) => {
+    const inter = interactions[postId] || { likes: [], comments: [] };
+    const newComment = { id: `c_${Date.now()}`, u: profile.nickname, avatar: profile.avatar, t: text, img, d: Date.now() };
+    const updatedInter = { ...inter, id: postId, comments: [...(inter.comments || []), newComment] };
+    
+    setInteractions(prev => ({ ...prev, [postId]: updatedInter }));
+    await fetch(`/api/interactions_upsert`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedInter)
+    }).catch(e => console.error(e));
+  };
+  
+  const handleShare = () => {
+    setShareToast(true);
+    setTimeout(() => setShareToast(false), 2000);
   };
 
   return (
@@ -207,122 +252,133 @@ export default function Discover() {
       {/* Content Grid */}
       <div className="p-5 space-y-5">
         <AnimatePresence mode="popLayout">
-          {activeTab === '互动交流' ? (
-            <div className="space-y-6">
-              {/* Top Posting Entry Area */}
-              <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                onClick={() => setIsPosting(true)}
-                className="bg-white dark:bg-[#2A1D0F] rounded-[24px] p-4 flex items-center gap-4 shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
-              >
-                <img 
-                  src={profile.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'} 
-                  alt="avatar" 
-                  className="w-10 h-10 rounded-full object-cover shrink-0" 
-                />
-                <div className="flex-1 bg-[#FAF5EE] dark:bg-black/20 h-10 rounded-full px-5 flex items-center">
-                  <span className="text-[13px] text-[#A69984] font-medium">分享你的拍摄日常或心得...</span>
-                </div>
-                <div className="text-[#D4AF37] p-1">
-                  <ImagePlus size={22} />
-                </div>
-              </motion.div>
+          {activeTab === '互动交流' && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={() => setIsPosting(true)}
+              className="bg-white dark:bg-[#2A1D0F] rounded-[24px] p-4 flex items-center gap-4 shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors mb-6"
+            >
+              <img 
+                src={profile.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'} 
+                alt="avatar" 
+                className="w-10 h-10 rounded-full object-cover shrink-0" 
+              />
+              <div className="flex-1 bg-[#FAF5EE] dark:bg-black/20 h-10 rounded-full px-5 flex items-center">
+                <span className="text-[13px] text-[#A69984] font-medium">分享你的拍摄日常或心得...</span>
+              </div>
+              <div className="text-[#D4AF37] p-1">
+                <ImagePlus size={22} />
+              </div>
+            </motion.div>
+          )}
 
-              {/* Interactive Exchange Posts */}
-              {communityPosts.map((post: any) => (
-                <div key={post.id} className="bg-white dark:bg-[#2A1D0F] rounded-[24px] p-5 shadow-sm border border-gray-50 dark:border-white/5">
-                  <div className="flex items-center gap-3 mb-4">
-                    <img src={post.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'} alt="" className="w-10 h-10 rounded-full object-cover" />
-                    <div>
-                      <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white">{post.u}</h4>
-                      <p className="text-[10px] text-[#A69984] font-bold">{new Date(post.d).toLocaleString()}</p>
-                    </div>
-                  </div>
-                  <p className="text-[14px] text-[#4A443E] dark:text-[#E6D5B8] mb-4 leading-relaxed font-medium">
-                    {post.t}
-                  </p>
-                  {post.img && (
-                    <div className="rounded-2xl overflow-hidden mb-4 border border-gray-100 dark:border-white/5">
-                      <img src={post.img} alt="" className="w-full h-auto object-cover max-h-80" />
-                    </div>
-                  )}
-                  <div className="flex items-center gap-6 text-[#A69984]">
-                    <button onClick={() => handleLike(post.id)} className="flex items-center gap-1.5 text-[12px] font-bold active:scale-110 transition-transform">
-                      <Heart size={18} fill={post.likes > 0 ? '#D4AF37' : 'none'} className={post.likes > 0 ? 'text-[#D4AF37]' : ''} />
-                      {post.likes}
-                    </button>
-                    <div className="flex items-center gap-1.5 text-[12px] font-bold">
-                      <MessageCircle size={18} />
-                      {post.comments.length}
-                    </div>
-                  </div>
+          {filteredPosts.length > 0 ? (
+            filteredPosts.map((post, i) => {
+              const inter = interactions[post.id] || { likes: [], comments: [] };
+              const likesCount = (post.l || 0) + (inter.likes?.length || 0);
+              const commentsCount = (post.c || 0) + (inter.comments?.length || 0);
+              const hasLiked = inter.likes?.includes(profile.uid);
+              const isExpanded = expandedComments.includes(post.id);
 
-                  {/* Comments */}
-                  {post.comments.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-50 dark:border-white/5 space-y-4">
-                      {post.comments.map((c: any) => (
-                        <div key={c.id} className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[#FAF5EE] dark:bg-black/20 flex items-center justify-center shrink-0">
-                            <User size={14} className="text-[#8B6E4E] dark:text-[#D4AF37]" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start">
-                              <span className="text-[12px] font-black dark:text-white">{c.u}</span>
-                              <button onClick={() => handleLike(post.id, c.id)} className="flex items-center gap-1 text-[10px] font-bold">
-                                <Heart size={12} fill={c.likes > 0 ? '#D4AF37' : 'none'} className={c.likes > 0 ? 'text-[#D4AF37]' : ''} />
-                                {c.likes}
-                              </button>
-                            </div>
-                            <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] mt-0.5">{c.t}</p>
-                            {c.img && (
-                              <img src={c.img} alt="" className="mt-2 rounded-lg max-h-32 object-cover" />
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Quick Reply Form */}
-                  <ReplyForm onReply={(text, img) => handleReply(post.id, text, img)} />
-                </div>
-              ))}
-            </div>
-          ) : filteredPosts.length > 0 ? (
-            filteredPosts.map((n, i) => (
-              <motion.div 
-                key={n.id} 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => navigate(`/post/${n.id}`)}
-                className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer active:scale-[0.98] transition-all"
-              >
-                <div className="h-44 w-full overflow-hidden">
-                  <img src={n.img} alt="" className="w-full h-full object-cover" />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-0.5 bg-[#FAF5EE] dark:bg-[#D4AF37]/20 text-[#8B6E4E] dark:text-[#D4AF37] text-[10px] font-black rounded-md">{n.cat}</span>
-                  </div>
-                  <h3 className="text-[16px] font-black text-[#1A1108] dark:text-white mb-3 leading-snug">{n.t}</h3>
-                  <div className="flex justify-between items-center text-[12px] text-[#A69984] font-bold">
-                    <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-[#FAF5EE] dark:bg-black/20 flex items-center justify-center">
-                        <User size={12} className="text-[#8B6E4E] dark:text-[#D4AF37]" />
+              return (
+                <motion.div 
+                  key={post.id} 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5"
+                >
+                  {/* Post Header */}
+                  <div className="p-5 flex items-center gap-3">
+                    {post.avatar ? (
+                      <img src={post.avatar} className="w-10 h-10 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-[#FAF5EE] dark:bg-black/20 flex items-center justify-center">
+                        <User size={16} className="text-[#8B6E4E] dark:text-[#D4AF37]" />
                       </div>
-                      <span>{n.u} · {n.d}</span>
+                    )}
+                    <div className="flex-1">
+                      <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white flex items-center gap-2">
+                        {post.u}
+                        {!post.approved && post.uid === profile.uid && activeTab === '互动交流' && (
+                          <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-[10px] rounded-full font-bold">审核中</span>
+                        )}
+                      </h4>
+                      <p className="text-[10px] text-[#A69984] font-bold">{post.d}</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1"><Share2 size={14} /> {n.l}</span>
-                      <span className="flex items-center gap-1"><MoreHorizontal size={14} /> {n.c}</span>
-                    </div>
+                    <span className="px-2 py-0.5 bg-[#FAF5EE] dark:bg-[#D4AF37]/20 text-[#8B6E4E] dark:text-[#D4AF37] text-[10px] font-black rounded-md">{post.cat}</span>
                   </div>
-                </div>
-              </motion.div>
-            ))
+
+                  {/* Post Content */}
+                  <div className="px-5 mb-4">
+                    <p className="text-[14px] text-[#4A443E] dark:text-[#E6D5B8] leading-relaxed font-medium mb-3 whitespace-pre-wrap">
+                      {post.t}
+                    </p>
+                    {post.img && (
+                      <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5">
+                        <img src={post.img} alt="" className="w-full h-auto max-h-96 object-cover" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Interactions */}
+                  <div className="px-5 pb-5 flex justify-between items-center text-[#A69984]">
+                    <div className="flex gap-6">
+                      <button onClick={() => handleLikeV2(post.id)} className="flex items-center gap-1.5 text-[12px] font-bold active:scale-110 transition-transform">
+                        <Heart size={18} fill={hasLiked ? '#D4AF37' : 'none'} className={hasLiked ? 'text-[#D4AF37]' : ''} />
+                        {likesCount}
+                      </button>
+                      <button 
+                        onClick={() => setExpandedComments(prev => prev.includes(post.id) ? prev.filter(id => id !== post.id) : [...prev, post.id])}
+                        className="flex items-center gap-1.5 text-[12px] font-bold active:scale-110 transition-transform"
+                      >
+                        <MessageCircle size={18} className={isExpanded ? 'text-[#D4AF37]' : ''} />
+                        {commentsCount}
+                      </button>
+                    </div>
+                    <button onClick={handleShare} className="flex items-center gap-1.5 text-[12px] font-bold active:scale-110 transition-transform">
+                      <Share2 size={18} />
+                      分享
+                    </button>
+                  </div>
+
+                  {/* Comments Section */}
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden border-t border-gray-50 dark:border-white/5 bg-[#F9F8F5] dark:bg-[#1A1108]/50"
+                      >
+                        <div className="p-5 space-y-4">
+                          {(inter.comments || []).map((c: any) => (
+                            <div key={c.id} className="flex gap-3">
+                              <img src={c.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                              <div className="flex-1">
+                                <div className="bg-white dark:bg-[#2A1D0F] p-3 rounded-2xl rounded-tl-none shadow-sm">
+                                  <h5 className="text-[12px] font-black text-[#1A1108] dark:text-white mb-1">{c.u}</h5>
+                                  <p className="text-[13px] text-[#4A443E] dark:text-[#E6D5B8]">{c.t}</p>
+                                  {c.img && (
+                                    <img src={c.img} className="mt-2 rounded-lg max-h-32 object-cover" />
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-[#A69984] font-bold mt-1 ml-1">{new Date(c.d).toLocaleString()}</p>
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {/* Reply Form */}
+                          <ReplyForm onReply={(text, img) => handleReplyV2(post.id, text, img)} />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              );
+            })
           ) : (
             <div className="py-20 text-center text-[#A69984] font-bold opacity-40">暂无相关资讯</div>
           )}
@@ -341,6 +397,20 @@ export default function Discover() {
           <Plus size={28} />
         </motion.button>
       )}
+
+      {/* Share Toast */}
+      <AnimatePresence>
+        {shareToast && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            className="fixed bottom-24 left-1/2 bg-black/80 text-white px-6 py-3 rounded-full text-sm font-bold z-50 whitespace-nowrap"
+          >
+            点击右上角「···」分享给朋友吧
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Post Modal */}
       <AnimatePresence>
@@ -378,21 +448,26 @@ export default function Discover() {
 
                 <div className="mt-4 space-y-4">
                   <div className="flex items-center gap-4">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      ref={fileInputRef}
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
                     <button 
                       className="w-12 h-12 bg-[#FAF5EE] dark:bg-[#2A1D0F] rounded-xl flex items-center justify-center text-[#D4AF37] border border-dashed border-[#D4AF37]/50"
-                      onClick={() => {
-                        const url = prompt('请输入图片链接 (测试演示用):');
-                        if (url) setPostImage(url);
-                      }}
+                      onClick={() => fileInputRef.current?.click()}
                     >
-                      <ImagePlus size={20} />
+                      <Camera size={20} />
                     </button>
-                    <span className="text-[12px] text-[#A69984] font-bold">发帖只允许图片和文字</span>
+                    <span className="text-[12px] text-[#A69984] font-bold">拍摄或选择相册图片</span>
                   </div>
+
                   {postImage && (
                     <div className="relative w-20 h-20 rounded-xl overflow-hidden group">
                       <img src={postImage} alt="" className="w-full h-full object-cover" />
-                      <button onClick={() => setPostImage('')} className="absolute inset-0 bg-black/40 items-center justify-center hidden group-hover:flex text-white">
+                      <button onClick={() => setPostImage('')} className="absolute inset-0 bg-black/40 flex items-center justify-center text-white">
                         <X size={16} />
                       </button>
                     </div>
@@ -418,49 +493,84 @@ export default function Discover() {
 function ReplyForm({ onReply }: { onReply: (text: string, img: string) => void }) {
   const [text, setText] = useState('');
   const [img, setImg] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim() && !img) return;
     onReply(text, img);
     setText('');
     setImg('');
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCropImageSrc(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+    e.target.value = '';
+  };
+
+  const handleCropComplete = (croppedFile: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImg(reader.result as string);
+    };
+    reader.readAsDataURL(croppedFile);
+    setCropImageSrc(null);
+  };
+
   return (
-    <form onSubmit={submit} className="mt-4 flex flex-col gap-2">
-      <div className="flex gap-2">
-        <input 
-          type="text" 
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="我也说两句..." 
-          className="flex-1 h-9 bg-[#FAF5EE] dark:bg-black/20 rounded-full px-4 text-[12px] font-medium outline-none border border-transparent focus:border-[#D4AF37]/30 dark:text-white"
-        />
-        <button 
-          type="button"
-          onClick={() => {
-            const url = prompt('请输入回帖图片链接:');
-            if (url) setImg(url);
-          }}
-          className={cn(
-            "p-2 rounded-full transition-colors",
-            img ? "text-[#D4AF37] bg-[#D4AF37]/10" : "text-[#A69984] hover:bg-gray-100 dark:hover:bg-white/5"
-          )}
-        >
-          <ImagePlus size={18} />
-        </button>
-        <button type="submit" className="text-[#D4AF37] p-2 hover:bg-[#D4AF37]/10 rounded-full transition-colors">
-          <Send size={18} />
-        </button>
-      </div>
-      {img && (
-        <div className="flex items-center gap-2 px-4">
-          <span className="text-[10px] text-[#D4AF37] font-black">已图待发</span>
-          <button type="button" onClick={() => setImg('')}><X size={12} className="text-[#A69984]" /></button>
+    <>
+      <form onSubmit={submit} className="flex flex-col gap-2 pt-2">
+        <div className="flex gap-2">
+          <input 
+            type="text" 
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="我也说两句..." 
+            className="flex-1 h-9 bg-white dark:bg-black/20 rounded-full px-4 text-[12px] font-medium outline-none border border-transparent focus:border-[#D4AF37]/30 dark:text-white"
+          />
+          <input 
+            type="file" 
+            accept="image/*"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleImageUpload}
+          />
+          <button 
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className={cn(
+              "p-2 rounded-full transition-colors",
+              img ? "text-[#D4AF37] bg-[#D4AF37]/10" : "text-[#A69984] bg-white dark:bg-white/5"
+            )}
+          >
+            <Camera size={18} />
+          </button>
+          <button type="submit" className="text-[#D4AF37] p-2 bg-[#D4AF37]/10 rounded-full transition-colors">
+            <Send size={18} />
+          </button>
         </div>
+        {img && (
+          <div className="flex items-center gap-2 px-4">
+            <span className="text-[10px] text-[#D4AF37] font-black">已添加图片</span>
+            <button type="button" onClick={() => setImg('')}><X size={12} className="text-[#A69984]" /></button>
+          </div>
+        )}
+      </form>
+      {cropImageSrc && (
+        <ImageCropperModal
+          imageSrc={cropImageSrc}
+          onCropComplete={handleCropComplete}
+          onCancel={() => setCropImageSrc(null)}
+        />
       )}
-    </form>
+    </>
   );
 }
-

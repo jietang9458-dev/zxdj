@@ -1,0 +1,12 @@
+
+> react-example@0.0.0 lint
+> tsc --noEmit
+
+src/pages/UserSubPages.tsx(52,10): error TS1005: '...' expected.
+src/pages/UserSubPages.tsx(58,9): error TS1003: Identifier expected.
+src/pages/UserSubPages.tsx(59,9): error TS1003: Identifier expected.
+src/pages/UserSubPages.tsx(86,15): error TS1003: Identifier expected.
+src/pages/UserSubPages.tsx(139,15): error TS1003: Identifier expected.
+src/pages/UserSubPages.tsx(223,13): error TS1003: Identifier expected.
+src/pages/UserSubPages.tsx(245,11): error TS1109: Expression expected.
+src/pages/UserSubPages.tsx(507,19): error TS1003: Identifier expected.

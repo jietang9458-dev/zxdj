@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCMS } from '../context/CMSContext';
+import CommunityManager from "../components/CommunityManager";
 import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase, updateBase, deleteBase, addProduct, updateProduct, deleteProduct, uploadFile,
   addLiveStream, updateLiveStream, deleteLiveStream
  } from '../services/cmsService';
 import { motion } from 'motion/react';
 import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft, Upload, MessageSquare, FileText, Wifi, UserCheck, PenTool } from 'lucide-react';
 
-const ImageUploadButton = ({ value, onChange, className, children }: { value: string, onChange: (url: string) => void, className?: string, children?: React.ReactNode }) => {
+import ImageCropperModal from '../components/ImageCropperModal';
+
+const ImageUploadButton = ({ value, onChange, className, children, aspectRatio }: { value: string, onChange: (url: string) => void, className?: string, children?: React.ReactNode, aspectRatio?: number }) => {
   const [uploading, setUploading] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -18,26 +22,44 @@ const ImageUploadButton = ({ value, onChange, className, children }: { value: st
         alert("图片太大，请选择 50MB 以下的图片");
         return;
       }
-      setUploading(true);
-      try {
-        const url = await uploadFile(file);
-        onChange(url);
-      } catch (err: any) {
-        alert("上传失败: " + err.message);
-      } finally {
-        setUploading(false);
-      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCropImageSrc(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-    // reset the input value so the same file can be selected again
     e.target.value = '';
   };
 
+  const handleCropComplete = async (croppedFile: File) => {
+    setCropImageSrc(null);
+    setUploading(true);
+    try {
+      const url = await uploadFile(croppedFile);
+      onChange(url);
+    } catch (err: any) {
+      alert("上传失败: " + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
-    <label className={`cursor-pointer ${className || ''} ${uploading ? 'opacity-50 pointer-events-none relative' : ''}`}>
-      {children}
-      {uploading && <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10 font-bold text-xs">...</div>}
-      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
-    </label>
+    <>
+      <label className={`cursor-pointer ${className || ''} ${uploading ? 'opacity-50 pointer-events-none relative' : ''}`}>
+        {children}
+        {uploading && <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10 font-bold text-xs">...</div>}
+        <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
+      </label>
+      {cropImageSrc && (
+        <ImageCropperModal
+          imageSrc={cropImageSrc}
+          onCropComplete={handleCropComplete}
+          onCancel={() => setCropImageSrc(null)}
+          aspectRatio={aspectRatio}
+        />
+      )}
+    </>
   );
 };
 
@@ -64,6 +86,7 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
                     value={data[field.key] || ''}
                     onChange={(val) => setData({...data, [field.key]: val})}
                     className="w-full"
+                    aspectRatio={field.aspectRatio}
                   >
                     <div className="w-full flex items-center justify-center p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100 cursor-pointer min-h-[140px]">
                       {data[field.key] ? (
@@ -219,6 +242,7 @@ export default function Admin() {
   const [investData, setInvestData] = useState(pages.invest || { banner: '', title: '', subtitle: '' });
   const [starclubData, setStarclubData] = useState(pages.starclub || { banner: '', title: '', subtitle: '' });
   const [newsData, setNewsData] = useState(pages.news || { shortDramaNews: [], bts: [], successCases: [] });
+  const [documentsData, setDocumentsData] = useState(pages.documents || { features: '', privacy: '', terms: '' });
   
   const [dialogState, setDialogState] = useState<{isOpen: boolean; config?: any}>({ isOpen: false, config: null });
 
@@ -245,6 +269,7 @@ export default function Admin() {
     setStarclubData(pages.starclub || { banner: '', title: '', subtitle: '' });
     setNewsData(pages.news || { shortDramaNews: [], bts: [], successCases: [] });
     setMallData(pages.mall || { pavilions: [] });
+    setDocumentsData(pages.documents || { features: '', privacy: '', terms: '' });
   }, [pages]);
 
   const handleLogin = () => {
@@ -307,7 +332,7 @@ export default function Admin() {
         title: initialData ? '编辑短剧' : '添加短剧',
         initialData: initialData || {},
         fields: [
-          { key: 'imageUrl', label: '封面图', type: 'image' },
+          { key: 'imageUrl', label: '封面图 (竖版3:4)', type: 'image', aspectRatio: 3/4 },
           { key: 'title', label: '短剧名称', type: 'text' }
         ],
         onSubmit: async (data: any) => {
@@ -337,8 +362,9 @@ export default function Admin() {
         title: initialData ? '编辑直播预告' : '添加直播预告',
         initialData: initialData || {},
         fields: [
-          { key: 'imageUrl', label: '封面图', type: 'image' },
+          { key: 'imageUrl', label: '封面图 (竖版3:4)', type: 'image', aspectRatio: 3/4 },
           { key: 'title', label: '标题', type: 'text' },
+          { key: 'desc', label: '文字描述', type: 'text' },
           { key: 'liveLink', label: '直播链接', type: 'text' },
           { key: 'liveTime', label: '直播时间', type: 'datetime-local' }
         ],
@@ -369,12 +395,12 @@ export default function Admin() {
         title: initialData ? '编辑基地' : '添加基地',
         initialData: initialData || { region: '华南' },
         fields: [
-          { key: 'imageUrl', label: '基地图片', type: 'image' },
+          { key: 'imageUrl', label: '基地图片', type: 'image', aspectRatio: 16/9 },
           { key: 'title', label: '基地名称', type: 'text' },
           { key: 'location', label: '地点描述', type: 'text' },
           { key: 'region', label: '大区 (如 华南)', type: 'text' },
           { key: 'tagsStr', label: '标签 (逗号分隔)', type: 'text' },
-          { key: 'introImage', label: '基地介绍图片', type: 'image' },
+          { key: 'introImage', label: '基地介绍图片', type: 'image', aspectRatio: 16/9 },
           { key: 'introText', label: '基地介绍文字', type: 'textarea' },
           { key: 'facilities', label: '基地设施', type: 'textarea' }
         ],
@@ -411,7 +437,7 @@ export default function Admin() {
         title: initialData ? '编辑商品' : '添加商品',
         initialData: initialData || {},
         fields: [
-          { key: 'imageUrl', label: '商品图', type: 'image' },
+          { key: 'imageUrl', label: '商品图 (1:1方图)', type: 'image', aspectRatio: 1 },
           { key: 'title', label: '商品名称', type: 'text' },
           { key: 'desc', label: '商品介绍', type: 'textarea' },
           { key: 'originalPrice', label: '原价', type: 'number' },
@@ -541,7 +567,7 @@ export default function Admin() {
     { id: 'products', label: '商城管理', icon: ShoppingBag },
     { id: 'users', label: '用户列表', icon: UserCheck },
     { id: 'courseRegistrations', label: '报名信息', icon: FileText },
-    { id: 'feedbacks', label: '咨询反馈', icon: MessageSquare },
+    { id: 'feedbacks', label: '咨询反馈', icon: MessageSquare }, { id: 'documents', label: '文档管理', icon: FileText }, { id: 'community', label: '社区审核', icon: MessageSquare },
   ];
 
   return (
@@ -618,6 +644,7 @@ export default function Admin() {
                     value={appLogo}
                     onChange={setAppLogo}
                     className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                    aspectRatio={1}
                   >
                     {appLogo ? <img src={appLogo} className="w-full h-full object-cover" alt="" /> : <ImageIcon className="text-gray-300" />}
                   </ImageUploadButton>
@@ -997,7 +1024,7 @@ export default function Admin() {
                       onChange={(items: any) => setCopyrightData({...copyrightData, libraryItems: items})}
                       setDialogState={setDialogState}
                       schema={[
-                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '片名 (必填)', type: 'text' },
                         { key: 'desc', label: '相关文字内容', type: 'text' }
                       ]}
@@ -1023,7 +1050,7 @@ export default function Admin() {
                     onChange={(items: any) => setProductionData({...productionData, projectsInPrep: items})}
                     setDialogState={setDialogState}
                     schema={[
-                      { key: 'imageUrl', label: '项目海报 (必填)', type: 'image' },
+                      { key: 'imageUrl', label: '项目海报 (竖版3:4)', type: 'image', aspectRatio: 3/4 },
                       { key: 'title', label: '片名 (必填)', type: 'text' },
                       { key: 'desc', label: '项目介绍', type: 'textarea' },
                       { key: 'team', label: '主创团队', type: 'text' }
@@ -1039,7 +1066,7 @@ export default function Admin() {
                       onChange={(items: any) => setActorsData({...actorsData, auditions: items})}
                       setDialogState={setDialogState}
                       schema={[
-                        { key: 'imageUrl', label: '活动封面 (可选)', type: 'image' },
+                        { key: 'imageUrl', label: '活动封面 (16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '项目名称 (必填)', type: 'text' },
                         { key: 'desc', label: '相关文字内容', type: 'text' }
                       ]}
@@ -1067,7 +1094,7 @@ export default function Admin() {
                       onChange={(items: any) => setTourismData({...tourismData, banners: items})}
                       setDialogState={setDialogState}
                       schema={[
-                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '主标题', type: 'text' },
                         { key: 'subtitle', label: '副标题/描述', type: 'text' }
                       ]}
@@ -1078,7 +1105,7 @@ export default function Admin() {
                       onChange={(items: any) => setTourismData({...tourismData, groups: items})}
                       setDialogState={setDialogState}
                       schema={[
-                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '名称 (必填)', type: 'text' },
                         { key: 'startTime', label: '开机时间', type: 'text' },
                         { key: 'route', label: '旅游线路', type: 'text' },
@@ -1096,7 +1123,7 @@ export default function Admin() {
                       onChange={(items: any) => setNewsData({...(newsData as any), shortDramaNews: items})}
                       setDialogState={setDialogState}
                       schema={[
-                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '资讯标题 (必填)', type: 'text' },
                         { key: 'desc', label: '文字内容', type: 'text' }
                       ]}
@@ -1107,7 +1134,7 @@ export default function Admin() {
                       onChange={(items: any) => setNewsData({...(newsData as any), bts: items})}
                       setDialogState={setDialogState}
                       schema={[
-                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '标题 (必填)', type: 'text' },
                         { key: 'desc', label: '文字内容', type: 'text' }
                       ]}
@@ -1118,7 +1145,7 @@ export default function Admin() {
                       onChange={(items: any) => setNewsData({...(newsData as any), successCases: items})}
                       setDialogState={setDialogState}
                       schema={[
-                        { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                        { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '案例标题 (必填)', type: 'text' },
                         { key: 'desc', label: '文字内容', type: 'text' }
                       ]}
@@ -1133,7 +1160,7 @@ export default function Admin() {
                     onChange={(items: any) => setStarclubData({...(starclubData as any), events: items})}
                     setDialogState={setDialogState}
                     schema={[
-                      { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                      { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                       { key: 'title', label: '活动名称 (必填)', type: 'text' },
                       { key: 'desc', label: '简要介绍', type: 'textarea' },
                       { key: 'time', label: '时间', type: 'text' },
@@ -1392,7 +1419,7 @@ export default function Admin() {
                 onChange={(items: any) => setMallData({...mallData, pavilions: items})}
                 setDialogState={setDialogState}
                 schema={[
-                  { key: 'imageUrl', label: '图片 (必填)', type: 'image' },
+                  { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                   { key: 'title', label: '产品馆名称 (必填)', type: 'text' }
                 ]}
               />
@@ -1536,6 +1563,31 @@ export default function Admin() {
           </div>
         )}
 
+        {activeTab === 'documents' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center px-2">
+              <h3 className="font-black text-[#1A1108]">文档管理</h3>
+              <button onClick={() => updatePageContent('documents', documentsData)} className="bg-[#D4AF37] hover:bg-yellow-600 text-white px-6 py-2 rounded-xl text-[14px] font-bold flex items-center gap-2 transition-colors">
+                <Save size={18} /> 保存配置
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+                <label className="block text-sm font-bold text-gray-700 mb-2">功能介绍</label>
+                <textarea value={documentsData.features} onChange={e => setDocumentsData({...documentsData, features: e.target.value})} className="w-full h-32 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30 transition-all" />
+              </div>
+              <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+                <label className="block text-sm font-bold text-gray-700 mb-2">隐私协议</label>
+                <textarea value={documentsData.privacy} onChange={e => setDocumentsData({...documentsData, privacy: e.target.value})} className="w-full h-32 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30 transition-all" />
+              </div>
+              <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+                <label className="block text-sm font-bold text-gray-700 mb-2">用户服务协议</label>
+                <textarea value={documentsData.terms} onChange={e => setDocumentsData({...documentsData, terms: e.target.value})} className="w-full h-32 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30 transition-all" />
+              </div>
+            </div>
+          </div>
+        )}
+        {activeTab === 'community' && <CommunityManager />}
         {activeTab === 'feedbacks' && (
           <div className="space-y-4 pb-10">
             <div className="flex justify-between items-center px-2">

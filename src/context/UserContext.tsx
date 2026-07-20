@@ -30,12 +30,25 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('user_profile');
-    if (saved) return JSON.parse(saved);
+    
+    // Read from URL parameters (passed from WeChat Mini Program)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlNickname = urlParams.get('nickname');
+    const urlAvatar = urlParams.get('avatar');
+
+    if (saved) {
+      const parsedSaved = JSON.parse(saved);
+      // Overwrite with URL params if present (e.g. first time from WeChat or updated)
+      if (urlNickname) parsedSaved.nickname = urlNickname;
+      if (urlAvatar) parsedSaved.avatar = urlAvatar;
+      return parsedSaved;
+    }
+    
     return {
-      nickname: '星友_9527',
+      nickname: urlNickname || '星友_9527',
       gender: '男',
       bio: '生活不仅有短剧，还有诗和远方',
-      avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop',
+      avatar: urlAvatar || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop',
       uid: '88886666'
     };
   });

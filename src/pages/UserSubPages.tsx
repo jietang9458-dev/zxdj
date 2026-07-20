@@ -2,42 +2,59 @@ import React, { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import { User, ChevronRight, Shield, Bell, Trash2, Moon, Sun, Wallet, Star, Clock, HelpCircle, MessageSquare, Send, Film, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useCMS } from '../context/CMSContext';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 import { HOT_DRAMAS, MALL_PRODUCTS } from '../constants';
 
 import { useUser } from '../context/UserContext';
+
+import ImageCropperModal from '../components/ImageCropperModal';
 
 // 1. 个人资料页
 export function Profile() {
   const { profile, updateProfile } = useUser();
   const [editing, setEditing] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) { // 2MB limit
-        alert("图片太大，请选择小于2MB的图片");
-        return;
-      }
       const reader = new FileReader();
       reader.onloadend = () => {
-        updateProfile({ avatar: reader.result as string });
+        setCropImageSrc(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
+    e.target.value = '';
+  };
+
+  const handleCropComplete = (croppedFile: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      updateProfile({ avatar: reader.result as string });
+    };
+    reader.readAsDataURL(croppedFile);
+    setCropImageSrc(null);
   };
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
-      <Header title="个人资料" dark />
       <div className="p-6">
         <input 
           type="file" 
           accept="image/*" 
           className="hidden" 
           ref={fileInputRef}
-          onChange={handleImageUpload} 
-        />
+          onChange={handleImageUpload} />
+        {cropImageSrc && (
+          <ImageCropperModal
+            imageSrc={cropImageSrc}
+            onCropComplete={handleCropComplete}
+            onCancel={() => setCropImageSrc(null)}
+            aspectRatio={1} />
+        )}
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5">
           {/* Avatar */}
           <div 
@@ -47,9 +64,7 @@ export function Profile() {
             <span className="text-[14px] font-black text-[#1A1108] dark:text-white">头像</span>
             <div className="flex items-center gap-2">
               <div className="w-12 h-12 rounded-full bg-[#FAF5EE] overflow-hidden border border-gray-100 dark:border-white/10">
-                <img src={profile.avatar} className="w-full h-full object-cover" />
               </div>
-              <ChevronRight size={16} className="text-gray-300" />
             </div>
           </div>
 
@@ -66,12 +81,10 @@ export function Profile() {
                   className="bg-transparent text-right text-[14px] text-[#A69984] font-bold outline-none border-b border-[#D4AF37]"
                   value={profile.nickname}
                   onChange={(e) => updateProfile({ nickname: e.target.value })}
-                  onBlur={() => setEditing(null)}
-                />
+                  onBlur={() => setEditing(null)} />
               ) : (
                 <span className="text-[14px] text-[#A69984] font-bold">{profile.nickname}</span>
               )}
-              <ChevronRight size={16} className="text-gray-300" />
             </div>
           </div>
 
@@ -105,7 +118,6 @@ export function Profile() {
               ) : (
                 <span className="text-[14px] text-[#A69984] font-bold">{profile.gender}</span>
               )}
-              <ChevronRight size={16} className="text-gray-300" />
             </div>
           </div>
 
@@ -122,12 +134,10 @@ export function Profile() {
                   className="bg-transparent text-right text-[14px] text-[#A69984] font-bold outline-none border-b border-[#D4AF37] w-full"
                   value={profile.bio}
                   onChange={(e) => updateProfile({ bio: e.target.value })}
-                  onBlur={() => setEditing(null)}
-                />
+                  onBlur={() => setEditing(null)} />
               ) : (
                 <span className="text-[14px] text-[#A69984] font-bold line-clamp-1">{profile.bio}</span>
               )}
-              <ChevronRight size={16} className="text-gray-300" />
             </div>
           </div>
         </div>
@@ -144,10 +154,8 @@ export function MyWallet() {
   const { addNotification } = useUser();
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full">
-      <Header title="我的钱包" dark />
       <div className="p-6">
         <div className="bg-[#1A1108] rounded-[40px] p-8 text-[#E6D5B8] shadow-2xl mb-8 relative overflow-hidden">
-          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
           <p className="text-[14px] opacity-60 font-bold mb-2">当前星币余额</p>
           <div className="flex items-end gap-2 mb-8">
             <span className="text-[40px] font-black leading-none">12,850</span>
@@ -171,9 +179,6 @@ export function MyWallet() {
         <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-6">账单明细</h3>
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 space-y-6">
           {[
-            { t: '解锁剧集《逆袭星途》', d: '今天 14:20', v: '-50', ic: <Film size={18} className="text-orange-400" /> },
-            { t: '每日签到奖励', d: '今天 09:00', v: '+10', ic: <Star size={18} className="text-yellow-400" /> },
-            { t: '充值星币', d: '昨天 20:15', v: '+1000', ic: <Wallet size={18} className="text-blue-400" /> }
           ].map((item, i) => (
             <div key={i} className="flex justify-between items-center pb-6 border-b border-gray-50 dark:border-white/5 last:border-0 last:pb-0">
               <div className="flex items-center gap-4">
@@ -199,12 +204,8 @@ export function Favorites() {
   const [tab, setTab] = useState('短剧');
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
-      <Header title="我的收藏" dark />
       <div className="flex px-6 py-0 gap-6 border-b border-gray-100 dark:border-white/5 bg-white dark:bg-[#1A1108] sticky top-24 z-20 overflow-x-auto scrollbar-hide">
         {[
-          { label: '短剧', ic: <Film size={16} /> },
-          { label: '商品', ic: <ShoppingBag size={16} /> },
-          { label: '资讯', ic: <MessageSquare size={16} /> }
         ].map(item => (
           <button 
             key={item.label}
@@ -217,8 +218,7 @@ export function Favorites() {
               <motion.div 
                 layoutId="favTabActive" 
                 className="absolute bottom-0 left-0 right-0 h-1 bg-[#D4AF37] rounded-full" 
-                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-              />
+                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }} />
             )}
           </button>
         ))}
@@ -234,16 +234,14 @@ export function Favorites() {
                 key={i} 
                 className="bg-white dark:bg-[#2A1D0F] p-4 rounded-[28px] shadow-sm border border-gray-100 dark:border-white/5 flex gap-4 active:scale-[0.98] transition-transform"
               >
-                <img src={item.imageUrl} className="w-20 h-28 object-cover rounded-xl shadow-md" />
                 <div className="flex flex-col justify-center gap-2">
                   <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white">{item.title}</h4>
                   <p className="text-[12px] text-[#A69984] font-bold">更新至 第80集</p>
-                  <button className="text-[12px] text-[#D4AF37] font-black flex items-center gap-1 mt-1">立即观看 <ChevronRight size={14} /></button>
                 </div>
               </motion.div>
             ))
           ) : (
-            <EmptyState />
+            <div className="text-center text-gray-400 font-bold py-10">暂无收藏</div>
           )
         ) : tab === '商品' ? (
           MALL_PRODUCTS.map((prod, i) => (
@@ -254,7 +252,6 @@ export function Favorites() {
               key={i} 
               className="bg-white dark:bg-[#2A1D0F] p-4 rounded-[28px] shadow-sm border border-gray-100 dark:border-white/5 flex gap-4 active:scale-[0.98] transition-transform"
             >
-              <img src={prod.imageUrl} className="w-20 h-20 object-cover rounded-xl shadow-md" />
               <div className="flex flex-col justify-center gap-1">
                 <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white line-clamp-1">{prod.title}</h4>
                 <div className="flex items-center gap-2">
@@ -271,7 +268,6 @@ export function Favorites() {
             className="py-20 flex flex-col items-center justify-center gap-4 opacity-40"
           >
             <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400">
-              <Star size={32} />
             </div>
             <p className="text-[14px] font-bold text-[#A69984]">暂无收藏资讯</p>
           </motion.div>
@@ -288,17 +284,23 @@ function EmptyState() {
 }
 
 
-import { useTheme } from '../context/ThemeContext';
-import { useNavigate } from 'react-router-dom';
 
 // 4. 设置页面
 export function Settings() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [cacheSize, setCacheSize] = useState('128 MB');
+
+  const handleClearCache = () => {
+    if (confirm('确定要清除本地缓存吗？')) {
+      localStorage.clear();
+      setCacheSize('0 MB');
+      alert('缓存已清除');
+    }
+  };
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
-      <Header title="系统设置" dark />
       <div className="p-6">
         {/* Appearance Group */}
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 mb-6">
@@ -309,7 +311,6 @@ export function Settings() {
               className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center gap-3 ${theme === 'light' ? 'border-[#D4AF37] bg-yellow-50/50' : 'border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-black/20'}`}
             >
               <div className="w-full aspect-[2/1] bg-white rounded-lg shadow-inner flex items-center justify-center">
-                <Sun size={24} className={theme === 'light' ? 'text-[#D4AF37]' : 'text-gray-300'} />
               </div>
               <span className={`text-[12px] font-black ${theme === 'light' ? 'text-[#1A1108]' : 'text-gray-400'}`}>浅色模式</span>
             </div>
@@ -318,7 +319,6 @@ export function Settings() {
               className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center gap-3 ${theme === 'dark' ? 'border-[#D4AF37] bg-yellow-50/50' : 'border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-black/20'}`}
             >
               <div className="w-full aspect-[2/1] bg-[#1A1108] rounded-lg shadow-inner flex items-center justify-center">
-                <Moon size={24} className={theme === 'dark' ? 'text-[#D4AF37]' : 'text-gray-300'} />
               </div>
               <span className={`text-[12px] font-black ${theme === 'dark' ? 'text-white' : 'text-gray-400'}`}>深色模式</span>
             </div>
@@ -328,14 +328,13 @@ export function Settings() {
         {/* List Group */}
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 mb-8">
           {[
-            { label: '账户与安全', icon: <Shield size={18} />, path: '/settings/security' },
-            { label: '消息通知设置', icon: <Bell size={18} /> },
-            { label: '清除缓存', icon: <Trash2 size={18} />, value: '128 MB' },
-            { label: '关于中星', icon: <HelpCircle size={18} />, value: 'v1.2.4', path: '/settings/about' }
           ].map((item, i) => (
             <div 
               key={i} 
-              onClick={() => item.path && navigate(item.path)}
+              onClick={() => {
+                if (item.action) item.action();
+                else if (item.path) navigate(item.path);
+              }}
               className="flex justify-between items-center px-6 py-5 border-b last:border-0 border-gray-50 dark:border-white/5 active:bg-gray-50 dark:active:bg-white/5 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3 text-[#1A1108] dark:text-white">
@@ -344,7 +343,6 @@ export function Settings() {
               </div>
               <div className="flex items-center gap-2">
                 {item.value && <span className="text-[12px] text-[#A69984] font-bold">{item.value}</span>}
-                <ChevronRight size={16} className="text-gray-300" />
               </div>
             </div>
           ))}
@@ -421,7 +419,6 @@ export function HelpCenter() {
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors relative flex flex-col overflow-hidden">
-      <Header title="帮助与反馈" dark />
       <div className="flex-1 p-6 pb-32">
         <div 
           onClick={() => setShowChat(true)}
@@ -432,7 +429,6 @@ export function HelpCenter() {
             <p className="text-[12px] opacity-70 font-bold">每日 09:00 - 22:00 在线为您服务</p>
           </div>
           <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
-            <MessageSquare size={20} />
           </div>
         </div>
 
@@ -446,7 +442,6 @@ export function HelpCenter() {
           ].map((q, i) => (
             <div key={i} className="bg-white dark:bg-[#2A1D0F] p-5 rounded-2xl border border-gray-50 dark:border-white/5 flex justify-between items-center">
               <span className="text-[14px] font-black text-[#4A443E] dark:text-white/80">{q}</span>
-              <ChevronRight size={16} className="text-gray-300" />
             </div>
           ))}
         </div>
@@ -461,7 +456,6 @@ export function HelpCenter() {
             exit={{ opacity: 0 }}
             className="absolute inset-0 z-50 flex flex-col bg-black/60 backdrop-blur-sm"
           >
-            <div className="flex-1" onClick={() => setShowChat(false)} />
             <motion.div 
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
@@ -472,12 +466,10 @@ export function HelpCenter() {
               <div className="p-6 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#8B6E4E] flex items-center justify-center text-white">
-                    <MessageSquare size={20} />
                   </div>
                   <div>
                     <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white">中星影视生态链小助手</h4>
                     <span className="text-[10px] text-green-500 font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                       当前在线
                     </span>
                   </div>
@@ -486,7 +478,6 @@ export function HelpCenter() {
                   onClick={() => setShowChat(false)}
                   className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400"
                 >
-                  <ChevronRight size={20} className="rotate-90" />
                 </button>
               </div>
 
@@ -502,7 +493,6 @@ export function HelpCenter() {
                     </div>
                   </div>
                 ))}
-                <div ref={chatEndRef} />
               </div>
 
               <div className="p-6 pb-10 bg-white dark:bg-[#1A1108] border-t border-gray-100 dark:border-white/5">
@@ -513,8 +503,7 @@ export function HelpCenter() {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                     placeholder="输入您的问题..."
-                    className="flex-1 h-12 bg-transparent pl-4 text-[14px] outline-none dark:text-white"
-                  />
+                    className="flex-1 h-12 bg-transparent pl-4 text-[14px] outline-none dark:text-white" />
                   <button 
                     disabled={!input.trim()}
                     onClick={handleSend}
@@ -524,7 +513,6 @@ export function HelpCenter() {
                         : 'bg-gray-200 text-gray-400'
                     }`}
                   >
-                    <Send size={18} />
                   </button>
                 </div>
               </div>
@@ -541,7 +529,6 @@ export function MyOrders() {
   const [tab, setTab] = useState('全部');
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors">
-      <Header title="我的订单" dark />
       <div className="flex px-6 py-4 gap-8 bg-white dark:bg-[#1A1108] sticky top-24 z-20 border-b border-gray-50 dark:border-white/5">
         {['全部', '待付款', '待收货', '已完成'].map(t => (
           <button 
@@ -550,7 +537,6 @@ export function MyOrders() {
             className={`text-[14px] font-black transition-all relative pb-2 ${tab === t ? 'text-[#8B6E4E] dark:text-[#E6D5B8]' : 'text-gray-300 dark:text-gray-600'}`}
           >
             {t}
-            {tab === t && <motion.div layoutId="orderTab" className="absolute bottom-0 left-0 right-0 h-1 bg-[#D4AF37] rounded-full" />}
           </button>
         ))}
       </div>
@@ -562,7 +548,6 @@ export function MyOrders() {
               <span className="text-[12px] text-[#D4AF37] font-black">已发货</span>
             </div>
             <div className="flex gap-4 mb-4">
-              <img src={prod.imageUrl} className="w-20 h-20 object-cover rounded-2xl" />
               <div className="flex-1 flex flex-col justify-center">
                 <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white line-clamp-1">{prod.title}</h4>
                 <p className="text-[16px] font-black text-[#1A1108] dark:text-[#D4AF37] mt-1">¥ {prod.price}</p>
@@ -583,7 +568,6 @@ export function MyOrders() {
 export function MyActivities() {
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full">
-      <Header title="我的活动" dark />
       <div className="p-6">
         <div className="space-y-6">
           {[
@@ -592,7 +576,6 @@ export function MyActivities() {
           ].map((item, i) => (
             <div key={i} className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5">
               <div className="h-32 relative">
-                <img src={item.i} className="w-full h-full object-cover" />
                 <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black text-[#8B6E4E] dark:text-[#D4AF37]">
                   {item.s}
                 </div>
@@ -613,7 +596,6 @@ export function MyActivities() {
 export function AccountSecurity() {
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full">
-      <Header title="账户与安全" dark />
       <div className="p-6">
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5">
           {[
@@ -626,7 +608,6 @@ export function AccountSecurity() {
               <span className={`text-[14px] font-black ${item.color || 'text-[#1A1108] dark:text-white'}`}>{item.label}</span>
               <div className="flex items-center gap-2">
                 <span className="text-[14px] text-[#A69984] font-bold">{item.value}</span>
-                <ChevronRight size={16} className="text-gray-300" />
               </div>
             </div>
           ))}
@@ -638,33 +619,56 @@ export function AccountSecurity() {
 
 // 9. 关于中星 (四级页面)
 export function AboutUs() {
+  const navigate = useNavigate();
+
   return (
-    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full">
-      <Header title="关于中星" dark />
-      <div className="p-8 flex flex-col items-center">
+    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full flex flex-col">
+      <div className="p-8 flex flex-col items-center flex-1">
         <div className="w-24 h-24 rounded-[32px] bg-[#1A1108] flex items-center justify-center text-[#D4AF37] shadow-xl mb-6">
-          <Star size={48} fill="currentColor" />
         </div>
         <h2 className="text-[20px] font-black text-[#1A1108] dark:text-white mb-1">中星影视生态链</h2>
         <p className="text-[14px] text-[#A69984] font-bold mb-10">Version 1.2.4</p>
         
         <div className="w-full bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5">
           {[
-            '功能介绍',
-            '投诉建议',
-            '隐私协议',
-            '用户服务协议'
+            { label: '功能介绍', path: '/doc/features' },
+            { label: '投诉建议', path: '/help' },
+            { label: '隐私协议', path: '/doc/privacy' },
+            { label: '用户服务协议', path: '/doc/terms' }
           ].map((item, i) => (
-            <div key={i} className="flex justify-between items-center px-6 py-5 border-b last:border-0 border-gray-50 dark:border-white/5 active:bg-gray-50 dark:active:bg-white/5 transition-colors">
-              <span className="text-[14px] font-black text-[#1A1108] dark:text-white">{item}</span>
-              <ChevronRight size={16} className="text-gray-300" />
+            <div 
+              key={i} 
+              onClick={() => navigate(item.path)}
+              className="flex justify-between items-center px-6 py-5 border-b last:border-0 border-gray-50 dark:border-white/5 active:bg-gray-50 dark:active:bg-white/5 transition-colors cursor-pointer"
+            >
+              <span className="text-[14px] font-black text-[#1A1108] dark:text-white">{item.label}</span>
             </div>
           ))}
         </div>
         
         <p className="mt-auto pt-20 text-[11px] text-[#A69984] font-bold text-center">
-          Copyright © 2024 ZX-Drama. <br/> All Rights Reserved.
         </p>
+      </div>
+    </div>
+  );
+}
+
+export function DocumentPage() {
+  const { docKey } = useParams();
+  const { pages } = useCMS();
+  const doc = pages.documents || {};
+  const content = doc[docKey as string] || '暂无内容';
+  
+  const title = docKey === 'features' ? '功能介绍' : 
+                docKey === 'privacy' ? '隐私协议' : 
+                docKey === 'terms' ? '用户服务协议' : '文档';
+
+  return (
+    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10">
+      <div className="p-6">
+        <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 whitespace-pre-wrap text-[14px] leading-relaxed text-[#4A443E] dark:text-[#E6D5B8]">
+          {content}
+        </div>
       </div>
     </div>
   );

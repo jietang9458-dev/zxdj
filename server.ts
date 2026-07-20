@@ -74,6 +74,14 @@ db.exec(`
     id TEXT PRIMARY KEY,
     data TEXT
   );
+  CREATE TABLE IF NOT EXISTS community_posts (
+    id TEXT PRIMARY KEY,
+    data TEXT
+  );
+  CREATE TABLE IF NOT EXISTS interactions (
+    id TEXT PRIMARY KEY,
+    data TEXT
+  );
 `);
 
 // API Routes
@@ -107,8 +115,17 @@ app.post('/api/pages/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// Custom Upsert for interactions
+app.post('/api/interactions_upsert', (req, res) => {
+  const { id, ...rest } = req.body;
+  if (!id) return res.status(400).json({ error: 'id required' });
+  const data = JSON.stringify(rest);
+  db.prepare('INSERT INTO interactions (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data').run(id, data);
+  res.json({ success: true });
+});
+
 // Generic Collection Handlers
-const collections = ['dramas', 'bases', 'products', 'liveStreams', 'feedbacks', 'course_registrations', 'users'];
+const collections = ['dramas', 'bases', 'products', 'liveStreams', 'feedbacks', 'course_registrations', 'users', 'community_posts', 'interactions'];
 
 collections.forEach(col => {
   app.get(`/api/${col}`, (req, res) => {

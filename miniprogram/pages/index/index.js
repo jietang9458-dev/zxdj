@@ -1,30 +1,49 @@
 Page({
   data: {
-    appUrl: "https://你的云托管公网域名.ap-shanghai.run.tcloudbase.com" // 请替换为你云托管的“公网域名访问”链接
+    appUrl: "https://ais-pre-msndmjbx4cyt5wbu7ntfdc-472421389681.asia-northeast1.run.app",
+    finalUrl: "",
+    hasLogin: false
   },
   onLoad(options) {
-    // 您可以在这里添加参数透传逻辑
-
-    // 示例：使用云托管 callContainer 调用后端接口
-    wx.cloud.callContainer({
-      config: {
-        env: 'cloudbase-d3gzm22gqb7c0caf1', // 你的微信云托管环境ID
-      },
-      path: '/api/pages/home', // 你在Express中编写的路由
-      method: 'GET',
-      header: {
-        'X-WX-SERVICE': 'zxys', // 这是你在微信云托管中的服务名称
-      },
-      data: {
-        // 你的请求参数
-      },
+    const hasLogin = wx.getStorageSync('hasLogin');
+    if (hasLogin) {
+      const userInfo = wx.getStorageSync('userInfo') || {};
+      this.enterApp(userInfo);
+    }
+  },
+  onCancel() {
+    wx.exitMiniProgram({
+      success: () => {},
+      fail: () => {
+        wx.showToast({ title: '请点击右上角关闭', icon: 'none' });
+      }
+    });
+  },
+  onConfirm() {
+    wx.getUserProfile({
+      desc: '用于完善会员资料',
       success: (res) => {
-        console.log('接口返回：', res.data)
+        const userInfo = res.userInfo;
+        wx.setStorageSync('hasLogin', true);
+        wx.setStorageSync('userInfo', userInfo);
+        this.enterApp(userInfo);
       },
       fail: (err) => {
-        console.error('请求失败：', err)
+        console.error("getUserProfile failed", err);
+        // Fallback for newer WeChat versions where getUserProfile is disabled
+        const userInfo = { nickName: '星友_9527', avatarUrl: '' };
+        wx.setStorageSync('hasLogin', true);
+        wx.setStorageSync('userInfo', userInfo);
+        this.enterApp(userInfo);
       }
-    })
+    });
+  },
+  enterApp(userInfo) {
+    let url = this.data.appUrl;
+    if (userInfo && userInfo.nickName) {
+      url += `?nickname=${encodeURIComponent(userInfo.nickName)}&avatar=${encodeURIComponent(userInfo.avatarUrl || '')}`;
+    }
+    this.setData({ hasLogin: true, finalUrl: url });
   },
   onWebviewLoad() {
     console.log('H5页面加载成功');

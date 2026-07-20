@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
-import { Warehouse, BookOpen, Film, Share2, Users, Star, Gift, ShieldAlert, CheckCircle2, Crown, Video } from 'lucide-react';
+import { Warehouse, BookOpen, Film, Share2, Users, Star, Gift, ShieldAlert, CheckCircle2, Crown, Video, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { HOT_DRAMAS } from '../constants';
@@ -634,6 +634,7 @@ export function LiveFilming() {
                 </div>
                 <div className="p-6">
                   <h4 className="text-[15px] font-black text-[#1A1108] mb-1">{item.title}</h4>
+                  {item.desc && <p className="text-[13px] text-gray-500 mb-2">{item.desc}</p>}
                   <p className="text-[12px] text-[#A69984] font-bold">现在正在直播中</p>
                 </div>
               </div>
@@ -645,25 +646,36 @@ export function LiveFilming() {
         {upcoming.length === 0 ? (
           <p className="text-[13px] text-gray-400 font-bold">暂无直播预告</p>
         ) : (
-          <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-50 space-y-6">
+          <div className="space-y-6">
             {upcoming.map((item: any) => (
               <div 
                 key={item.id} 
-                className="flex justify-between items-center pb-6 last:pb-0 border-b last:border-0 border-gray-50 cursor-pointer"
+                className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-50 relative group cursor-pointer hover:shadow-md transition-shadow"
                 onClick={() => handleLiveClick(item.liveLink)}
               >
-                <div>
-                  <h4 className="text-[14px] font-black text-[#1A1108]">{item.title}</h4>
+                {item.imageUrl && (
+                  <div className="h-40 relative">
+                    <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
+                    <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-[10px] font-black flex items-center gap-1.5 backdrop-blur-sm">
+                      <Clock size={12} /> 预告
+                    </div>
+                  </div>
+                )}
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="text-[15px] font-black text-[#1A1108]">{item.title}</h4>
+                    <button 
+                      onClick={(e) => handleReserve(e, item)}
+                      className="px-4 py-2 bg-[#F2EDE4] text-[#8B6E4E] rounded-xl text-[12px] font-black border border-[#8B6E4E]/10 ml-4 shrink-0"
+                    >
+                      预约
+                    </button>
+                  </div>
+                  {item.desc && <p className="text-[13px] text-gray-500 mb-2">{item.desc}</p>}
                   <p className="text-[11px] text-[#D4AF37] font-bold mt-1">
                     {item.liveTime ? new Date(item.liveTime).toLocaleString() : '敬请期待'}
                   </p>
                 </div>
-                <button 
-                  onClick={(e) => handleReserve(e, item)}
-                  className="px-4 py-2 bg-[#F2EDE4] text-[#8B6E4E] rounded-xl text-[12px] font-black border border-[#8B6E4E]/10"
-                >
-                  预约
-                </button>
               </div>
             ))}
           </div>

@@ -22,7 +22,7 @@ import { DramaDetail, ActorDetail, PostDetail, ProductDetail, PrepProjectDetail 
 import { CopyrightPurchase, SalesModel, CopyrightLibrary, CopyrightPublicity, ServiceFlow, PurchaseInstructions, FullCopyrightInstructions, CopyrightRights, AuditionRegistration, GeneralRegistration, MyRegistrations, LearningArt, AuditionProjectList } from './pages/SubPages';
 import MallCategory from './pages/MallSubPages';
 import Discover from './pages/Discover';
-import { Profile, MyWallet, Favorites, Settings, HelpCenter, MyOrders, MyActivities, AccountSecurity, AboutUs } from './pages/UserSubPages';
+import { Profile, MyWallet, Favorites, Settings, HelpCenter, MyOrders, MyActivities, AccountSecurity, AboutUs, DocumentPage } from './pages/UserSubPages';
 import { useNavigate } from 'react-router-dom';
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -85,6 +85,7 @@ export default function App() {
                     <Route path="/user/my-registrations" element={<MyRegistrations />} />
                     <Route path="/settings/security" element={<AccountSecurity />} />
                     <Route path="/settings/about" element={<AboutUs />} />
+                    <Route path="/doc/:docKey" element={<DocumentPage />} />
                   </Routes>
                 </Layout>
               } />
