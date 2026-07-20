@@ -1,12 +1,16 @@
 <view class="modal-mask" wx:if="{{!hasLogin}}">
   <view class="modal-dialog">
-    <view class="modal-title">微信授权登录</view>
+    <view class="modal-title">获取您的昵称和头像</view>
     <view class="modal-content">
-      允许获取您的微信昵称和头像，以提供更好的服务并在小程序中作为您的初始用户名和头像。
+      <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+        <image class="avatar" src="{{avatarUrl || defaultAvatar}}"></image>
+        <view class="avatar-hint">点击选择</view>
+      </button>
+      <input type="nickname" class="weui-input" placeholder="请输入或获取昵称" bindblur="onInputNickname" bindchange="onInputNickname" />
     </view>
     <view class="modal-footer">
       <view class="modal-btn cancel" bindtap="onCancel">跳过</view>
-      <button class="modal-btn confirm" bindtap="onConfirm">确认授权</button>
+      <button class="modal-btn confirm" bindtap="onConfirm">确认进入</button>
     </view>
   </view>
 </view>
