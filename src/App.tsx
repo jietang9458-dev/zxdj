@@ -19,9 +19,10 @@ import Mine from './pages/Mine';
 import Mall from './pages/Mall';
 import { Production, Actors, Tourism, TourismGroups, FilmingExperience, StarClub, Investment, LiveFilming } from './pages/MiscPages';
 import { DramaDetail, ActorDetail, PostDetail, ProductDetail, PrepProjectDetail } from './pages/Details';
-import { CopyrightPurchase, SalesModel, CopyrightLibrary, CopyrightPublicity, ServiceFlow, PurchaseInstructions, FullCopyrightInstructions, CopyrightRights, AuditionRegistration, GeneralRegistration, MyRegistrations, LearningArt, AuditionProjectList } from './pages/SubPages';
+import { CopyrightPurchase, SalesModel, CopyrightLibrary, CopyrightPublicity, ServiceFlow, PurchaseInstructions, FullCopyrightInstructions, CopyrightRights, AuditionRegistration, GeneralRegistration, MyRegistrations, LearningArt, AuditionProjectList, ProjectDetails, ClassDetails } from './pages/SubPages';
 import MallCategory from './pages/MallSubPages';
 import Discover from './pages/Discover';
+import HotDramas from './pages/HotDramas';
 import { Profile, MyWallet, Favorites, Settings, HelpCenter, MyOrders, MyActivities, AccountSecurity, AboutUs, DocumentPage } from './pages/UserSubPages';
 import { useNavigate } from 'react-router-dom';
 
@@ -45,6 +46,7 @@ export default function App() {
                     <Route path="/base" element={<BaseList />} />
                     <Route path="/base/:id" element={<BaseDetail />} />
                     <Route path="/discover" element={<Discover />} />
+          <Route path="/hot-dramas" element={<HotDramas />} />
                     <Route path="/mall" element={<Mall />} />
                     <Route path="/mine" element={<Mine />} />
                     <Route path="/copyright" element={<Copyright />} />
@@ -69,11 +71,13 @@ export default function App() {
                     <Route path="/copyright/full-purchase-instructions" element={<FullCopyrightInstructions />} />
                     <Route path="/copyright/model" element={<SalesModel />} />
                     <Route path="/copyright/library" element={<CopyrightLibrary />} />
+                    <Route path="/copyright/project/:id" element={<ProjectDetails />} />
                     <Route path="/copyright/publicity" element={<CopyrightPublicity />} />
                     <Route path="/audition/registration" element={<AuditionRegistration />} />
                     <Route path="/register" element={<GeneralRegistration />} />
                     <Route path="/audition/projects" element={<AuditionProjectList />} />
                     <Route path="/audition/learning" element={<LearningArt />} />
+                    <Route path="/audition/class/:id" element={<ClassDetails />} />
                     <Route path="/service/flow" element={<ServiceFlow />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/wallet" element={<MyWallet />} />

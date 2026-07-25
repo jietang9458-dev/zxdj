@@ -42,7 +42,7 @@ export default function Copyright() {
   
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
-      <Header title={pageData.title || "版权营销中心"} dark />
+      <Header title={pageData.headerTitle || pageData.title || "版权营销中心"} dark />
       
       {/* Banner */}
       <div className="mx-5 mt-4 rounded-3xl overflow-hidden h-[180px] relative shadow-xl">
@@ -87,7 +87,7 @@ export default function Copyright() {
             <div 
               key={idx} 
               className="flex-shrink-0 w-36 cursor-pointer active:scale-95 transition-transform"
-              onClick={() => navigate(`/drama/${drama.id || idx}?live=true`)}
+              onClick={() => navigate(`/live`)}
             >
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-md mb-2">
                 <img src={drama.imageUrl} alt="" className="w-full h-full object-cover" />

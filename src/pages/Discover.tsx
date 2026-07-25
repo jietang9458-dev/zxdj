@@ -1,3 +1,4 @@
+import ImageCropperModal from "../components/ImageCropperModal";
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Share2, MoreHorizontal, User, ImagePlus, Send, Heart, MessageCircle, X, Plus, Camera } from 'lucide-react';

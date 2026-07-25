@@ -340,19 +340,25 @@ export default function Home() {
       <div className="px-5 mt-10 mb-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[18px] font-black text-[#1A1108] dark:text-white">热播短剧推荐</h2>
-          <button onClick={() => navigate('/discover')} className="flex items-center gap-0.5 text-[#A69984] text-[13px] font-semibold hover:text-[#D4AF37] transition-colors">
+          <button onClick={() => navigate('/hot-dramas')} className="flex items-center gap-0.5 text-[#A69984] text-[13px] font-semibold hover:text-[#D4AF37] transition-colors">
             更多 <ChevronRight size={16} />
           </button>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          {(dramas.length > 0 ? dramas : HOT_DRAMAS).slice(0, 3).map((drama, idx) => (
+          {(dramas.length > 0 ? (dramas.some(d => d.recommended) ? dramas.filter(d => d.recommended) : dramas) : HOT_DRAMAS).slice(0, 3).map((drama, idx) => (
             <motion.div 
               key={drama.id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 + idx * 0.1 }}
-              onClick={() => navigate(`/drama/${drama.id}`)}
+              onClick={() => {
+                if (drama.playUrl) {
+                  window.location.href = drama.playUrl;
+                } else {
+                  navigate(`/drama/${drama.id}`);
+                }
+              }}
               className="flex flex-col gap-2 group cursor-pointer"
             >
               <div className="aspect-[3/4] rounded-2xl overflow-hidden relative shadow-lg">

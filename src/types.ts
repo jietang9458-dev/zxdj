@@ -15,6 +15,9 @@ export interface ShortDrama {
   title: string;
   imageUrl: string;
   tag?: string;
+  description?: string;
+  playUrl?: string;
+  recommended?: boolean;
 }
 
 export interface CategoryItem {

@@ -14,7 +14,7 @@ export function Production() {
   
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
-      <Header title={pageData.title || "制作发行中心"} dark />
+      <Header title={pageData.headerTitle || "制作发行中心"} dark />
       <div className="mx-5 mt-4 rounded-[32px] overflow-hidden h-[180px] relative shadow-xl">
         <img 
           src={pageData.banner || "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=800&fit=crop"} 
@@ -110,7 +110,7 @@ export function Actors() {
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
-      <Header title={pageData.title || "明星演员孵化中心"} dark />
+      <Header title={pageData.headerTitle || "明星演员孵化中心"} dark />
       
       {/* 16:9 Carousel Background */}
       <div className="mx-5 mt-4 rounded-[32px] overflow-hidden aspect-video relative shadow-xl">
@@ -186,7 +186,7 @@ export function Actors() {
         </div>
         <div className="grid grid-cols-3 gap-4">
           {(pageData.auditions || HOT_DRAMAS).map((item: any, i: number) => (
-            <div key={i} onClick={() => navigate(item.id ? `/drama/${item.id}` : '#')} className="text-center group cursor-pointer">
+            <div key={i} onClick={() => navigate('/audition/projects')} className="text-center group cursor-pointer">
               <div className="aspect-[3/4] rounded-2xl bg-gray-200 mb-2.5 overflow-hidden shadow-md">
                 <img src={item.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               </div>
@@ -211,7 +211,7 @@ export function Actors() {
             { title: '少儿演艺周末班', desc: '形体、台词、表演基础', date: '每月初开班', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop' },
             { title: '青年演员特训营', desc: '剧组实战、进阶表演', date: '寒暑假开班', imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop' }
           ]).map((cls: any, i: number) => (
-            <div key={i} className="flex gap-4 p-4 bg-white dark:bg-[#2A1D0F] rounded-2xl shadow-sm border border-gray-50 dark:border-white/5">
+            <div key={i} onClick={() => navigate('/audition/class/' + i)} className="flex gap-4 p-4 bg-white dark:bg-[#2A1D0F] rounded-2xl shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer active:scale-95 transition-transform">
               <div className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden shrink-0">
                 <img src={cls.imageUrl} alt="" className="w-full h-full object-cover" />
               </div>

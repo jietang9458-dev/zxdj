@@ -120,6 +120,16 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
                   onChange={(e) => setData({...data, [field.key]: e.target.value})}
                   className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200"
                 />
+              ) : field.type === 'boolean' ? (
+                <div className="flex items-center gap-2 px-1">
+                  <input 
+                    type="checkbox"
+                    checked={!!data[field.key]}
+                    onChange={(e) => setData({...data, [field.key]: e.target.checked})}
+                    className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-[14px] text-gray-700">{field.label}</span>
+                </div>
               ) : (
                 <input 
                   type="text"
@@ -333,7 +343,10 @@ export default function Admin() {
         initialData: initialData || {},
         fields: [
           { key: 'imageUrl', label: '封面图 (竖版3:4)', type: 'image', aspectRatio: 3/4 },
-          { key: 'title', label: '短剧名称', type: 'text' }
+          { key: 'title', label: '短剧名称', type: 'text' },
+          { key: 'description', label: '故事介绍', type: 'textarea' },
+          { key: 'playUrl', label: '播放链接', type: 'text' },
+          { key: 'recommended', label: '推荐到首页', type: 'boolean' }
         ],
         onSubmit: async (data: any) => {
           if (!data.title || !data.imageUrl) return alert("请填写完整信息");
@@ -921,8 +934,28 @@ export default function Admin() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                  {(activeTab === 'copyright' || activeTab === 'production' || activeTab === 'actors') && (
+                    <div className="space-y-2 col-span-2">
+                      <label className="text-[11px] font-bold text-[#A69984] ml-2">顶部导航标题</label>
+                      <input 
+                        value={
+                          activeTab === 'copyright' ? copyrightData.headerTitle || '' :
+                          activeTab === 'production' ? productionData.headerTitle || '' :
+                          activeTab === 'actors' ? actorsData.headerTitle || '' : ''
+                        }
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (activeTab === 'copyright') setCopyrightData({...copyrightData, headerTitle: val});
+                          if (activeTab === 'production') setProductionData({...productionData, headerTitle: val});
+                          if (activeTab === 'actors') setActorsData({...actorsData, headerTitle: val});
+                        }}
+                        className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none border border-gray-50"
+                        placeholder="显示在页面顶部的标题"
+                      />
+                    </div>
+                  )}
                   <div className="space-y-2">
-                    <label className="text-[11px] font-bold text-[#A69984] ml-2">页面主标题</label>
+                    <label className="text-[11px] font-bold text-[#A69984] ml-2">页面主标题(Banner横幅内)</label>
                     <input 
                       value={
                         activeTab === 'copyright' ? copyrightData.title :
@@ -997,26 +1030,56 @@ export default function Admin() {
                       </div>
                     </div>
 
-                    <h4 className="font-bold text-[#1A1108] mt-6">热门可购版权</h4>
-                    <div className="space-y-2">
-                      <label className="text-[11px] font-bold text-[#A69984] ml-2 font-mono">
-                        编辑此 JSON 数组进行管理热门可购版权（支持4个板块或以上）
-                      </label>
-                      <textarea
-                        value={JSON.stringify(copyrightData.hotCopyrights || [
+                    <AdminListEditor 
+                      title="热门可购版权"
+                      items={copyrightData.hotCopyrights || [
                           { title: 'AI制作短剧', imageUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4628c6bb5?q=80&w=400&h=600&fit=crop', desc: '每部短剧共50份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (A)0021 001~050' },
                           { title: '精品短剧', imageUrl: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400&h=600&fit=crop', desc: '每部短剧共100份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (B)0101 001~100' },
                           { title: '明星短剧', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?q=80&w=400&h=600&fit=crop', desc: '每部短剧共200份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (C)0201 001~200，注：明星演员的定义、标准和人选由中星影视生态链确定，版权购买方不存有异议。' },
                           { title: '互动影游', imageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=400&h=600&fit=crop', desc: '请联系中星影视生态链客服咨询详情。' }
-                        ], null, 2)}
-                        onChange={(e) => {
-                          try {
-                            setCopyrightData({...copyrightData, hotCopyrights: JSON.parse(e.target.value)});
-                          } catch (e) {}
-                        }}
-                        className="w-full px-5 py-4 bg-gray-50 rounded-2xl min-h-[200px] outline-none border border-gray-50 font-mono text-xs"
-                      />
-                    </div>
+                      ]}
+                      onChange={(items: any) => setCopyrightData({...copyrightData, hotCopyrights: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '海报', type: 'image', aspectRatio: 3/4 },
+                        { key: 'title', label: '标题', type: 'text' },
+                        { key: 'desc', label: '文字介绍', type: 'textarea' }
+                      ]}
+                    />
+
+
+                    <AdminListEditor 
+                      title="购买须知及办法"
+                      items={copyrightData.purchaseInstructions || [
+                        { t: '购买须知', d: '购买版权是自己真实意愿的表达，共享收益，共担风险。版权购买需线下签订版权购买合同和版权授权协议，版权销售款不委托任何企业和个人代收，按照正式签订的合同里明确的收款方付款。签订合同时需要明确介绍人的姓名和电话。' },
+                        { t: '选择版权', d: '在热销中短剧版权里，购买短剧版权号。版权库里的仅供参考，在截止该部短剧的版权销售开始筹备时，官方平台会即时公布版权号所对应的短剧内容，任何购买版权者不持有异议。' },
+                        { t: '签署合约', d: '线下签署正式的版权购买合同和版权授权协议。' },
+                        { t: '票房收益', d: '所购买的短剧版权的短剧上线后，根据播放平台的结算收益按照版权购买合同约定支付票房收益。' }
+                      ]}
+                      onChange={(items: any) => setCopyrightData({...copyrightData, purchaseInstructions: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 't', label: '标题', type: 'text' },
+                        { key: 'd', label: '说明内容', type: 'textarea' }
+                      ]}
+                    />
+
+
+                    <AdminListEditor 
+                      title="购买须知及办法"
+                      items={copyrightData.purchaseInstructions || [
+                        { t: '购买须知', d: '购买版权是自己真实意愿的表达，共享收益，共担风险。版权购买需线下签订版权购买合同和版权授权协议，版权销售款不委托任何企业和个人代收，按照正式签订的合同里明确的收款方付款。签订合同时需要明确介绍人的姓名和电话。' },
+                        { t: '选择版权', d: '在热销中短剧版权里，购买短剧版权号。版权库里的仅供参考，在截止该部短剧的版权销售开始筹备时，官方平台会即时公布版权号所对应的短剧内容，任何购买版权者不持有异议。' },
+                        { t: '签署合约', d: '线下签署正式的版权购买合同和版权授权协议。' },
+                        { t: '票房收益', d: '所购买的短剧版权的短剧上线后，根据播放平台的结算收益按照版权购买合同约定支付票房收益。' }
+                      ]}
+                      onChange={(items: any) => setCopyrightData({...copyrightData, purchaseInstructions: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 't', label: '标题', type: 'text' },
+                        { key: 'd', label: '文字说明', type: 'textarea' }
+                      ]}
+                    />
 
                     <AdminListEditor 
                       title="版权库内容管理"
@@ -1024,9 +1087,44 @@ export default function Admin() {
                       onChange={(items: any) => setCopyrightData({...copyrightData, libraryItems: items})}
                       setDialogState={setDialogState}
                       schema={[
-                        { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
+                        { key: 'imageUrl', label: '海报 (建议3:4)', type: 'image', aspectRatio: 3/4 },
                         { key: 'title', label: '片名 (必填)', type: 'text' },
-                        { key: 'desc', label: '相关文字内容', type: 'text' }
+                        { key: 'synopsis', label: '故事梗概', type: 'textarea' },
+                        { key: 'desc', label: '相关介绍', type: 'textarea' }
+                      ]}
+                    />
+                    <AdminListEditor 
+                      title="购买版权的十大权益"
+                      items={copyrightData.rights || [
+                        "成为中星影视生态链的联合制片人，销售推广中星影视生态链的版权和其他业务，享受销售的佣金和平台公司奖励。",
+                        "颁发电子版“中星影视生态链的联合制片人”牌匾，牌匾内有个人的照片和名字。",
+                        "每份版权按照票房版权方收益的（A: AI短剧2%，B：精品短剧1%，C：明星短剧0.5%）比例，长期享受版权收益，每月支付一次。",
+                        "销售佣金每份版权2000元。",
+                        "完成销售三份版权后公司奖励4000元。",
+                        "三份版权中其中两份版权完成三份版权的销售，平台公司再奖励2000元。",
+                        "完成3组同类型版权销售后，公司随机奖励一份同类型版权（价值10000元），与购买版权享受同等的权利。",
+                        "可以参加明星俱乐部活动，与明星互动。",
+                        "可以参与公司的发布会、开机仪式、片场探班等。",
+                        "可以参演公司的短剧（AI短剧除外）。"
+                      ].map(r => ({ text: r }))}
+                      onChange={(items: any) => setCopyrightData({...copyrightData, rights: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'text', label: '权益描述', type: 'textarea' }
+                      ]}
+                    />
+                    <AdminListEditor 
+                      title="销售模式"
+                      items={copyrightData.salesModels || [
+                        { t: '区域子公司管理模式', d: '针对中星短剧地方影视文化服务中心、代理公司进行全方位的业务赋能与区域管理支持。' },
+                        { t: '分销代理模式', d: '成为地方（中星短剧XX影视文化服务中心）代理销售 or 平台、团队代理，享受高额销售返佣和平台分红。' },
+                        { t: '销售模式', d: '凡是购买一份短剧版权者，获得电子版”中星影视生态链联合制片人“牌匾，牌匾里有本人的照片和名字。就可以直接销售中星影视生态链的短剧版权，首次直接销售3份版权就全额回本（每销售一份，佣金2000元；完成销售3份，平台公司奖励4000元；销售的3份版权中，其中2份各自再销售3份，平台公司再奖励2000元。）。完成以上9份版权销售。即为完成一组销售，可收益12000元。完成一组销售后，开启另一组销售，完成3组销售后，平台公司随机奖励一份版权，与购买的版权享受同等权益。' }
+                      ]}
+                      onChange={(items: any) => setCopyrightData({...copyrightData, salesModels: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 't', label: '标题', type: 'text' },
+                        { key: 'd', label: '描述', type: 'textarea' }
                       ]}
                     />
                     <AdminListEditor 
@@ -1066,9 +1164,10 @@ export default function Admin() {
                       onChange={(items: any) => setActorsData({...actorsData, auditions: items})}
                       setDialogState={setDialogState}
                       schema={[
-                        { key: 'imageUrl', label: '活动封面 (16:9)', type: 'image', aspectRatio: 16/9 },
+                        { key: 'imageUrl', label: '活动封面 (3:4)', type: 'image', aspectRatio: 3/4 },
                         { key: 'title', label: '项目名称 (必填)', type: 'text' },
-                        { key: 'desc', label: '相关文字内容', type: 'text' }
+                        { key: 'desc', label: '相关文字内容', type: 'text' },
+                        { key: 'requirement', label: '招募要求', type: 'textarea' }
                       ]}
                     />
                     <AdminListEditor 
@@ -1080,7 +1179,8 @@ export default function Admin() {
                         { key: 'imageUrl', label: '课程封面 (可选)', type: 'image' },
                         { key: 'title', label: '班级名称 (必填)', type: 'text' },
                         { key: 'desc', label: '相关文字内容', type: 'text' },
-                        { key: 'date', label: '开班时间', type: 'text' }
+                        { key: 'date', label: '开班时间', type: 'text' },
+                        { key: 'details', label: '详细介绍', type: 'textarea' }
                       ]}
                     />
                   </>

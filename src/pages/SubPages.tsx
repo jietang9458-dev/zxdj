@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useCMS } from '../context/CMSContext';
 import { useUser } from '../context/UserContext';
 import { clsx, type ClassValue } from 'clsx';
@@ -129,7 +129,9 @@ export function CopyrightPurchase() {
 }
 
 export function PurchaseInstructions() {
-  const steps = [
+  const navigate = useNavigate();
+  const { pages } = useCMS();
+  const steps = pages.copyright?.purchaseInstructions || [
     { t: '购买须知', d: '购买版权是自己真实意愿的表达，共享收益，共担风险。版权购买需线下签订版权购买合同和版权授权协议，版权销售款不委托任何企业和个人代收，按照正式签订的合同里明确的收款方付款。签订合同时需要明确介绍人的姓名和电话。' },
     { t: '选择版权', d: '在热销中短剧版权里，购买短剧版权号。版权库里的仅供参考，在截止该部短剧的版权销售开始筹备时，官方平台会即时公布版权号所对应的短剧内容，任何购买版权者不持有异议。' },
     { t: '签署合约', d: '线下签署正式的版权购买合同和版权授权协议。' },
@@ -164,6 +166,14 @@ export function PurchaseInstructions() {
             所有版权交易均与中星影视生态链官方产生。如遇私下交易请及时反馈和投诉，私下交易产生的所有风险，平台概不负责，同时平台保留追究法律责任的权利。
           </p>
         </div>
+        
+        <button 
+          onClick={() => navigate('/help')}
+          className="mt-6 w-full bg-[#8B6E4E] hover:bg-[#6A523A] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+        >
+          <MessageSquare size={18} />
+          立即咨询
+        </button>
       </div>
     </div>
   );
@@ -239,18 +249,20 @@ export function FullCopyrightInstructions() {
 }
 
 export function CopyrightRights() {
-  const rights = [
-    "成为中星影视生态链的联合制片人，销售推广中星影视生态链的版权和其他业务，享受销售的佣金和平台公司奖励。",
-    "颁发电子版“中星影视生态链的联合制片人”牌匾，牌匾内有个人的照片和名字。",
-    "每份版权按照票房版权方收益的（A: AI短剧2%，B：精品短剧1%，C：明星短剧0.5%）比例，长期享受版权收益，每月支付一次。",
-    "销售佣金每份版权2000元。",
-    "完成销售三份版权后公司奖励4000元。",
-    "三份版权中其中两份版权完成三份版权的销售，平台公司再奖励2000元。",
-    "完成3组同类型版权销售后，公司随机奖励一份同类型版权（价值10000元），与购买版权享受同等的权利。",
-    "可以参加明星俱乐部活动，与明星互动。",
-    "可以参与公司的发布会、开机仪式、片场探班等。",
-    "可以参演公司的短剧（AI短剧除外）。"
+  const { pages } = useCMS();
+  const rawRights = pages.copyright?.rights || [
+    { text: "成为中星影视生态链的联合制片人，销售推广中星影视生态链的版权和其他业务，享受销售的佣金和平台公司奖励。" },
+    { text: "颁发电子版“中星影视生态链的联合制片人”牌匾，牌匾内有个人的照片和名字。" },
+    { text: "每份版权按照票房版权方收益的（A: AI短剧2%，B：精品短剧1%，C：明星短剧0.5%）比例，长期享受版权收益，每月支付一次。" },
+    { text: "销售佣金每份版权2000元。" },
+    { text: "完成销售三份版权后公司奖励4000元。" },
+    { text: "三份版权中其中两份版权完成三份版权的销售，平台公司再奖励2000元。" },
+    { text: "完成3组同类型版权销售后，公司随机奖励一份同类型版权（价值10000元），与购买版权享受同等的权利。" },
+    { text: "可以参加明星俱乐部活动，与明星互动。" },
+    { text: "可以参与公司的发布会、开机仪式、片场探班等。" },
+    { text: "可以参演公司的短剧（AI短剧除外）。" }
   ];
+  const rights = rawRights.map((r: any) => r.text);
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
@@ -281,19 +293,28 @@ export function CopyrightRights() {
 
 export function SalesModel() {
   const navigate = useNavigate();
+  const { pages } = useCMS();
+  const rawModels = pages.copyright?.salesModels || [
+    { t: '区域子公司管理模式', d: '针对中星短剧地方影视文化服务中心、代理公司进行全方位的业务赋能与区域管理支持。' },
+    { t: '分销代理模式', d: '成为地方（中星短剧XX影视文化服务中心）代理销售 or 平台、团队代理，享受高额销售返佣和平台分红。' },
+    { t: '销售模式', d: '凡是购买一份短剧版权者，获得电子版”中星影视生态链联合制片人“牌匾，牌匾里有本人的照片和名字。就可以直接销售中星影视生态链的短剧版权，首次直接销售3份版权就全额回本（每销售一份，佣金2000元；完成销售3份，平台公司奖励4000元；销售的3份版权中，其中2份各自再销售3份，平台公司再奖励2000元。）。完成以上9份版权销售。即为完成一组销售，可收益12000元。完成一组销售后，开启另一组销售，完成3组销售后，平台公司随机奖励一份版权，与购买的版权享受同等权益。' }
+  ];
+  
+  const getIcon = (index: number) => {
+    if (index % 3 === 0) return <Briefcase className="text-orange-500"/>;
+    if (index % 3 === 1) return <Users className="text-blue-500"/>;
+    return <TrendingUp className="text-green-500"/>;
+  };
+
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
       <Header title="销售模式" dark />
       <div className="p-8">
         <div className="space-y-8">
-          {[
-            { t: '区域子公司管理模式', d: '针对中星短剧地方影视文化服务中心、代理公司进行全方位的业务赋能与区域管理支持。', i: <Briefcase className="text-orange-500"/> },
-            { t: '分销代理模式', d: '成为地方（中星短剧XX影视文化服务中心）代理销售 or 平台、团队代理，享受高额销售返佣和平台分红。', i: <Users className="text-blue-500"/> },
-            { t: '销售模式', d: '凡是购买一份短剧版权者，获得电子版”中星影视生态链联合制片人“牌匾，牌匾里有本人的照片和名字。就可以直接销售中星影视生态链的短剧版权，首次直接销售3份版权就全额回本（每销售一份，佣金2000元；完成销售3份，平台公司奖励4000元；销售的3份版权中，其中2份各自再销售3份，平台公司再奖励2000元。）。完成以上9份版权销售。即为完成一组销售，可收益12000元。完成一组销售后，开启另一组销售，完成3组销售后，平台公司随机奖励一份版权，与购买的版权享受同等权益。', i: <TrendingUp className="text-green-500"/> }
-          ].map((m, i) => (
+          {rawModels.map((m: any, i: number) => (
             <div key={i} className="flex gap-6 items-start">
               <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#2A1D0F] shadow-sm animate-shadow-pulse flex items-center justify-center flex-shrink-0">
-                {React.cloneElement(m.i as React.ReactElement, { size: 28 })}
+                {React.cloneElement(getIcon(i) as React.ReactElement, { size: 28 })}
               </div>
               <div>
                 <h4 className="text-[17px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2">{m.t}</h4>
@@ -314,6 +335,7 @@ export function SalesModel() {
 }
 
 export function CopyrightLibrary() {
+  const navigate = useNavigate();
   const { pages } = useCMS();
   const libraryItems = pages.copyright?.libraryItems || HOT_DRAMAS.concat(HOT_DRAMAS);
   const [searchQuery, setSearchQuery] = useState('');
@@ -345,7 +367,7 @@ export function CopyrightLibrary() {
         </div>
         <div className="grid grid-cols-2 gap-4 mb-10">
           {filtered.map((drama, i) => (
-            <div key={i} className="bg-white dark:bg-[#2A1D0F] rounded-[28px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 flex flex-col group cursor-pointer">
+            <div key={i} onClick={() => navigate('/copyright/project/' + i)} className="bg-white dark:bg-[#2A1D0F] rounded-[28px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 flex flex-col group cursor-pointer">
               <div className="aspect-[3/4] relative overflow-hidden">
                 <img src={drama.imageUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="" />
                 <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] text-white font-black border border-white/30 flex items-center gap-1">
@@ -354,13 +376,53 @@ export function CopyrightLibrary() {
               </div>
               <div className="p-4">
                 <h4 className="text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] line-clamp-1">{drama.title}</h4>
-                <div className="flex items-center gap-1.5 text-[11px] text-[#A69984] mt-1.5">
-                  <LayoutList size={12} className="text-[#D4AF37]" />
-                  <span>作品集数：80集</span>
-                </div>
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+export function ProjectDetails() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { pages } = useCMS();
+  const libraryItems = pages.copyright?.libraryItems || HOT_DRAMAS.concat(HOT_DRAMAS);
+  const project = libraryItems[Number(id)] || libraryItems[0];
+
+  return (
+    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
+      <Header title="项目介绍" dark />
+      <div className="w-full aspect-[3/4] max-h-[60vh] overflow-hidden relative shadow-2xl">
+        <img src={project.imageUrl} className="w-full h-full object-cover" alt="" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+        <div className="absolute bottom-6 left-6 right-6">
+          <h1 className="text-[28px] font-black text-white mb-2 leading-tight drop-shadow-md">{project.title}</h1>
+        </div>
+      </div>
+      
+      <div className="p-6 -mt-4 relative z-10 space-y-6">
+        <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
+          <h3 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-3 flex items-center gap-2">
+            <FileText className="text-[#D4AF37]" size={18} />
+            故事梗概
+          </h3>
+          <p className="text-[14px] text-[#4A443E] dark:text-[#A69984] leading-relaxed whitespace-pre-line">
+            {project.synopsis || "暂无故事梗概"}
+          </p>
+        </div>
+
+        <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
+          <h3 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-3 flex items-center gap-2">
+            <Info className="text-[#D4AF37]" size={18} />
+            相关介绍
+          </h3>
+          <p className="text-[14px] text-[#4A443E] dark:text-[#A69984] leading-relaxed whitespace-pre-line">
+            {project.desc || "暂无相关介绍"}
+          </p>
         </div>
       </div>
     </div>
@@ -874,6 +936,55 @@ export function MyRegistrations() {
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+
+export function ClassDetails() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { pages } = useCMS();
+  const actorsData = pages.actors || {};
+  const classes = actorsData.classes || [
+    { title: '少儿演艺周末班', desc: '形体、台词、表演基础', date: '每月初开班', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop', details: '通过科学的课程体系，培养孩子的艺术表现力和自信心。' },
+    { title: '青年演员特训营', desc: '剧组实战、进阶表演', date: '寒暑假开班', imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop', details: '为有志于演艺事业的青年提供专业的进阶培训，直接对接剧组资源。' }
+  ];
+  const classInfo = classes[Number(id)] || classes[0];
+
+  return (
+    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
+      <Header title="详细介绍" dark />
+      <div className="w-full aspect-[16/9] max-h-[40vh] overflow-hidden relative shadow-2xl">
+        <img src={classInfo.imageUrl} className="w-full h-full object-cover" alt="" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+        <div className="absolute bottom-6 left-6 right-6">
+          <div className="text-[12px] text-[#D4AF37] font-bold mb-2 bg-[#D4AF37]/20 px-3 py-1 rounded-full inline-block backdrop-blur-md border border-[#D4AF37]/30">
+            {classInfo.date}
+          </div>
+          <h1 className="text-[24px] font-black text-white mb-1 leading-tight drop-shadow-md">{classInfo.title}</h1>
+        </div>
+      </div>
+      
+      <div className="p-6 -mt-4 relative z-10 space-y-6">
+        <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
+          <h3 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-3 flex items-center gap-2">
+            <Info className="text-[#D4AF37]" size={18} />
+            详细介绍
+          </h3>
+          <p className="text-[14px] text-[#4A443E] dark:text-[#A69984] leading-relaxed whitespace-pre-line">
+            {classInfo.details || classInfo.desc || "暂无相关介绍"}
+          </p>
+        </div>
+
+        <button 
+          onClick={() => navigate('/audition/registration')}
+          className="w-full mt-8 h-14 bg-[#1A1108] text-white font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px] flex items-center justify-center gap-2"
+        >
+          <CheckCircle2 size={20} />
+          我要报名
+        </button>
       </div>
     </div>
   );

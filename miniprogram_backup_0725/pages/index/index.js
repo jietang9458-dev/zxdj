@@ -39,6 +39,5 @@ Page({
       icon: 'none',
       duration: 3000
     });
-    this.setData({ showWebview: false });
   }
 })
