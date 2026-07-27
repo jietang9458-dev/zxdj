@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCMS } from '../context/CMSContext';
-import CommunityManager from "../components/CommunityManager";
 import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase, updateBase, deleteBase, addProduct, updateProduct, deleteProduct, uploadFile,
   addLiveStream, updateLiveStream, deleteLiveStream
  } from '../services/cmsService';
@@ -720,7 +719,7 @@ export default function Admin() {
     { id: 'users', label: '用户列表', icon: UserCheck },
     { id: 'courseRegistrations', label: '报名信息', icon: FileText },
     { id: 'visitBookings', label: '预约信息', icon: FileText },
-    { id: 'feedbacks', label: '咨询反馈', icon: MessageSquare }, { id: 'documents', label: '文档管理', icon: FileText }, { id: 'community', label: '社区审核', icon: MessageSquare },
+    { id: 'feedbacks', label: '咨询反馈', icon: MessageSquare }, { id: 'documents', label: '文档管理', icon: FileText },
   ];
 
   return (
@@ -1901,7 +1900,7 @@ export default function Admin() {
             </div>
           </div>
         )}
-        {activeTab === 'community' && <CommunityManager />}
+        
         {activeTab === 'feedbacks' && (
           <div className="space-y-4 pb-10">
             <div className="flex justify-between items-center px-2">
