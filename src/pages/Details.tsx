@@ -137,7 +137,7 @@ export function DramaDetail() {
         </div>
 
         <button 
-          onClick={() => navigate('/audition/registration')}
+          onClick={() => navigate('/audition/registration?type=参演报名表')}
           className="w-full mt-12 h-14 bg-[#D4AF37] text-white font-black rounded-2xl shadow-xl shadow-yellow-500/10 active:scale-95 transition-all text-[15px]"
         >
           我要参加海选
@@ -205,7 +205,7 @@ export function ActorDetail() {
         </div>
 
         <button 
-          onClick={() => navigate('/audition/registration')}
+          onClick={() => navigate('/audition/registration?type=参演报名表')}
           className="w-full mt-10 h-14 bg-[#8B6E4E] text-white font-black rounded-2xl shadow-lg active:scale-95 transition-all text-[15px]"
         >
           我要参加海选

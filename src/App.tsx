@@ -19,7 +19,7 @@ import Mine from './pages/Mine';
 import Mall from './pages/Mall';
 import { Production, Actors, Tourism, TourismGroups, FilmingExperience, StarClub, Investment, LiveFilming } from './pages/MiscPages';
 import { DramaDetail, ActorDetail, PostDetail, ProductDetail, PrepProjectDetail } from './pages/Details';
-import { CopyrightPurchase, SalesModel, CopyrightLibrary, CopyrightPublicity, ServiceFlow, PurchaseInstructions, FullCopyrightInstructions, CopyrightRights, AuditionRegistration, GeneralRegistration, MyRegistrations, LearningArt, AuditionProjectList, ProjectDetails, ClassDetails } from './pages/SubPages';
+import { CopyrightPurchase, SalesModel, CopyrightLibrary, CopyrightPublicity, ServiceFlow, PurchaseInstructions, FullCopyrightInstructions, CopyrightRights, AuditionRegistration, GeneralRegistration, MyRegistrations, LearningArt, AuditionProjectList, ProjectDetails, ClassDetails , VisitBooking, AuditionProjectDetail } from './pages/SubPages';
 import MallCategory from './pages/MallSubPages';
 import Discover from './pages/Discover';
 import HotDramas from './pages/HotDramas';
@@ -75,7 +75,9 @@ export default function App() {
                     <Route path="/copyright/publicity" element={<CopyrightPublicity />} />
                     <Route path="/audition/registration" element={<AuditionRegistration />} />
                     <Route path="/register" element={<GeneralRegistration />} />
+                    <Route path="/visit-booking/:id" element={<VisitBooking />} />
                     <Route path="/audition/projects" element={<AuditionProjectList />} />
+                    <Route path="/audition/project/:id" element={<AuditionProjectDetail />} />
                     <Route path="/audition/learning" element={<LearningArt />} />
                     <Route path="/audition/class/:id" element={<ClassDetails />} />
                     <Route path="/service/flow" element={<ServiceFlow />} />

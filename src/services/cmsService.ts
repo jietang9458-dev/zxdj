@@ -209,3 +209,18 @@ export async function isAdmin() {
   // Always true for local editing now or use simple local storage
   return localStorage.getItem('isAdmin') === 'true';
 }
+
+export async function getVisitBookings() {
+  const res = await fetch(`${API_BASE}/visit_bookings`);
+  if (!res.ok) return null;
+  return await res.json();
+}
+
+export async function addVisitBooking(data: any) {
+  const res = await fetch(`${API_BASE}/visit_bookings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+}

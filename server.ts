@@ -70,6 +70,10 @@ db.exec(`
     data TEXT
   );
 
+  CREATE TABLE IF NOT EXISTS visit_bookings (
+    id TEXT PRIMARY KEY,
+    data TEXT
+  );
   CREATE TABLE IF NOT EXISTS course_registrations (
     id TEXT PRIMARY KEY,
     data TEXT
@@ -125,7 +129,7 @@ app.post('/api/interactions_upsert', (req, res) => {
 });
 
 // Generic Collection Handlers
-const collections = ['dramas', 'bases', 'products', 'liveStreams', 'feedbacks', 'course_registrations', 'users', 'community_posts', 'interactions'];
+const collections = ['dramas', 'bases', 'products', 'liveStreams', 'feedbacks', 'course_registrations', 'visit_bookings', 'users', 'community_posts', 'interactions'];
 
 collections.forEach(col => {
   app.get(`/api/${col}`, (req, res) => {

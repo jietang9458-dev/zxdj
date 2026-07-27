@@ -512,6 +512,7 @@ export function ServiceFlow() {
 
 export function LearningArt() {
   const { pages } = useCMS();
+  const navigate = useNavigate();
   const actorsData = pages.actors || {};
   const classes = actorsData.classes && actorsData.classes.length > 0 ? actorsData.classes : [
     { title: '少儿演艺周末班', desc: '形体、台词、表演基础', date: '每月初开班', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop' },
@@ -530,7 +531,11 @@ export function LearningArt() {
 
         <div className="space-y-4">
           {classes.map((cls: any, i: number) => (
-            <div key={i} className="flex gap-4 p-5 bg-white dark:bg-[#2A1D0F] rounded-[32px] shadow-sm border border-gray-50 dark:border-white/5">
+            <div 
+              key={i} 
+              onClick={() => navigate('/audition/class/' + i)}
+              className="flex gap-4 p-5 bg-white dark:bg-[#2A1D0F] rounded-[32px] shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer active:scale-95 transition-transform"
+            >
               <div className="w-20 h-24 rounded-2xl bg-gray-100 overflow-hidden shrink-0 shadow-sm border border-gray-100">
                 <img src={cls.imageUrl} alt="" className="w-full h-full object-cover" />
               </div>
@@ -557,8 +562,10 @@ export function LearningArt() {
 
 export function AuditionRegistration() {
   const navigate = useNavigate();
-  const { addCourseRegistration } = useCMS();
+  const { addCourseRegistration, pages } = useCMS();
+  const typeParam = new URLSearchParams(window.location.search).get('type') || '海选报名表';
   const { addNotification } = useUser();
+  const auditionEmail = pages.settings?.auditionEmail || 'szfyuan@163.com';
   const [formData, setFormData] = useState({
     name: '',
     gender: '男',
@@ -586,7 +593,7 @@ export function AuditionRegistration() {
     };
 
     try {
-      await addCourseRegistration({ ...newRegistration, category: '海选' });
+      await addCourseRegistration({ ...newRegistration, category: typeParam });
     } catch(err) {
       console.error(err);
     }
@@ -727,6 +734,18 @@ export function AuditionRegistration() {
             >
               提交报名信息
             </button>
+            <div className="mt-6 text-center text-[12px] text-red-500 font-bold px-4 leading-relaxed">
+              注意：请将素颜生活照和作品发至邮箱：
+              <span 
+                onClick={() => {
+                  navigator.clipboard.writeText(auditionEmail);
+                  alert('复制成功');
+                }}
+                className="text-blue-600 text-[14px] font-black cursor-pointer underline underline-offset-2 break-all inline-block ml-1"
+              >
+                {auditionEmail}
+              </span>。
+            </div>
           </form>
         </div>
       </div>
@@ -764,7 +783,8 @@ export function GeneralRegistration() {
     };
     
     try {
-      await addCourseRegistration({ ...newRegistration, category: '海选/活动' });
+      const typeParam = new URLSearchParams(window.location.search).get('type') || '一般报名表';
+      await addCourseRegistration({ ...newRegistration, category: typeParam });
     } catch(err) {
       console.error(err);
     }
@@ -979,7 +999,7 @@ export function ClassDetails() {
         </div>
 
         <button 
-          onClick={() => navigate('/audition/registration')}
+          onClick={() => navigate('/register?type=培训报名表')}
           className="w-full mt-8 h-14 bg-[#1A1108] text-white font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px] flex items-center justify-center gap-2"
         >
           <CheckCircle2 size={20} />
@@ -1029,7 +1049,7 @@ export function AuditionProjectList() {
           {auditionProjects.map((project: any, index: number) => (
             <div 
               key={project.id || index} 
-              onClick={() => navigate(project.id ? `/drama/${project.id}` : '#')}
+              onClick={() => navigate(`/audition/project/${project.id || index}`)}
               className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 flex flex-col active:scale-[0.98] transition-transform"
             >
               <div className="flex gap-4 p-5">
@@ -1050,10 +1070,7 @@ export function AuditionProjectList() {
               <div className="px-5 py-3 bg-gray-50 dark:bg-black/10 border-t border-gray-50 dark:border-white/5 flex justify-between items-center">
                 <span className="text-[11px] text-[#A69984] font-black">{project.date}</span>
                 <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate('/audition/registration');
-                  }}
+                  onClick={(e) => { e.stopPropagation(); navigate('/audition/registration?type=海选报名表'); }}
                   className="bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108] px-4 py-1.5 rounded-xl text-[11px] font-black"
                 >
                   立即报名
@@ -1062,6 +1079,211 @@ export function AuditionProjectList() {
             </div>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+
+export function VisitBooking() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { bases } = useCMS();
+  const currentBases = bases && bases.length > 0 ? bases : [{ id: '1', title: '中国盐田山海都市片场' }];
+  const base = currentBases.find((b: any) => b.id === id) || currentBases[0];
+  const { addNotification } = useUser();
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    visitDate: '',
+    teamSize: '',
+    purpose: ''
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone || !formData.visitDate) {
+      alert('请填写必填项');
+      return;
+    }
+
+    try {
+      const { addVisitBooking } = await import('../services/cmsService');
+      const newBooking = {
+        ...formData,
+        baseId: id,
+        baseName: base.title,
+        status: '待审核',
+        date: new Date().toLocaleDateString()
+      };
+      
+      await addVisitBooking(newBooking);
+      addNotification({
+        id: Date.now().toString(),
+        title: '预约成功',
+        message: '您的参观预约已提交，工作人员将尽快与您联系。',
+        time: '刚刚',
+        read: false,
+        type: 'system'
+      });
+      alert('预约提交成功！');
+      navigate(-1);
+    } catch (e: any) {
+      alert("提交失败: " + e.message);
+    }
+  };
+
+  return (
+    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-screen pb-10 transition-colors duration-300">
+      <Header title="预约参观报名表" dark />
+      <div className="p-5 space-y-6">
+        <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
+          <div className="mb-6 pb-6 border-b border-gray-100 dark:border-white/5">
+            <h2 className="text-[18px] font-black text-[#1A1108] dark:text-white mb-2">预约基地</h2>
+            <p className="text-[14px] text-[#A69984]">{base.title}</p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">姓名 <span className="text-red-500">*</span></label>
+              <input 
+                type="text" 
+                value={formData.name}
+                onChange={e => setFormData({...formData, name: e.target.value})}
+                placeholder="请输入您的姓名"
+                className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5"
+              />
+            </div>
+            <div>
+              <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">联系电话 <span className="text-red-500">*</span></label>
+              <input 
+                type="tel" 
+                value={formData.phone}
+                onChange={e => setFormData({...formData, phone: e.target.value})}
+                placeholder="请输入联系电话"
+                className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5"
+              />
+            </div>
+            <div>
+              <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">期望参观日期 <span className="text-red-500">*</span></label>
+              <input 
+                type="date" 
+                value={formData.visitDate}
+                onChange={e => setFormData({...formData, visitDate: e.target.value})}
+                className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">参观人数</label>
+                <input 
+                  type="number" 
+                  value={formData.teamSize}
+                  onChange={e => setFormData({...formData, teamSize: e.target.value})}
+                  placeholder="如: 3"
+                  className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">参观目的</label>
+                <select 
+                  value={formData.purpose}
+                  onChange={e => setFormData({...formData, purpose: e.target.value})}
+                  className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5 appearance-none"
+                >
+                  <option value="">请选择</option>
+                  <option value="拍摄取景">拍摄取景</option>
+                  <option value="场地租赁">场地租赁</option>
+                  <option value="合作洽谈">合作洽谈</option>
+                  <option value="其他">其他</option>
+                </select>
+              </div>
+            </div>
+            <button 
+              type="submit"
+              className="w-full mt-6 h-14 bg-[#1A1108] dark:bg-[#D4AF37] text-white dark:text-[#1A1108] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px]"
+            >
+              提交预约
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+export function AuditionProjectDetail() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { pages } = useCMS();
+  const actorsData = pages.actors || {};
+  const auditions = actorsData.auditions && actorsData.auditions.length > 0 ? actorsData.auditions : [
+    {
+      id: '1',
+      title: '逆袭之星途璀璨',
+      imageUrl: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=400&h=600&fit=crop',
+      desc: '一部讲述草根少女通过努力一步步攀登演艺巅峰的励志短剧。',
+      requirement: '形象气质佳，演技自然，有舞蹈基础者优先。',
+      date: '海选截止：2024-07-30'
+    }
+  ];
+  
+  // Try finding by id, otherwise index if id is numeric, otherwise just pick first
+  const project = auditions.find((a: any) => a.id === id) || (isNaN(Number(id)) ? auditions[0] : auditions[Number(id)]) || auditions[0];
+
+  return (
+    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-screen pb-24 transition-colors duration-300">
+      <Header title="项目介绍" dark />
+      <div className="w-full aspect-[3/4] max-h-[60vh] overflow-hidden relative shadow-2xl">
+        <img src={project.imageUrl} className="w-full h-full object-cover" alt="" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+        <div className="absolute bottom-6 left-6 right-6">
+          <h1 className="text-[28px] font-black text-white mb-2 leading-tight drop-shadow-md">{project.title}</h1>
+        </div>
+      </div>
+      
+      <div className="p-6 -mt-4 relative z-10 space-y-6">
+        <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
+          <h3 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-3 flex items-center gap-2">
+            <FileText className="text-[#D4AF37]" size={18} />
+            招募要求
+          </h3>
+          <p className="text-[14px] text-[#4A443E] dark:text-[#A69984] leading-relaxed">
+            {project.requirement || "暂无招募要求"}
+          </p>
+          <div className="mt-4 pt-4 border-t border-gray-50 dark:border-white/5">
+            <span className="text-[11px] text-[#A69984] font-black">{project.date}</span>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
+          <h3 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-3 flex items-center gap-2">
+            <FileText className="text-[#D4AF37]" size={18} />
+            项目介绍
+          </h3>
+          {project.introImages && project.introImages.length > 0 && (
+            <div className={`grid gap-2 mb-4 ${project.introImages.length === 1 ? 'grid-cols-1' : project.introImages.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+              {project.introImages.map((img: string, idx: number) => (
+                <div key={idx} className="w-full rounded-xl overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 aspect-square">
+                  <img src={img} className="w-full h-full object-cover" alt="" />
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-[14px] text-[#4A443E] dark:text-[#A69984] leading-relaxed whitespace-pre-wrap">
+            {project.introText || project.desc || "暂无项目介绍"}
+          </p>
+        </div>
+      </div>
+      
+      {/* Fixed bottom action */}
+      <div className="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-white via-white to-transparent dark:from-[#1A1108] dark:via-[#1A1108] z-50">
+        <button 
+          onClick={() => navigate('/audition/registration?type=参演报名表')}
+          className="w-full h-14 bg-[#1A1108] dark:bg-[#D4AF37] text-white dark:text-[#1A1108] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px] flex items-center justify-center gap-2"
+        >
+          我要参演
+        </button>
       </div>
     </div>
   );

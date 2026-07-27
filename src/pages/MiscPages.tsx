@@ -255,7 +255,7 @@ export function Tourism() {
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
-      <Header title={pageData.title || "影视文化旅游中心"} dark />
+      <Header title={pageData.pageTitle || "影视文化旅游中心"} dark />
       <div className="mx-5 mt-4 rounded-[32px] overflow-hidden h-[180px] relative shadow-xl">
         <AnimatePresence mode="wait">
           <motion.img
@@ -292,7 +292,7 @@ export function Tourism() {
       <div className="px-5 mt-8 grid grid-cols-4 gap-4">
         {[
           { l: '影视旅游', Icon: Warehouse, path: '/tourism/groups' },
-          { l: '拍摄体验', Icon: Film, path: '/tourism/experience' },
+          { l: '拍摄体验', Icon: Film, path: '/audition/projects' },
           { l: '特色产品', Icon: Users, path: '/mall' },
           { l: '疗愈养生', Icon: Star, path: '/service/flow' }
         ].map((item, idx) => (
@@ -396,7 +396,7 @@ export function TourismGroups() {
               </div>
 
               <button 
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/register?type=旅游报名表')}
                 className="w-full mt-6 h-12 bg-[#8B6E4E] text-white font-black rounded-2xl shadow-lg shadow-[#8B6E4E]/20 active:scale-95 transition-all text-[14px]"
               >
                 我要报名
@@ -423,7 +423,7 @@ export function StarClub() {
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
-      <Header title={pageData.title || "明星俱乐部"} dark />
+      <Header title={pageData.pageTitle || "明星俱乐部"} dark />
       <div className="mx-5 mt-4 rounded-[32px] overflow-hidden h-[180px] relative shadow-xl">
         <img 
           src={pageData.banner || "https://images.unsplash.com/photo-1514525253361-b83f8a9e2a6a?q=80&w=800&fit=crop"} 
@@ -473,7 +473,7 @@ export function StarClub() {
                 <p className="text-[11px] text-[#A69984] font-bold">{item.time} {item.location}</p>
                 <div className="flex justify-end mt-1">
                   <button 
-                    onClick={() => navigate('/register')}
+                    onClick={() => navigate('/register?type=旅游报名表')}
                     className="bg-[#8B6E4E] text-white px-5 py-1.5 rounded-xl text-[12px] font-black active:scale-90 transition-transform"
                   >
                     我要报名

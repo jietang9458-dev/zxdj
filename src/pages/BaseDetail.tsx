@@ -20,8 +20,7 @@ export default function BaseDetail() {
   
   const currentBases = bases && bases.length > 0 ? bases : BASES;
   const base = currentBases.find((b: any) => b.id === id) || currentBases[0];
-  const tagsStr = base.tagsStr || '';
-  const tags = tagsStr ? tagsStr.split(',').map((t: string) => t.trim()).filter(Boolean) : ['海景基地', '高级配套'];
+  const tags = Array.isArray(base.tags) && base.tags.length > 0 ? base.tags : (base.tagsStr ? base.tagsStr.split(',').map((t: string) => t.trim()).filter(Boolean) : ['海景基地', '高级配套']);
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
@@ -54,7 +53,15 @@ export default function BaseDetail() {
         {/* Section: Intro */}
         <div className="mb-10">
           <h2 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-4">基地介绍</h2>
-          {base.introImage && (
+          {base.introImages && base.introImages.length > 0 ? (
+            <div className={`grid gap-2 mb-4 ${base.introImages.length === 1 ? 'grid-cols-1' : base.introImages.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+              {base.introImages.map((img: string, idx: number) => (
+                <div key={idx} className="w-full rounded-xl overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 aspect-square">
+                  <img src={img} className="w-full h-full object-cover" alt="" />
+                </div>
+              ))}
+            </div>
+          ) : base.introImage && (
             <div className="w-full rounded-2xl overflow-hidden mb-4 shadow-sm border border-gray-50 dark:border-white/5">
               <img src={base.introImage} className="w-full object-cover" alt="" />
             </div>
@@ -94,7 +101,7 @@ export default function BaseDetail() {
         <button className="flex-shrink-0 w-16 h-14 rounded-2xl border-2 border-[#D4AF37]/20 bg-white dark:bg-[#2A1D0F] flex items-center justify-center text-[#D4AF37] shadow-sm active:scale-95 transition-all">
           <Heart size={24} />
         </button>
-        <button className="flex-1 h-14 bg-[#8B6E4E] text-white font-black rounded-2xl shadow-xl shadow-[#8B6E4E]/30 active:scale-95 transition-all tracking-widest text-[16px]">
+        <button onClick={() => navigate(`/visit-booking/${base.id}`)} className="flex-1 h-14 bg-[#8B6E4E] text-white font-black rounded-2xl shadow-xl shadow-[#8B6E4E]/30 active:scale-95 transition-all tracking-widest text-[16px]">
           预约参观
         </button>
       </div>

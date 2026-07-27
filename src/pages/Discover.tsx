@@ -64,9 +64,9 @@ export default function Discover() {
 
   const newsData = pages.news || {};
   const cmsPosts = [
-    ...(newsData.shortDramaNews || []).map((n: any, i: number) => ({ id: `sd_${i}`, t: n.title, u: '短剧资讯', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '短剧资讯' })),
-    ...(newsData.bts || []).map((n: any, i: number) => ({ id: `bts_${i}`, t: n.title, u: '拍摄花絮', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '拍摄花絮' })),
-    ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, u: '成功案例', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '成功案例' }))
+    ...(newsData.shortDramaNews || []).map((n: any, i: number) => ({ id: `sd_${i}`, t: n.title, u: '短剧资讯', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '短剧资讯', isRecommended: !!n.isRecommended })),
+    ...(newsData.bts || []).map((n: any, i: number) => ({ id: `bts_${i}`, t: n.title, u: '拍摄花絮', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '拍摄花絮', isRecommended: !!n.isRecommended })),
+    ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, u: '成功案例', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '成功案例', isRecommended: !!n.isRecommended }))
   ];
   
   const approvedCommunityPosts = communityPosts.filter(p => p.approved || p.uid === profile.uid).map(p => ({
@@ -79,7 +79,7 @@ export default function Discover() {
   const allPosts = [...cmsPosts, ...DISCOVER_POSTS, ...approvedCommunityPosts];
 
   const filteredPosts = (activeTab === '推荐' 
-    ? allPosts 
+    ? allPosts.filter((p: any) => p.isRecommended || DISCOVER_POSTS.includes(p) || p.cat === '互动交流') 
     : allPosts.filter(p => p.cat === activeTab)
   ).filter(p => !urlSearchQuery || p.t?.includes(urlSearchQuery) || p.u?.includes(urlSearchQuery));
 

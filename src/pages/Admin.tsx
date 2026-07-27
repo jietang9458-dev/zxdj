@@ -1,3 +1,4 @@
+import * as XLSX from 'xlsx';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
@@ -7,7 +8,7 @@ import { updatePageContent, isAdmin, addDrama, updateDrama, deleteDrama, addBase
   addLiveStream, updateLiveStream, deleteLiveStream
  } from '../services/cmsService';
 import { motion } from 'motion/react';
-import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft, Upload, MessageSquare, FileText, Wifi, UserCheck, PenTool } from 'lucide-react';
+import { Save, Plus, Trash2, LogIn, Lock, Image as ImageIcon, Type, MapPin, Tag, ExternalLink, Settings, Home, Shield, Video, Users, Plane, PiggyBank, Star, Film, Map, ShoppingBag, LayoutDashboard, ChevronLeft, Upload, MessageSquare, FileText, Wifi, UserCheck, PenTool , X } from 'lucide-react';
 
 import ImageCropperModal from '../components/ImageCropperModal';
 
@@ -99,6 +100,88 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
                       )}
                     </div>
                   </ImageUploadButton>
+                </div>
+              ) : field.type === 'tag_list' ? (
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
+                    {(data[field.key] || []).map((tag, idx) => (
+                      <span key={idx} className="px-3 py-1.5 bg-gray-100 text-gray-700 text-[13px] rounded-xl flex items-center gap-1">
+                        {tag}
+                        <button onClick={() => {
+                          const newArr = [...data[field.key]];
+                          newArr.splice(idx, 1);
+                          setData({...data, [field.key]: newArr});
+                        }} className="text-gray-400 hover:text-red-500"><X size={14}/></button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="输入新标签 (回车添加)" 
+                      id={`tag-input-${field.key}`}
+                      className="flex-1 px-4 py-2 bg-gray-50 rounded-xl outline-none text-[13px] focus:ring-2 ring-orange-200"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const val = e.currentTarget.value.trim();
+                          if (val) {
+                            const newArr = [...(data[field.key] || []), val];
+                            setData({...data, [field.key]: newArr});
+                            e.currentTarget.value = '';
+                          }
+                        }
+                      }}
+                    />
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const input = document.getElementById(`tag-input-${field.key}`) as HTMLInputElement;
+                        const val = input.value.trim();
+                        if (val) {
+                          const newArr = [...(data[field.key] || []), val];
+                          setData({...data, [field.key]: newArr});
+                          input.value = '';
+                        }
+                      }}
+                      className="px-4 py-2 bg-[#1A1108] text-white rounded-xl text-[13px] font-bold"
+                    >
+                      添加
+                    </button>
+                  </div>
+                </div>
+              ) : field.type === 'image_list' ? (
+                <div className="grid grid-cols-3 gap-3">
+                  {(data[field.key] || []).map((imgUrl, idx) => (
+                    <div key={idx} className="relative aspect-square bg-gray-50 rounded-xl overflow-hidden group">
+                      <img src={imgUrl} className="w-full h-full object-cover" alt="" />
+                      <button 
+                        onClick={() => {
+                          const newArr = [...data[field.key]];
+                          newArr.splice(idx, 1);
+                          setData({...data, [field.key]: newArr});
+                        }}
+                        className="absolute top-1 right-1 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      ><X size={14}/></button>
+                    </div>
+                  ))}
+                  {(!data[field.key] || data[field.key].length < (field.maxCount || 9)) && (
+                    <ImageUploadButton 
+                      value=""
+                      onChange={(val) => {
+                        const newArr = [...(data[field.key] || [])];
+                        newArr.push(val);
+                        setData({...data, [field.key]: newArr});
+                      }}
+                      className="w-full aspect-square"
+                    >
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors border border-gray-100 cursor-pointer min-h-[100px]">
+                        <Upload size={20} className="text-gray-400 mb-1" />
+                        <span className="text-[11px] text-gray-400 font-bold">上传图片</span>
+                        <span className="text-[10px] text-gray-400">({data[field.key]?.length || 0}/{field.maxCount || 9})</span>
+                      </div>
+                    </ImageUploadButton>
+                  )}
                 </div>
               ) : field.type === 'textarea' ? (
                 <textarea 
@@ -230,7 +313,7 @@ const AdminListEditor = ({ title, items = [], onChange, schema, setDialogState }
 };
 
 export default function Admin() {
-  const { pages, dramas, bases, products, liveStreams, feedbacks, courseRegistrations, users, refresh } = useCMS();
+  const { pages, dramas, bases, products, liveStreams, feedbacks, courseRegistrations, visitBookings, users, refresh } = useCMS();
   const [activeTab, setActiveTab] = useState<'home' | 'dramas' | 'bases' | 'products' | 'liveStreams' | 'feedbacks' | 'courseRegistrations' | 'users' | 'settings' | 'copyright' | 'production' | 'actors' | 'tourism' | 'invest' | 'starclub' | 'news'>('home');
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -242,6 +325,7 @@ export default function Admin() {
   const [appLogo, setAppLogo] = useState(pages.settings?.logo || '');
   const [appName, setAppName] = useState(pages.settings?.name || '中星短剧');
   const [appSlogan, setAppSlogan] = useState(pages.settings?.slogan || '联动你我 · 链接未来');
+  const [auditionEmail, setAuditionEmail] = useState(pages.settings?.auditionEmail || 'szfyuan@163.com');
 
   // Business Pages States
   const [copyrightData, setCopyrightData] = useState(pages.copyright || { banner: '', title: '', subtitle: '', news: [] });
@@ -311,7 +395,8 @@ export default function Admin() {
       await updatePageContent('settings', { 
         logo: appLogo, 
         name: appName,
-        slogan: appSlogan
+        slogan: appSlogan,
+        auditionEmail: auditionEmail
       });
       alert("全局设置保存成功！");
       refresh();
@@ -412,8 +497,8 @@ export default function Admin() {
           { key: 'title', label: '基地名称', type: 'text' },
           { key: 'location', label: '地点描述', type: 'text' },
           { key: 'region', label: '大区 (如 华南)', type: 'text' },
-          { key: 'tagsStr', label: '标签 (逗号分隔)', type: 'text' },
-          { key: 'introImage', label: '基地介绍图片', type: 'image', aspectRatio: 16/9 },
+          { key: 'tags', label: '标签 (海景基地、高级配置等)', type: 'tag_list' },
+          { key: 'introImages', label: '基地介绍图片 (最多9张)', type: 'image_list', maxCount: 9 },
           { key: 'introText', label: '基地介绍文字', type: 'textarea' },
           { key: 'facilities', label: '基地设施', type: 'textarea' }
         ],
@@ -421,11 +506,7 @@ export default function Admin() {
           if (!data.title || !data.imageUrl) return alert("请填写完整信息");
           setLoading(true);
           try {
-            const formattedData = {
-              ...data,
-              tags: data.tagsStr ? data.tagsStr.split(',').map((t:string) => t.trim()) : data.tags || []
-            };
-            delete formattedData.tagsStr;
+            const formattedData = { ...data };
             
             if (initialData) {
               await updateBase(initialData.id, formattedData);
@@ -564,7 +645,65 @@ export default function Admin() {
     );
   }
 
+
+  const exportToExcel = () => {
+    const wb = XLSX.utils.book_new();
+
+    const normalizedRegistrations = courseRegistrations.map((r: any) => {
+      let cat = r.category || '其他';
+      if (cat === '海选') cat = '海选报名表';
+      if (cat === '文旅') cat = '旅游报名表';
+      if (cat === '培训') cat = '培训报名表';
+      if (cat === '海选/活动') cat = '参演报名表';
+      return { ...r, normalizedCat: cat };
+    });
+
+    const createSheetForCategory = (catName: string, items: any[]) => {
+      if (items.length === 0) return;
+      const wsData = items.map((item: any) => ({
+        类别: item.normalizedCat,
+        姓名: item.name,
+        性别: item.gender || '-',
+        年龄: item.age || '-',
+        联系方式: item.phone || item.contact || '-',
+        项目名称: item.projectName || item.courseName || '-',
+        特点专长: item.characteristics || '-',
+        作品名称: item.worksName || '-',
+        作品链接: item.worksLink || '-',
+        提交时间: item.date || '-'
+      }));
+      const ws = XLSX.utils.json_to_sheet(wsData);
+      XLSX.utils.book_append_sheet(wb, ws, catName.substring(0, 31));
+    };
+
+    ['海选报名表', '培训报名表', '旅游报名表', '参演报名表'].forEach(cat => {
+      const items = normalizedRegistrations.filter((r: any) => r.normalizedCat === cat);
+      createSheetForCategory(cat, items);
+    });
+    
+    if (visitBookings && visitBookings.length > 0) {
+      const wsVisit = XLSX.utils.json_to_sheet(visitBookings.map((item: any) => ({
+        联系人: item.name,
+        联系电话: item.phone,
+        预约人数: item.headcount,
+        预约日期: item.date,
+        预约基地: item.baseName,
+        需求说明: item.notes,
+        状态: item.status
+      })));
+      XLSX.utils.book_append_sheet(wb, wsVisit, "预约参观报名表");
+    }
+
+    const otherItems = normalizedRegistrations.filter((r: any) => !['海选报名表', '培训报名表', '旅游报名表', '参演报名表'].includes(r.normalizedCat));
+    if (otherItems.length > 0) {
+      createSheetForCategory('其他', otherItems);
+    }
+    
+    XLSX.writeFile(wb, "报名信息汇总.xlsx");
+  };
+
   const tabs = [
+
     { id: 'settings', label: '全局设置', icon: Settings },
     { id: 'home', label: '首页配置', icon: Home },
     { id: 'copyright', label: '版权中心', icon: Shield },
@@ -580,6 +719,7 @@ export default function Admin() {
     { id: 'products', label: '商城管理', icon: ShoppingBag },
     { id: 'users', label: '用户列表', icon: UserCheck },
     { id: 'courseRegistrations', label: '报名信息', icon: FileText },
+    { id: 'visitBookings', label: '预约信息', icon: FileText },
     { id: 'feedbacks', label: '咨询反馈', icon: MessageSquare }, { id: 'documents', label: '文档管理', icon: FileText }, { id: 'community', label: '社区审核', icon: MessageSquare },
   ];
 
@@ -642,6 +782,15 @@ export default function Admin() {
                   onChange={(e) => setAppSlogan(e.target.value)}
                   className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 transition-all border border-gray-50"
                   placeholder="例如: 联动你我 · 链接未来"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[12px] font-bold text-[#A69984] ml-2">海选报名接收邮箱</label>
+                <input 
+                  value={auditionEmail}
+                  onChange={(e) => setAuditionEmail(e.target.value)}
+                  className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 transition-all border border-gray-50"
+                  placeholder="例如: szfyuan@163.com"
                 />
               </div>
 
@@ -934,20 +1083,24 @@ export default function Admin() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  {(activeTab === 'copyright' || activeTab === 'production' || activeTab === 'actors') && (
+                  {(activeTab === 'copyright' || activeTab === 'production' || activeTab === 'actors' || activeTab === 'tourism' || activeTab === 'starclub') && (
                     <div className="space-y-2 col-span-2">
                       <label className="text-[11px] font-bold text-[#A69984] ml-2">顶部导航标题</label>
                       <input 
                         value={
                           activeTab === 'copyright' ? copyrightData.headerTitle || '' :
                           activeTab === 'production' ? productionData.headerTitle || '' :
-                          activeTab === 'actors' ? actorsData.headerTitle || '' : ''
+                          activeTab === 'actors' ? actorsData.headerTitle || '' :
+                          activeTab === 'tourism' ? (tourismData as any).pageTitle || '' :
+                          activeTab === 'starclub' ? (starclubData as any).pageTitle || '' : ''
                         }
                         onChange={(e) => {
                           const val = e.target.value;
                           if (activeTab === 'copyright') setCopyrightData({...copyrightData, headerTitle: val});
                           if (activeTab === 'production') setProductionData({...productionData, headerTitle: val});
                           if (activeTab === 'actors') setActorsData({...actorsData, headerTitle: val});
+                          if (activeTab === 'tourism') setTourismData({...tourismData, pageTitle: val});
+                          if (activeTab === 'starclub') setStarclubData({...starclubData, pageTitle: val});
                         }}
                         className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none border border-gray-50"
                         placeholder="显示在页面顶部的标题"
@@ -1225,7 +1378,8 @@ export default function Admin() {
                       schema={[
                         { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '资讯标题 (必填)', type: 'text' },
-                        { key: 'desc', label: '文字内容', type: 'text' }
+                        { key: 'desc', label: '文字内容', type: 'text' },
+                        { key: 'isRecommended', label: '设为推荐', type: 'boolean' }
                       ]}
                     />
                     <AdminListEditor 
@@ -1236,7 +1390,8 @@ export default function Admin() {
                       schema={[
                         { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '标题 (必填)', type: 'text' },
-                        { key: 'desc', label: '文字内容', type: 'text' }
+                        { key: 'desc', label: '文字内容', type: 'text' },
+                        { key: 'isRecommended', label: '设为推荐', type: 'boolean' }
                       ]}
                     />
                     <AdminListEditor 
@@ -1247,7 +1402,8 @@ export default function Admin() {
                       schema={[
                         { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '案例标题 (必填)', type: 'text' },
-                        { key: 'desc', label: '文字内容', type: 'text' }
+                        { key: 'desc', label: '文字内容', type: 'text' },
+                        { key: 'isRecommended', label: '设为推荐', type: 'boolean' }
                       ]}
                     />
                   </>
@@ -1588,6 +1744,45 @@ export default function Admin() {
           </div>
         )}
 
+        {activeTab === 'visitBookings' && (
+          <div className="space-y-4 pb-10">
+            <h3 className="font-black text-[#1A1108] px-2">预约记录 ({visitBookings.length})</h3>
+            <div className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50/50 border-b border-gray-100 text-[13px] text-gray-500">
+                  <tr>
+                    <th className="py-4 px-6 font-medium">基地</th>
+                    <th className="py-4 px-6 font-medium">姓名</th>
+                    <th className="py-4 px-6 font-medium">电话</th>
+                    <th className="py-4 px-6 font-medium">预约日期</th>
+                    <th className="py-4 px-6 font-medium">人数</th>
+                    <th className="py-4 px-6 font-medium">目的</th>
+                    <th className="py-4 px-6 font-medium">提交时间</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                {visitBookings.map((b: any, i: number) => (
+                  <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="py-4 px-6 font-bold text-[#1A1108]">{b.baseName}</td>
+                    <td className="py-4 px-6 text-[#1A1108]">{b.name}</td>
+                    <td className="py-4 px-6 text-[#1A1108]">{b.phone}</td>
+                    <td className="py-4 px-6 text-[#1A1108]">{b.visitDate}</td>
+                    <td className="py-4 px-6 text-[#1A1108]">{b.teamSize || '-'}</td>
+                    <td className="py-4 px-6 text-[#1A1108]">{b.purpose || '-'}</td>
+                    <td className="py-4 px-6 text-[13px] text-gray-400">{b.date}</td>
+                  </tr>
+                ))}
+                {visitBookings.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="py-10 text-center text-gray-400 text-[13px]">暂无预约记录</td>
+                  </tr>
+                )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        
         {activeTab === 'users' && (
           <div className="space-y-4 pb-10">
             <div className="flex justify-between items-center px-2">
@@ -1623,11 +1818,30 @@ export default function Admin() {
 
         {activeTab === 'courseRegistrations' && (
           <div className="space-y-4 pb-10">
-            <div className="flex justify-between items-center px-2">
+                        <div className="flex justify-between items-center px-2">
               <h3 className="font-black text-[#1A1108]">报名信息列表</h3>
+              <button 
+                onClick={exportToExcel}
+                className="bg-[#D4AF37] hover:bg-[#B8972D] text-white px-4 py-2 rounded-xl text-[13px] font-bold shadow-md transition-all flex items-center gap-2"
+              >
+                <FileText size={16} />
+                导出所有报名信息 (Excel)
+              </button>
             </div>
-            {['海选', '文旅', '培训', '其他'].map(category => {
-              const items = courseRegistrations.filter(r => (r.category || '其他') === category);
+            {['海选报名表', '培训报名表', '旅游报名表', '参演报名表', '其他'].map(category => {
+              const items = courseRegistrations.map((r: any) => {
+                let cat = r.category || '其他';
+                if (cat === '海选') cat = '海选报名表';
+                if (cat === '文旅') cat = '旅游报名表';
+                if (cat === '培训') cat = '培训报名表';
+                if (cat === '海选/活动') cat = '参演报名表';
+                return { ...r, normalizedCat: cat };
+              }).filter((r: any) => {
+                if (category === '其他') {
+                   return !['海选报名表', '培训报名表', '旅游报名表', '参演报名表'].includes(r.normalizedCat);
+                }
+                return r.normalizedCat === category;
+              });
               if (items.length === 0) return null;
               return (
                 <div key={category} className="mb-8">

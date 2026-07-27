@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getPageContent, getDramas, getBases, getProducts, testConnection, getLiveStreams, getFeedbacks, getCourseRegistrations, getUsers } from '../services/cmsService';
+import { getPageContent, getDramas, getBases, getProducts, testConnection, getLiveStreams, getFeedbacks, getCourseRegistrations, getUsers, getVisitBookings, addVisitBooking } from '../services/cmsService';
 import { HOME_CATEGORIES, HOT_DRAMAS, BASES, MALL_PRODUCTS } from '../constants';
 
 interface CMSContextType {
@@ -10,6 +10,7 @@ interface CMSContextType {
   liveStreams: any[];
   feedbacks: any[];
   courseRegistrations: any[];
+  visitBookings: any[];
   users: any[];
   loading: boolean;
   refresh: () => void;
@@ -25,6 +26,7 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
   const [liveStreams, setLiveStreams] = useState<any[]>(HOT_DRAMAS);
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
   const [courseRegistrations, setCourseRegistrations] = useState<any[]>([]);
+  const [visitBookings, setVisitBookings] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,11 +38,11 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
       const [
         homeContent, copyrightContent, productionContent, actorsContent,
         mallContent, settingsContent, tourismContent, investContent, starclubContent, newsContent, documentsContent,
-        dbDramas, dbBases, dbProducts, dbLiveStreams, dbFeedbacks, dbCourseRegistrations, dbUsers
+        dbDramas, dbBases, dbProducts, dbLiveStreams, dbFeedbacks, dbCourseRegistrations, dbUsers, dbVisitBookings
       ] = await Promise.all([
         getPageContent('home'), getPageContent('copyright'), getPageContent('production'), getPageContent('actors'),
         getPageContent('mall'), getPageContent('settings'), getPageContent('tourism'), getPageContent('invest'), getPageContent('starclub'), getPageContent('news'), getPageContent('documents'),
-        getDramas(), getBases(), getProducts(), getLiveStreams(), getFeedbacks(), getCourseRegistrations(), getUsers()
+        getDramas(), getBases(), getProducts(), getLiveStreams(), getFeedbacks(), getCourseRegistrations(), getUsers(), getVisitBookings()
       ]);
 
       setPages({
@@ -67,6 +69,7 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
       if (dbLiveStreams !== null) setLiveStreams(dbLiveStreams.length > 0 ? dbLiveStreams : []);
       if (dbFeedbacks !== null) setFeedbacks(dbFeedbacks);
       if (dbCourseRegistrations !== null) setCourseRegistrations(dbCourseRegistrations);
+      if (dbVisitBookings !== null) setVisitBookings(dbVisitBookings);
       if (dbUsers !== null) setUsers(dbUsers);
 
     } catch (error) {
@@ -81,7 +84,7 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <CMSContext.Provider value={{ pages, dramas, bases, products, liveStreams, feedbacks, courseRegistrations, users, loading, refresh: fetchData }}>
+    <CMSContext.Provider value={{ pages, dramas, bases, products, liveStreams, feedbacks, courseRegistrations, visitBookings, users, loading, refresh: fetchData }}>
       {children}
     </CMSContext.Provider>
   );
