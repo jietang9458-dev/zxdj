@@ -576,9 +576,14 @@ export function AuditionRegistration() {
     worksName: '',
     worksLink: ''
   });
+  const [agreed, setAgreed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreed) {
+      alert('请先阅读并同意用户服务协议及隐私政策');
+      return;
+    }
     if (!formData.name || !formData.contact) {
       alert('请填写姓名和联系方式');
       return;
@@ -728,8 +733,22 @@ export function AuditionRegistration() {
               </div>
             </div>
 
-            <button 
-              type="submit"
+<div className="flex items-start gap-2 mt-4 px-1 mb-4">
+              <input 
+                type="checkbox" 
+                checked={agreed} 
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-1 shrink-0 accent-[#D4AF37]"
+              />
+              <div className="text-[12px] text-gray-500 leading-tight">
+                我已阅读并同意
+                <span onClick={(e) => { e.preventDefault(); navigate('/doc/terms'); }} className="text-[#D4AF37] cursor-pointer">《用户服务协议》</span>
+                及
+                <span onClick={(e) => { e.preventDefault(); navigate('/doc/privacy'); }} className="text-[#D4AF37] cursor-pointer">《隐私政策》</span>
+                ，知晓并授权平台为提供服务所需收集、使用、存储上述填写的个人信息。
+              </div>
+            </div>
+            <button type="submit"
               className="w-full h-14 bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px] mt-4"
             >
               提交报名信息
@@ -765,9 +784,14 @@ export function GeneralRegistration() {
     address: '',
     projectName: ''
   });
+  const [agreed, setAgreed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreed) {
+      alert('请先阅读并同意用户服务协议及隐私政策');
+      return;
+    }
     if (!formData.name || !formData.phone || !formData.projectName) {
       alert('请填写姓名、电话和项目名称');
       return;
@@ -895,8 +919,22 @@ export function GeneralRegistration() {
               </div>
             </div>
 
-            <button 
-              type="submit"
+<div className="flex items-start gap-2 mt-4 px-1 mb-4">
+              <input 
+                type="checkbox" 
+                checked={agreed} 
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-1 shrink-0 accent-[#D4AF37]"
+              />
+              <div className="text-[12px] text-gray-500 leading-tight">
+                我已阅读并同意
+                <span onClick={(e) => { e.preventDefault(); navigate('/doc/terms'); }} className="text-[#D4AF37] cursor-pointer">《用户服务协议》</span>
+                及
+                <span onClick={(e) => { e.preventDefault(); navigate('/doc/privacy'); }} className="text-[#D4AF37] cursor-pointer">《隐私政策》</span>
+                ，知晓并授权平台为提供服务所需收集、使用、存储上述填写的个人信息。
+              </div>
+            </div>
+            <button type="submit"
               className="w-full h-14 bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px] mt-4"
             >
               提交
@@ -1099,9 +1137,14 @@ export function VisitBooking() {
     teamSize: '',
     purpose: ''
   });
+  const [agreed, setAgreed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreed) {
+      alert('请先阅读并同意用户服务协议及隐私政策');
+      return;
+    }
     if (!formData.name || !formData.phone || !formData.visitDate) {
       alert('请填写必填项');
       return;
@@ -1198,8 +1241,22 @@ export function VisitBooking() {
                 </select>
               </div>
             </div>
-            <button 
-              type="submit"
+<div className="flex items-start gap-2 mt-4 px-1 mb-4">
+              <input 
+                type="checkbox" 
+                checked={agreed} 
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-1 shrink-0 accent-[#D4AF37]"
+              />
+              <div className="text-[12px] text-gray-500 leading-tight">
+                我已阅读并同意
+                <span onClick={(e) => { e.preventDefault(); navigate('/doc/terms'); }} className="text-[#D4AF37] cursor-pointer">《用户服务协议》</span>
+                及
+                <span onClick={(e) => { e.preventDefault(); navigate('/doc/privacy'); }} className="text-[#D4AF37] cursor-pointer">《隐私政策》</span>
+                ，知晓并授权平台为提供服务所需收集、使用、存储上述填写的个人信息。
+              </div>
+            </div>
+            <button type="submit"
               className="w-full mt-6 h-14 bg-[#1A1108] dark:bg-[#D4AF37] text-white dark:text-[#1A1108] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px]"
             >
               提交预约
