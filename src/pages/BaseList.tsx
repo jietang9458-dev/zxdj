@@ -79,7 +79,7 @@ export default function BaseList() {
                           {base.location}
                         </div>
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {base.tags.map(tag => (
+                          {(Array.isArray(base.tags) ? base.tags : (typeof base.tags === 'string' ? base.tags.split(',').map(t => t.trim()).filter(Boolean) : [])).map((tag: string) => (
                             <span key={tag} className="px-2.5 py-1 bg-[#FAF9F6] text-[#A69984] text-[10px] font-black rounded-lg border border-gray-100 uppercase">
                               {tag}
                             </span>

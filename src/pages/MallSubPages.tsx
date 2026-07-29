@@ -49,6 +49,14 @@ export default function MallCategory() {
     }
   };
 
+  const dynamicCategories = pages?.mall?.categories || {};
+  ['creative', 'star', 'digital', 'specialty'].forEach(key => {
+    if (dynamicCategories[key]) {
+      categoryConfig[key].title = dynamicCategories[key].title || categoryConfig[key].title;
+      categoryConfig[key].banner = dynamicCategories[key].banner || categoryConfig[key].banner;
+    }
+  });
+
   const config = categoryConfig[category || 'creative'] || {
     title: category ? (category.includes('馆') ? category : `${category}馆`) : '特色产品馆',
     banner: matchedPavilion?.imageUrl || matchedPavilion?.image || matchedPavilion?.banner || 'https://images.unsplash.com/photo-1541604193435-225878996233?w=800',
@@ -150,7 +158,7 @@ export default function MallCategory() {
                 )}
                 <div className="flex justify-between items-center">
                   <span className="text-[15px] font-black text-[#8B6E4E]">¥ {prod.memberPrice || prod.price}</span>
-                  <span className="text-[10px] text-[#A69984] font-bold">128人付款</span>
+                  <span className="text-[10px] text-[#A69984] font-bold">{prod.salesCount || 128}人付款</span>
                 </div>
               </div>
             </div>

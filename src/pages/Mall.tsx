@@ -33,11 +33,13 @@ export default function Mall() {
                       defaultPavilions;
 
   const filteredPavilions = allPavilions.filter((p: any) => !searchQuery || p.title.includes(searchQuery));
+  const filteredProducts = searchQuery ? currentProducts.filter((p: any) => p.name && p.name.includes(searchQuery)) : [];
 
   const handleSearch = () => {
     setSearchQuery(internalQuery);
-    const matches = allPavilions.filter((p: any) => p.title.includes(internalQuery));
-    if (internalQuery && matches.length === 0) {
+    const pavilionMatches = allPavilions.filter((p: any) => p.title.includes(internalQuery));
+    const productMatches = currentProducts.filter((p: any) => p.name && p.name.includes(internalQuery));
+    if (internalQuery && pavilionMatches.length === 0 && productMatches.length === 0) {
       setShowNoResultMap(true);
       setTimeout(() => setShowNoResultMap(false), 2000);
     }
@@ -55,7 +57,7 @@ export default function Mall() {
             value={internalQuery}
             onChange={(e) => setInternalQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="搜索商品馆" 
+            placeholder="搜索商品馆和商品" 
             className="w-full h-11 pl-11 pr-4 bg-[#F2EDE4] dark:bg-[#2A1D0F] rounded-full text-[13px] outline-none border border-transparent focus:border-[#D4AF37]/30 dark:text-white transition-all placeholder:text-[#A69984]"
           />
           <Search 
@@ -112,6 +114,30 @@ export default function Mall() {
       {/* Pavilions Section */}
       <div className="px-5 mt-10 mb-10">
         <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-6">特色产品馆</h3>
+        {filteredProducts.length > 0 && (
+          <div className="mb-8">
+            <h4 className="text-[14px] font-bold text-[#1A1108] dark:text-[#E6D5B8] mb-4">相关商品</h4>
+            <div className="grid grid-cols-2 gap-4">
+              {filteredProducts.map((product: any, idx: number) => (
+                <div key={idx} onClick={() => navigate(`/product/${product.id}`)} className="bg-white dark:bg-[#2A1D0F] rounded-2xl overflow-hidden shadow-sm flex flex-col active:scale-95 transition-transform cursor-pointer border border-gray-50 dark:border-white/5">
+                  <div className="aspect-square bg-gray-100 dark:bg-black/20 overflow-hidden relative">
+                    <img src={product.imageUrl} className="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal" alt="" />
+                  </div>
+                  <div className="p-3 flex-1 flex flex-col">
+                    <h3 className="font-bold text-[13px] text-[#1A1108] dark:text-[#E6D5B8] leading-snug line-clamp-2 mb-1">{product.name}</h3>
+                    <div className="mt-auto flex items-end justify-between">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-[10px] text-red-500 font-bold">¥</span>
+                        <span className="text-[16px] font-black text-red-500 leading-none">{product.price}</span>
+                      </div>
+                      <span className="text-[10px] text-[#A69984]">{product.salesCount || 128}人付款</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-4">
             {filteredPavilions.map((pavilion: any, idx: number) => (
               <div 

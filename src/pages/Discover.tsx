@@ -40,9 +40,9 @@ export default function Discover() {
 
   const newsData = pages.news || {};
   const cmsPosts = [
-    ...(newsData.shortDramaNews || []).map((n: any, i: number) => ({ id: `sd_${i}`, t: n.title, u: '短剧资讯', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '短剧资讯', isRecommended: !!n.isRecommended })),
-    ...(newsData.bts || []).map((n: any, i: number) => ({ id: `bts_${i}`, t: n.title, u: '拍摄花絮', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '拍摄花絮', isRecommended: !!n.isRecommended })),
-    ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, u: '成功案例', d: n.desc || '刚刚发布', l: 0, c: 0, img: n.imageUrl, cat: '成功案例', isRecommended: !!n.isRecommended }))
+    ...(newsData.shortDramaNews || []).map((n: any, i: number) => ({ id: `sd_${i}`, t: n.title, d: n.desc, blocks: n.blocks, img: n.imageUrl, cat: '短剧资讯', isRecommended: !!n.isRecommended })),
+    ...(newsData.bts || []).map((n: any, i: number) => ({ id: `bts_${i}`, t: n.title, d: n.desc, blocks: n.blocks, img: n.imageUrl, cat: '拍摄花絮', isRecommended: !!n.isRecommended })),
+    ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, d: n.desc, blocks: n.blocks, img: n.imageUrl, cat: '成功案例', isRecommended: !!n.isRecommended }))
   ];
   
    
@@ -126,40 +126,41 @@ export default function Discover() {
                   transition={{ delay: i * 0.05 }}
                   className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5"
                 >
-                  {/* Post Header */}
-                  <div className="p-5 flex items-center gap-3">
-                    {post.avatar ? (
-                      <img src={post.avatar} className="w-10 h-10 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-[#FAF5EE] dark:bg-black/20 flex items-center justify-center">
-                        <User size={16} className="text-[#8B6E4E] dark:text-[#D4AF37]" />
+                  {post.img && (
+                    <div className="w-full aspect-[16/9] overflow-hidden relative">
+                      <img src={post.img} alt="" className="w-full h-full object-cover" />
+                      <div className="absolute top-4 right-4 px-3 py-1 bg-black/50 backdrop-blur-sm text-white text-[11px] font-bold rounded-full">
+                        {post.cat}
                       </div>
-                    )}
-                    <div className="flex-1">
-                      <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white flex items-center gap-2">
-                        {post.u}
-                        {!post.approved && post.uid === profile.uid && activeTab === '互动交流' && (
-                          <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-[10px] rounded-full font-bold">审核中</span>
-                        )}
-                      </h4>
-                      <p className="text-[10px] text-[#A69984] font-bold">{post.d}</p>
                     </div>
-                    <span className="px-2 py-0.5 bg-[#FAF5EE] dark:bg-[#D4AF37]/20 text-[#8B6E4E] dark:text-[#D4AF37] text-[10px] font-black rounded-md">{post.cat}</span>
-                  </div>
-
-                  {/* Post Content */}
-                  <div className="px-5 mb-4">
-                    <p className="text-[14px] text-[#4A443E] dark:text-[#E6D5B8] leading-relaxed font-medium mb-3 whitespace-pre-wrap">
+                  )}
+                  
+                  <div className="p-6">
+                    <h3 className="text-[18px] font-black text-[#1A1108] dark:text-white leading-tight mb-4">
                       {post.t}
-                    </p>
-                    {post.img && (
-                      <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5">
-                        <img src={post.img} alt="" className="w-full h-auto max-h-96 object-cover" />
+                    </h3>
+                    
+                    {post.blocks && post.blocks.length > 0 ? (
+                      <div className="space-y-4 mt-4">
+                        {post.blocks.map((block: any, idx: number) => (
+                          <div key={idx}>
+                            {block.type === 'text' ? (
+                              <p className="text-[14px] text-[#4A443E] dark:text-[#E6D5B8] leading-relaxed whitespace-pre-wrap">
+                                {block.content}
+                              </p>
+                            ) : block.type === 'image' && block.url ? (
+                              <img src={block.url} alt="" className="w-full rounded-2xl" />
+                            ) : null}
+                          </div>
+                        ))}
                       </div>
-                    )}
+                    ) : post.d && post.d !== '刚刚发布' ? (
+                      <p className="text-[14px] text-[#4A443E] dark:text-[#E6D5B8] leading-relaxed whitespace-pre-wrap">
+                        {post.d}
+                      </p>
+                    ) : null}
                   </div>
-
-                  </motion.div>
+                </motion.div>
               );
             })
           ) : (

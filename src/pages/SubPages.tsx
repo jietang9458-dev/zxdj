@@ -1,18 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useCMS } from '../context/CMSContext';
-import { useUser } from '../context/UserContext';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useCMS } from "../context/CMSContext";
+import { useUser } from "../context/UserContext";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-import Header from '../components/Header';
-import { CheckCircle2, ShieldCheck, TrendingUp, Search, FileText, Download, Briefcase, Users, Coins, Info, User, Phone, Calendar, Star, Link, LayoutList, Video, BookOpen, MessageSquare, Clock } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { HOT_DRAMAS } from '../constants';
+import Header from "../components/Header";
+import {
+  CheckCircle2,
+  ShieldCheck,
+  TrendingUp,
+  Search,
+  FileText,
+  Download,
+  Briefcase,
+  Users,
+  Coins,
+  Info,
+  User,
+  Phone,
+  Calendar,
+  Star,
+  Link,
+  LayoutList,
+  Video,
+  BookOpen,
+  MessageSquare,
+  Clock,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { HOT_DRAMAS } from "../constants";
 
 // --- 版权营销中心子页面 ---
 
@@ -20,25 +41,29 @@ export function CopyrightPurchase() {
   const navigate = useNavigate();
   const { pages } = useCMS();
   const purchaseRecommendations = pages.copyright?.hotCopyrights || [
-    { 
-      title: 'AI制作短剧', 
-      imageUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4628c6bb5?q=80&w=400&h=600&fit=crop', 
-      desc: '每部短剧共50份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (A)0021 001~050' 
+    {
+      title: "AI制作短剧",
+      imageUrl:
+        "https://images.unsplash.com/photo-1620712943543-bcc4628c6bb5?q=80&w=400&h=600&fit=crop",
+      desc: "每部短剧共50份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (A)0021 001~050",
     },
-    { 
-      title: '精品短剧', 
-      imageUrl: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400&h=600&fit=crop', 
-      desc: '每部短剧共100份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (B)0101 001~100' 
+    {
+      title: "精品短剧",
+      imageUrl:
+        "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400&h=600&fit=crop",
+      desc: "每部短剧共100份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (B)0101 001~100",
     },
-    { 
-      title: '明星短剧', 
-      imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?q=80&w=400&h=600&fit=crop', 
-      desc: '每部短剧共200份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (C)0201 001~200，注：明星演员的定义、标准和人选由中星影视生态链确定，版权购买方不存有异议。' 
+    {
+      title: "明星短剧",
+      imageUrl:
+        "https://images.unsplash.com/photo-1544208453-ca422f28b7e2?q=80&w=400&h=600&fit=crop",
+      desc: "每部短剧共200份版权，每份版权统一售价10000元，版权编号示例：ZXDJ (C)0201 001~200，注：明星演员的定义、标准和人选由中星影视生态链确定，版权购买方不存有异议。",
     },
-    { 
-      title: '互动影游', 
-      imageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=400&h=600&fit=crop', 
-      desc: '请联系中星影视生态链客服咨询详情。' 
+    {
+      title: "互动影游",
+      imageUrl:
+        "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=400&h=600&fit=crop",
+      desc: "请联系中星影视生态链客服咨询详情。",
     },
   ];
 
@@ -48,197 +73,128 @@ export function CopyrightPurchase() {
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
       <Header title="购买版权" dark />
       <div className="p-6">
-
         {/* 短剧版权销售动态 */}
-        {salesDynamics && (salesDynamics.soldOut || salesDynamics.hotSelling) && (
-          <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 mb-8">
-            <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-4">短剧版权销售动态</h3>
-            <div className="space-y-4">
-              {salesDynamics.soldOut && (
-                <div className="bg-gray-50 dark:bg-black/20 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
-                  <h4 className="text-[14px] font-bold text-gray-500 mb-2 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />已售罄短剧版权编号
-                  </h4>
-                  <div className="text-[13px] text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed font-mono">
-                    {salesDynamics.soldOut}
+        {salesDynamics &&
+          (salesDynamics.soldOut || salesDynamics.hotSelling) && (
+            <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 mb-8">
+              <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-4">
+                短剧版权销售动态
+              </h3>
+              <div className="space-y-4">
+                {salesDynamics.soldOut && (
+                  <div className="bg-gray-50 dark:bg-black/20 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
+                    <h4 className="text-[14px] font-bold text-gray-500 mb-2 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                      已售罄短剧版权编号
+                    </h4>
+                    <div className="text-[13px] text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed font-mono">
+                      {salesDynamics.soldOut}
+                    </div>
                   </div>
-                </div>
-              )}
-              {salesDynamics.hotSelling && (
-                <div className="bg-orange-50 dark:bg-orange-900/10 p-4 rounded-2xl border border-orange-100 dark:border-orange-500/20">
-                  <h4 className="text-[14px] font-bold text-orange-500 mb-2 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />热销中短剧版权编号
-                  </h4>
-                  <div className="text-[13px] text-orange-600 dark:text-orange-400 font-bold whitespace-pre-wrap leading-relaxed font-mono">
-                    {salesDynamics.hotSelling}
+                )}
+                {salesDynamics.hotSelling && (
+                  <div className="bg-orange-50 dark:bg-orange-900/10 p-4 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                    <h4 className="text-[14px] font-bold text-orange-500 mb-2 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                      热销中短剧版权编号
+                    </h4>
+                    <div className="text-[13px] text-orange-600 dark:text-orange-400 font-bold whitespace-pre-wrap leading-relaxed font-mono">
+                      {salesDynamics.hotSelling}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-6 shadow-sm border border-gray-50 dark:border-white/5 mb-8">
-          <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-4">热门可购版权</h3>
+          <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-4">
+            热门可购版权
+          </h3>
           <div className="space-y-4">
             {purchaseRecommendations.map((drama, i) => (
-              <div key={i} className="flex gap-4 p-3 bg-gray-50 dark:bg-black/20 rounded-2xl items-center">
-                <div className="w-16 h-24 rounded-xl overflow-hidden shadow-sm flex-shrink-0 relative">
-                  <img src={drama.imageUrl} className="w-full h-full object-cover" alt="" />
-                  <div className="absolute top-1 right-1 bg-black/60 rounded-md p-1 backdrop-blur-sm">
-                    <ShieldCheck size={12} className="text-[#D4AF37]" />
+              <div
+                key={i}
+                className="flex gap-4 p-3 bg-gray-50 dark:bg-black/20 rounded-2xl items-stretch h-36"
+              >
+                <div className="w-24 flex-shrink-0 flex flex-col gap-2">
+                  <div className="w-full flex-1 rounded-xl overflow-hidden shadow-sm relative">
+                    <img
+                      src={drama.imageUrl}
+                      className="w-full h-full object-cover"
+                      alt=""
+                    />
+                    <div className="absolute top-1 right-1 bg-black/60 rounded-md p-1 backdrop-blur-sm">
+                      <ShieldCheck size={12} className="text-[#D4AF37]" />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => navigate("/copyright/purchase-instructions")}
+                    className="w-full bg-[#8B6E4E] text-white py-1.5 rounded-lg text-[11px] font-bold active:scale-95 transition-transform flex items-center justify-center gap-1 flex-shrink-0"
+                  >
+                    <MessageSquare size={12} /> 咨询
+                  </button>
+                </div>
+                <div className="flex-1 flex flex-col min-w-0">
+                  <h4 className="font-black text-[14px] text-[#1A1108] dark:text-[#E6D5B8] mb-1 truncate">
+                    {drama.title}
+                  </h4>
+                  <div className="flex-1 overflow-y-auto scrollbar-hide pr-1">
+                    <p className="text-[10px] sm:text-[11px] text-[#A69984] leading-relaxed whitespace-pre-wrap break-words">
+                      {drama.desc}
+                    </p>
                   </div>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="p-1 px-1.5 bg-[#8B6E4E]/10 rounded text-[9px] font-black text-[#8B6E4E] uppercase">Premium</span>
-                    <h4 className="font-black text-[14px] text-[#1A1108] dark:text-[#E6D5B8]">{drama.title}</h4>
-                  </div>
-                  <p className="text-[11px] text-[#A69984] mt-1 leading-relaxed">{drama.desc}</p>
-                </div>
-                <button 
-                  onClick={() => navigate('/copyright/purchase-instructions')}
-                  className="bg-[#8B6E4E] text-white px-4 py-1.5 rounded-lg text-[11px] font-bold active:scale-95 transition-transform flex items-center gap-1"
-                >
-                  <MessageSquare size={12} /> 咨询
-                </button>
               </div>
             ))}
           </div>
         </div>
-        <div 
-          onClick={() => navigate('/copyright/rights')}
-          className="bg-orange-50 dark:bg-orange-900/20 p-8 rounded-[32px] border border-orange-100 dark:border-orange-500/20 flex flex-col items-center text-center cursor-pointer active:scale-[0.98] transition-transform mb-6"
-        >
-          <TrendingUp className="text-orange-500 mb-4" size={40} />
-          <h4 className="font-black text-[18px] text-[#1A1108] dark:text-white">购买版权的权益</h4>
-          <p className="text-[13px] text-orange-400 mt-2 font-bold">解锁十大专属核心权益 · 共享短剧掘金红利</p>
-        </div>
 
-        <div 
-          onClick={() => navigate('/copyright/full-purchase-instructions')}
-          className="bg-blue-50 dark:bg-blue-900/20 p-8 rounded-[32px] border border-blue-100 dark:border-blue-500/20 flex flex-col items-center text-center cursor-pointer active:scale-[0.98] transition-transform"
-        >
-          <ShieldCheck className="text-blue-500 mb-4" size={40} />
-          <h4 className="font-black text-[18px] text-[#1A1108] dark:text-white">全版权购买</h4>
-          <p className="text-[13px] text-blue-400 mt-2 font-bold">独家持有保护 · 永久知识产权所有</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function PurchaseInstructions() {
-  const navigate = useNavigate();
-  const { pages } = useCMS();
-  const steps = pages.copyright?.purchaseInstructions || [
-    { t: '购买须知', d: '购买版权是自己真实意愿的表达，共享收益，共担风险。版权购买需线下签订版权购买合同和版权授权协议，版权销售款不委托任何企业和个人代收，按照正式签订的合同里明确的收款方付款。签订合同时需要明确介绍人的姓名和电话。' },
-    { t: '选择版权', d: '在热销中短剧版权里，购买短剧版权号。版权库里的仅供参考，在截止该部短剧的版权销售开始筹备时，官方平台会即时公布版权号所对应的短剧内容，任何购买版权者不持有异议。' },
-    { t: '签署合约', d: '线下签署正式的版权购买合同和版权授权协议。' },
-    { t: '票房收益', d: '所购买的短剧版权的短剧上线后，根据播放平台的结算收益按照版权购买合同约定支付票房收益。' }
-  ];
-
-  return (
-    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
-      <Header title="购买须知及办法" dark />
-      <div className="p-6">
-        <div className="bg-[#1A1108] dark:bg-[#2A1D0F] p-8 rounded-[32px] mb-8 text-center">
-          <Info className="text-[#D4AF37] mx-auto mb-4" size={40} />
-          <h2 className="text-[20px] font-black text-white mb-2">标准化版权购买流程</h2>
-          <p className="text-[#A69984] text-[13px]">合规、透明、专业的一站式版权转让服务</p>
-        </div>
-
-        <div className="space-y-6">
-          {steps.map((s, i) => (
-            <div key={i} className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[24px] shadow-sm border border-gray-50 dark:border-white/5 relative overflow-hidden">
-              <div className="absolute -left-2 -top-2 w-12 h-12 bg-[#FAF5EE] dark:bg-black/20 rounded-full flex items-center justify-center -rotate-12">
-                <span className="text-[20px] font-black text-[#D4AF37] opacity-20">{i + 1}</span>
-              </div>
-              <h4 className="text-[16px] font-black text-[#1A1108] dark:text-white mb-2 relative z-10">{s.t}</h4>
-              <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] leading-relaxed font-medium relative z-10">{s.d}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-10 p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
-          <h5 className="text-[14px] font-black text-orange-800 dark:text-orange-400 mb-2">特别提醒</h5>
-          <p className="text-[12px] text-orange-700 dark:text-orange-300 leading-relaxed font-bold">
-            所有版权交易均与中星影视生态链官方产生。如遇私下交易请及时反馈和投诉，私下交易产生的所有风险，平台概不负责，同时平台保留追究法律责任的权利。
-          </p>
-        </div>
-        
-        <button 
-          onClick={() => navigate('/help')}
-          className="mt-6 w-full bg-[#8B6E4E] hover:bg-[#6A523A] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
-        >
-          <MessageSquare size={18} />
-          立即咨询
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export function FullCopyrightInstructions() {
-  const navigate = useNavigate();
-  const benefits = [
-    { t: '永久所有权', d: '获得该作品除署名权外所有的著作财产权利。' },
-    { t: '全球独占', d: '在约定期限和全球范围内具有排他性的权利。' },
-    { t: '二次创作权', d: '允许对作品进行改编、续写、剪辑等二次开发。' },
-    { t: '商业衍生', d: '包含周边开发、形象授权、广告植入等商业化权利。' }
-  ];
-
-  return (
-    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
-      <Header title="全版权购买须知及办法" dark />
-      <div className="p-6">
-        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[32px] mb-8 text-center text-white shadow-lg">
-          <ShieldCheck className="mx-auto mb-4" size={48} />
-          <h2 className="text-[22px] font-black mb-2">全版权终极权益</h2>
-          <p className="text-blue-100/80 text-[14px]">深度掌控内容资产，开启无限商业可能</p>
-        </div>
-
-        <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-6 px-2">四大核心权益</h3>
-        <div className="grid grid-cols-1 gap-4 mb-10">
-          {benefits.map((b, i) => (
-            <div key={i} className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[24px] shadow-sm border border-gray-50 dark:border-white/5 flex gap-4">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="text-blue-500" size={20} />
-              </div>
-              <div>
-                <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white mb-1">{b.t}</h4>
-                <p className="text-[13px] text-[#A69984] leading-relaxed font-bold">{b.d}</p>
-              </div>
-            </div>
-          ))}
+        <div className="grid grid-cols-2 gap-4 mt-8 mb-8">
+          <div onClick={() => navigate('/copyright/rights')} className="bg-white dark:bg-[#2A1D0F] rounded-[24px] p-5 shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer active:scale-95 transition-transform group">
+            <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white mb-1">购买版权的权益</h4>
+            <p className="text-[12px] text-[#A69984] font-medium">了解作为联合制片人的专属权益</p>
+          </div>
+          <div onClick={() => navigate('/copyright/full-purchase-instructions')} className="bg-white dark:bg-[#2A1D0F] rounded-[24px] p-5 shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer active:scale-95 transition-transform group">
+            <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white mb-1">全版权购买</h4>
+            <p className="text-[12px] text-[#A69984] font-medium">全版权定制开发专属爆款短剧</p>
+          </div>
         </div>
 
         <div className="bg-white dark:bg-[#2A1D0F] p-8 rounded-[32px] border border-gray-100 dark:border-white/5">
-          <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-4">购买流程细节</h3>
+          <h3 className="text-[17px] font-black text-[#1A1108] dark:text-white mb-4">
+            购买流程细节
+          </h3>
           <div className="space-y-4">
             <div className="flex gap-4">
               <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
                 <Search className="text-blue-500" size={18} />
               </div>
-              <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] font-medium pt-1">在版权库里选择或者预约全版权专家定制短剧。</p>
+              <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] font-medium pt-1">
+                在版权库里选择或者预约全版权专家定制短剧。
+              </p>
             </div>
             <div className="flex gap-4">
               <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
                 <FileText className="text-blue-500" size={18} />
               </div>
-              <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] font-medium pt-1">线下签署短剧定制合同，按合同支付款项。</p>
+              <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] font-medium pt-1">
+                线下签署短剧定制合同，按合同支付款项。
+              </p>
             </div>
             <div className="flex gap-4">
               <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
                 <Download className="text-blue-500" size={18} />
               </div>
-              <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] font-medium pt-1">需要发行的签订发行协议。不需要发行的，交付花絮、成片和工程文件。</p>
+              <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] font-medium pt-1">
+                需要发行的签订发行协议。不需要发行的，交付花絮、成片和工程文件。
+              </p>
             </div>
           </div>
         </div>
 
-        <button 
-          onClick={() => navigate('/help')}
+        <button
+          onClick={() => navigate("/help")}
           className="w-full mt-10 h-14 bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-blue-800/10 active:scale-95 transition-all text-[15px]"
         >
           极速预约全版权专家
@@ -249,18 +205,29 @@ export function FullCopyrightInstructions() {
 }
 
 export function CopyrightRights() {
+  const navigate = useNavigate();
   const { pages } = useCMS();
   const rawRights = pages.copyright?.rights || [
-    { text: "成为中星影视生态链的联合制片人，销售推广中星影视生态链的版权和其他业务，享受销售的佣金和平台公司奖励。" },
-    { text: "颁发电子版“中星影视生态链的联合制片人”牌匾，牌匾内有个人的照片和名字。" },
-    { text: "每份版权按照票房版权方收益的（A: AI短剧2%，B：精品短剧1%，C：明星短剧0.5%）比例，长期享受版权收益，每月支付一次。" },
+    {
+      text: "成为中星影视生态链的联合制片人，销售推广中星影视生态链的版权和其他业务，享受销售的佣金和平台公司奖励。",
+    },
+    {
+      text: "颁发电子版“中星影视生态链的联合制片人”牌匾，牌匾内有个人的照片和名字。",
+    },
+    {
+      text: "每份版权按照票房版权方收益的（A: AI短剧2%，B：精品短剧1%，C：明星短剧0.5%）比例，长期享受版权收益，每月支付一次。",
+    },
     { text: "销售佣金每份版权2000元。" },
     { text: "完成销售三份版权后公司奖励4000元。" },
-    { text: "三份版权中其中两份版权完成三份版权的销售，平台公司再奖励2000元。" },
-    { text: "完成3组同类型版权销售后，公司随机奖励一份同类型版权（价值10000元），与购买版权享受同等的权利。" },
+    {
+      text: "三份版权中其中两份版权完成三份版权的销售，平台公司再奖励2000元。",
+    },
+    {
+      text: "完成3组同类型版权销售后，公司随机奖励一份同类型版权（价值10000元），与购买版权享受同等的权利。",
+    },
     { text: "可以参加明星俱乐部活动，与明星互动。" },
     { text: "可以参与公司的发布会、开机仪式、片场探班等。" },
-    { text: "可以参演公司的短剧（AI短剧除外）。" }
+    { text: "可以参演公司的短剧（AI短剧除外）。" },
   ];
   const rights = rawRights.map((r: any) => r.text);
 
@@ -271,21 +238,37 @@ export function CopyrightRights() {
         <div className="bg-[#1A1108] dark:bg-[#2A1D0F] p-8 rounded-[32px] mb-8 text-center text-white">
           <TrendingUp className="text-[#D4AF37] mx-auto mb-4" size={40} />
           <h2 className="text-[20px] font-black mb-2">联合制片人十大权益</h2>
-          <p className="text-[#A69984] text-[13px]">加入中星影视生态链，开启财富增长新引擎</p>
+          <p className="text-[#A69984] text-[13px]">
+            加入中星影视生态链，开启财富增长新引擎
+          </p>
         </div>
 
         <div className="space-y-4">
           {rights.map((r, i) => (
-            <div key={i} className="bg-white dark:bg-[#2A1D0F] p-5 rounded-[24px] shadow-sm border border-gray-50 dark:border-white/5 flex gap-4 items-start group">
+            <div
+              key={i}
+              className="bg-white dark:bg-[#2A1D0F] p-5 rounded-[24px] shadow-sm border border-gray-50 dark:border-white/5 flex gap-4 items-start group"
+            >
               <div className="w-8 h-8 rounded-full bg-[#1A1108] dark:bg-[#E6D5B8] flex items-center justify-center shrink-0 mt-0.5 shadow-lg group-hover:scale-110 transition-transform">
-                <span className="text-[12px] font-black text-white dark:text-[#1A1108]">{i + 1}</span>
+                <span className="text-[12px] font-black text-white dark:text-[#1A1108]">
+                  {i + 1}
+                </span>
               </div>
               <div className="flex-1">
-                <p className="text-[14px] text-[#1A1108] dark:text-[#E6D5B8] leading-relaxed font-black">{r}</p>
+                <p className="text-[14px] text-[#1A1108] dark:text-[#E6D5B8] leading-relaxed font-black">
+                  {r}
+                </p>
               </div>
             </div>
           ))}
         </div>
+        <button 
+          onClick={() => navigate('/help')}
+          className="mt-10 w-full bg-[#8B6E4E] hover:bg-[#6A523A] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg shadow-[#8B6E4E]/20"
+        >
+          <MessageSquare size={18} />
+          立即咨询
+        </button>
       </div>
     </div>
   );
@@ -295,15 +278,24 @@ export function SalesModel() {
   const navigate = useNavigate();
   const { pages } = useCMS();
   const rawModels = pages.copyright?.salesModels || [
-    { t: '区域子公司管理模式', d: '针对中星短剧地方影视文化服务中心、代理公司进行全方位的业务赋能与区域管理支持。' },
-    { t: '分销代理模式', d: '成为地方（中星短剧XX影视文化服务中心）代理销售 or 平台、团队代理，享受高额销售返佣和平台分红。' },
-    { t: '销售模式', d: '凡是购买一份短剧版权者，获得电子版”中星影视生态链联合制片人“牌匾，牌匾里有本人的照片和名字。就可以直接销售中星影视生态链的短剧版权，首次直接销售3份版权就全额回本（每销售一份，佣金2000元；完成销售3份，平台公司奖励4000元；销售的3份版权中，其中2份各自再销售3份，平台公司再奖励2000元。）。完成以上9份版权销售。即为完成一组销售，可收益12000元。完成一组销售后，开启另一组销售，完成3组销售后，平台公司随机奖励一份版权，与购买的版权享受同等权益。' }
+    {
+      t: "区域子公司管理模式",
+      d: "针对中星短剧地方影视文化服务中心、代理公司进行全方位的业务赋能与区域管理支持。",
+    },
+    {
+      t: "分销代理模式",
+      d: "成为地方（中星短剧XX影视文化服务中心）代理销售 or 平台、团队代理，享受高额销售返佣和平台分红。",
+    },
+    {
+      t: "销售模式",
+      d: "凡是购买一份短剧版权者，获得电子版”中星影视生态链联合制片人“牌匾，牌匾里有本人的照片和名字。就可以直接销售中星影视生态链的短剧版权，首次直接销售3份版权就全额回本（每销售一份，佣金2000元；完成销售3份，平台公司奖励4000元；销售的3份版权中，其中2份各自再销售3份，平台公司再奖励2000元。）。完成以上9份版权销售。即为完成一组销售，可收益12000元。完成一组销售后，开启另一组销售，完成3组销售后，平台公司随机奖励一份版权，与购买的版权享受同等权益。",
+    },
   ];
-  
+
   const getIcon = (index: number) => {
-    if (index % 3 === 0) return <Briefcase className="text-orange-500"/>;
-    if (index % 3 === 1) return <Users className="text-blue-500"/>;
-    return <TrendingUp className="text-green-500"/>;
+    if (index % 3 === 0) return <Briefcase className="text-orange-500" />;
+    if (index % 3 === 1) return <Users className="text-blue-500" />;
+    return <TrendingUp className="text-green-500" />;
   };
 
   return (
@@ -314,17 +306,23 @@ export function SalesModel() {
           {rawModels.map((m: any, i: number) => (
             <div key={i} className="flex gap-6 items-start">
               <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#2A1D0F] shadow-sm animate-shadow-pulse flex items-center justify-center flex-shrink-0">
-                {React.cloneElement(getIcon(i) as React.ReactElement, { size: 28 })}
+                {React.cloneElement(getIcon(i) as React.ReactElement, {
+                  size: 28,
+                })}
               </div>
               <div>
-                <h4 className="text-[17px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2">{m.t}</h4>
-                <p className="text-[13px] text-[#A69984] font-medium leading-relaxed">{m.d}</p>
+                <h4 className="text-[17px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2">
+                  {m.t}
+                </h4>
+                <p className="text-[13px] text-[#A69984] font-medium leading-relaxed">
+                  {m.d}
+                </p>
               </div>
             </div>
           ))}
         </div>
-        <button 
-          onClick={() => navigate('/help')}
+        <button
+          onClick={() => navigate("/help")}
           className="w-full mt-12 h-14 bg-[#1A1108] text-[#E6D5B8] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[15px] tracking-widest"
         >
           下载详细合作手册
@@ -337,14 +335,18 @@ export function SalesModel() {
 export function CopyrightLibrary() {
   const navigate = useNavigate();
   const { pages } = useCMS();
-  const libraryItems = pages.copyright?.libraryItems || HOT_DRAMAS.concat(HOT_DRAMAS);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('全部');
-  const cats = ['全部', '现代都市', '古装玄幻', '悬疑惊悚', '年代励志'];
-  const baseDramas = libraryItems.map((d: any, i: number) => ({ ...d, cat: d.cat || cats[(i % 4) + 1] }));
-  
+  const libraryItems =
+    pages.copyright?.libraryItems || HOT_DRAMAS.concat(HOT_DRAMAS);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("全部");
+  const cats = ["全部", "现代都市", "古装玄幻", "悬疑惊悚", "年代励志"];
+  const baseDramas = libraryItems.map((d: any, i: number) => ({
+    ...d,
+    cat: d.cat || cats[(i % 4) + 1],
+  }));
+
   const filtered = baseDramas.filter((d: any) => {
-    if (activeTab !== '全部' && d.cat !== activeTab) return false;
+    if (activeTab !== "全部" && d.cat !== activeTab) return false;
     if (searchQuery && !d.title?.includes(searchQuery)) return false;
     return true;
   });
@@ -354,56 +356,91 @@ export function CopyrightLibrary() {
       <Header title="版权库" dark />
       <div className="p-6">
         <div className="relative mb-6">
-          <input type="text" 
+          <input
+            type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="搜索版权作品/作者" className="w-full h-12 pl-12 pr-4 bg-white dark:bg-[#2A1D0F] rounded-2xl text-[14px] outline-none shadow-sm font-medium dark:text-white" />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
+            placeholder="搜索版权作品/作者"
+            className="w-full h-12 pl-12 pr-4 bg-white dark:bg-[#2A1D0F] rounded-2xl text-[14px] outline-none shadow-sm font-medium dark:text-white"
+          />
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
+            size={20}
+          />
         </div>
         <div className="flex gap-4 mb-6 overflow-x-auto scrollbar-hide">
           {cats.map((t, i) => (
-            <span key={i} onClick={() => setActiveTab(t)} className={`cursor-pointer whitespace-nowrap px-4 py-2 rounded-xl text-[13px] font-black ${activeTab === t ? 'bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108]' : 'bg-white dark:bg-[#2A1D0F] text-gray-400'}`}>{t}</span>
+            <span
+              key={i}
+              onClick={() => setActiveTab(t)}
+              className={`cursor-pointer whitespace-nowrap px-4 py-2 rounded-xl text-[13px] font-black ${activeTab === t ? "bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108]" : "bg-white dark:bg-[#2A1D0F] text-gray-400"}`}
+            >
+              {t}
+            </span>
           ))}
         </div>
         <div className="grid grid-cols-2 gap-4 mb-10">
           {filtered.map((drama, i) => (
-            <div key={i} onClick={() => navigate('/copyright/project/' + i)} className="bg-white dark:bg-[#2A1D0F] rounded-[28px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 flex flex-col group cursor-pointer">
+            <div
+              key={i}
+              onClick={() => navigate("/copyright/project/" + i)}
+              className="bg-white dark:bg-[#2A1D0F] rounded-[28px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 flex flex-col group cursor-pointer"
+            >
               <div className="aspect-[3/4] relative overflow-hidden">
-                <img src={drama.imageUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="" />
+                <img
+                  src={drama.imageUrl}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  alt=""
+                />
                 <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] text-white font-black border border-white/30 flex items-center gap-1">
                   <Clock size={10} /> 待售
                 </div>
               </div>
               <div className="p-4">
-                <h4 className="text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] line-clamp-1">{drama.title}</h4>
+                <h4 className="text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] line-clamp-1">
+                  {drama.title}
+                </h4>
               </div>
             </div>
           ))}
         </div>
+        <button 
+          onClick={() => navigate('/help')}
+          className="mt-10 w-full bg-[#8B6E4E] hover:bg-[#6A523A] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg shadow-[#8B6E4E]/20"
+        >
+          <MessageSquare size={18} />
+          立即咨询
+        </button>
       </div>
     </div>
   );
 }
 
-
 export function ProjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { pages } = useCMS();
-  const libraryItems = pages.copyright?.libraryItems || HOT_DRAMAS.concat(HOT_DRAMAS);
+  const libraryItems =
+    pages.copyright?.libraryItems || HOT_DRAMAS.concat(HOT_DRAMAS);
   const project = libraryItems[Number(id)] || libraryItems[0];
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
       <Header title="项目介绍" dark />
       <div className="w-full aspect-[3/4] max-h-[60vh] overflow-hidden relative shadow-2xl">
-        <img src={project.imageUrl} className="w-full h-full object-cover" alt="" />
+        <img
+          src={project.imageUrl}
+          className="w-full h-full object-cover"
+          alt=""
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div className="absolute bottom-6 left-6 right-6">
-          <h1 className="text-[28px] font-black text-white mb-2 leading-tight drop-shadow-md">{project.title}</h1>
+          <h1 className="text-[28px] font-black text-white mb-2 leading-tight drop-shadow-md">
+            {project.title}
+          </h1>
         </div>
       </div>
-      
+
       <div className="p-6 -mt-4 relative z-10 space-y-6">
         <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
           <h3 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-3 flex items-center gap-2">
@@ -432,16 +469,18 @@ export function ProjectDetails() {
 export function CopyrightPublicity() {
   const { pages } = useCMS();
   const announcements = pages.copyright?.announcements || [
-    { 
-      title: '《逆袭星途》（暂定名，名称修改不影响法律效力）', 
-      content: '主要故事内容（示例）：一个现代白领失业后，受生活压力无意间穿越到山海经的世界里，与各种怪兽搏斗，征服了7个怪兽，怪兽化身为女人和他生活在一起的故事。', 
-      date: '2024-05-12'
+    {
+      title: "《逆袭星途》（暂定名，名称修改不影响法律效力）",
+      content:
+        "主要故事内容（示例）：一个现代白领失业后，受生活压力无意间穿越到山海经的世界里，与各种怪兽搏斗，征服了7个怪兽，怪兽化身为女人和他生活在一起的故事。",
+      date: "2024-05-12",
     },
-    { 
-      title: '《我的室友是大佬》版权公示', 
-      content: '主要故事内容（示例）：合租生活引发的爆笑故事，平凡少女与神秘大佬的同居日常。', 
-      date: '2024-05-20'
-    }
+    {
+      title: "《我的室友是大佬》版权公示",
+      content:
+        "主要故事内容（示例）：合租生活引发的爆笑故事，平凡少女与神秘大佬的同居日常。",
+      date: "2024-05-20",
+    },
   ];
 
   return (
@@ -454,12 +493,21 @@ export function CopyrightPublicity() {
           </h3>
           <div className="space-y-6">
             {announcements.map((m: any, i: number) => (
-              <div key={i} className="flex flex-col gap-2 pb-6 border-b border-gray-50 dark:border-white/5 last:border-0 last:pb-0">
+              <div
+                key={i}
+                className="flex flex-col gap-2 pb-6 border-b border-gray-50 dark:border-white/5 last:border-0 last:pb-0"
+              >
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white leading-snug pr-4">{m.title}</h4>
-                  <p className="text-[11px] text-[#A69984] font-bold shrink-0">{m.date}</p>
+                  <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white leading-snug pr-4">
+                    {m.title}
+                  </h4>
+                  <p className="text-[11px] text-[#A69984] font-bold shrink-0">
+                    {m.date}
+                  </p>
                 </div>
-                <p className="text-[12px] text-[#4A443E] dark:text-[#A69984] font-medium leading-relaxed mb-2">{m.content}</p>
+                <p className="text-[12px] text-[#4A443E] dark:text-[#A69984] font-medium leading-relaxed mb-2">
+                  {m.content}
+                </p>
               </div>
             ))}
           </div>
@@ -480,31 +528,59 @@ export function ServiceFlow() {
         <div className="relative">
           {/* Vertical Dash Line */}
           <div className="absolute left-6 top-8 bottom-8 w-px bg-dashed border-l border-dashed border-gray-200" />
-          
+
           {[
-            { t: '需求沟通', d: '专属客服 1 对 1 深入沟通具体需求', i: <Users />, path: '/help' },
-            { t: '方案策划', d: '专家团队制定个性化业务实施路径', i: <FileText /> },
-            { t: '签订合同', d: '确立法律保障，明确双方权益与义务', i: <Briefcase /> },
-            { t: '项目落地', d: '高效执行，全过程关键节点实时反馈', i: <CheckCircle2 /> }
+            {
+              t: "需求沟通",
+              d: "专属客服 1 对 1 深入沟通具体需求",
+              i: <Users />,
+              path: "/help",
+            },
+            {
+              t: "方案策划",
+              d: "专家团队制定个性化业务实施路径",
+              i: <FileText />,
+            },
+            {
+              t: "签订合同",
+              d: "确立法律保障，明确双方权益与义务",
+              i: <Briefcase />,
+            },
+            {
+              t: "项目落地",
+              d: "高效执行，全过程关键节点实时反馈",
+              i: <CheckCircle2 />,
+            },
           ].map((s, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               onClick={() => s.path && navigate(s.path)}
               className={cn(
                 "flex gap-8 mb-12 last:mb-0 relative z-10",
-                s.path && "cursor-pointer active:scale-95 transition-transform"
+                s.path && "cursor-pointer active:scale-95 transition-transform",
               )}
             >
               <div className="w-12 h-12 rounded-2xl bg-white shadow-md flex items-center justify-center text-[#D4AF37] border border-gray-50 dark:border-white/10 dark:bg-[#2A1D0F]">
                 {React.cloneElement(s.i as React.ReactElement, { size: 22 })}
               </div>
               <div className="flex-1 pt-1">
-                <h4 className="text-[16px] font-black text-[#1A1108] dark:text-white mb-2">{s.t}</h4>
-                <p className="text-[13px] text-[#A69984] font-bold leading-relaxed">{s.d}</p>
+                <h4 className="text-[16px] font-black text-[#1A1108] dark:text-white mb-2">
+                  {s.t}
+                </h4>
+                <p className="text-[13px] text-[#A69984] font-bold leading-relaxed">
+                  {s.d}
+                </p>
               </div>
             </div>
           ))}
         </div>
+        <button 
+          onClick={() => navigate('/help')}
+          className="mt-10 w-full bg-[#8B6E4E] hover:bg-[#6A523A] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg shadow-[#8B6E4E]/20"
+        >
+          <MessageSquare size={18} />
+          立即咨询
+        </button>
       </div>
     </div>
   );
@@ -514,10 +590,25 @@ export function LearningArt() {
   const { pages } = useCMS();
   const navigate = useNavigate();
   const actorsData = pages.actors || {};
-  const classes = actorsData.classes && actorsData.classes.length > 0 ? actorsData.classes : [
-    { title: '少儿演艺周末班', desc: '形体、台词、表演基础', date: '每月初开班', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop' },
-    { title: '青年演员特训营', desc: '剧组实战、进阶表演', date: '寒暑假开班', imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop' }
-  ];
+  const classes =
+    actorsData.classes && actorsData.classes.length > 0
+      ? actorsData.classes
+      : [
+          {
+            title: "少儿演艺周末班",
+            desc: "形体、台词、表演基础",
+            date: "每月初开班",
+            imageUrl:
+              "https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop",
+          },
+          {
+            title: "青年演员特训营",
+            desc: "剧组实战、进阶表演",
+            date: "寒暑假开班",
+            imageUrl:
+              "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop",
+          },
+        ];
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
@@ -526,24 +617,34 @@ export function LearningArt() {
         <div className="bg-gradient-to-br from-[#1A1108] to-[#4A443E] p-8 rounded-[32px] mb-8 text-center text-white">
           <BookOpen className="text-[#D4AF37] mx-auto mb-4" size={40} />
           <h2 className="text-[20px] font-black mb-2">专业技能培训体系</h2>
-          <p className="text-[#A69984] text-[13px]">从中星开始，完成从爱好者到专业人士的蜕变</p>
+          <p className="text-[#A69984] text-[13px]">
+            从中星开始，完成从爱好者到专业人士的蜕变
+          </p>
         </div>
 
         <div className="space-y-4">
           {classes.map((cls: any, i: number) => (
-            <div 
-              key={i} 
-              onClick={() => navigate('/audition/class/' + i)}
+            <div
+              key={i}
+              onClick={() => navigate("/audition/class/" + i)}
               className="flex gap-4 p-5 bg-white dark:bg-[#2A1D0F] rounded-[32px] shadow-sm border border-gray-50 dark:border-white/5 cursor-pointer active:scale-95 transition-transform"
             >
               <div className="w-20 h-24 rounded-2xl bg-gray-100 overflow-hidden shrink-0 shadow-sm border border-gray-100">
-                <img src={cls.imageUrl} alt="" className="w-full h-full object-cover" />
+                <img
+                  src={cls.imageUrl}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="flex-1 flex flex-col justify-center">
-                <h4 className="font-black text-[16px] text-[#1A1108] dark:text-white mb-1.5">{cls.title}</h4>
-                <p className="text-[12px] text-[#4A443E] dark:text-[#A69984] mb-3 leading-relaxed line-clamp-2">{cls.desc}</p>
+                <h4 className="font-black text-[16px] text-[#1A1108] dark:text-white mb-1.5">
+                  {cls.title}
+                </h4>
+                <p className="text-[12px] text-[#4A443E] dark:text-[#A69984] mb-3 leading-relaxed line-clamp-2">
+                  {cls.desc}
+                </p>
                 <div className="text-[11px] text-[#D4AF37] font-bold bg-[#D4AF37]/10 px-3 py-1 rounded-lg self-start">
-                  {cls.date || '随时开班'}
+                  {cls.date || "随时开班"}
                 </div>
               </div>
             </div>
@@ -563,58 +664,61 @@ export function LearningArt() {
 export function AuditionRegistration() {
   const navigate = useNavigate();
   const { addCourseRegistration, pages } = useCMS();
-  const typeParam = new URLSearchParams(window.location.search).get('type') || '海选报名表';
+  const typeParam =
+    new URLSearchParams(window.location.search).get("type") || "海选报名表";
   const { addNotification } = useUser();
-  const auditionEmail = pages.settings?.auditionEmail || 'szfyuan@163.com';
+  const auditionEmail = pages.settings?.auditionEmail || "szfyuan@163.com";
   const [formData, setFormData] = useState({
-    name: '',
-    gender: '男',
-    age: '',
-    contact: '',
-    characteristics: '',
-    projectName: '',
-    worksName: '',
-    worksLink: ''
+    name: "",
+    gender: "男",
+    age: "",
+    contact: "",
+    characteristics: "",
+    projectName: "",
+    worksName: "",
+    worksLink: "",
   });
   const [agreed, setAgreed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) {
-      alert('请先阅读并同意用户服务协议及隐私政策');
+      alert("请先阅读并同意用户服务协议及隐私政策");
       return;
     }
     if (!formData.name || !formData.contact) {
-      alert('请填写姓名和联系方式');
+      alert("请填写姓名和联系方式");
       return;
     }
 
-    const { addCourseRegistration } = await import('../services/cmsService');
+    const { addCourseRegistration } = await import("../services/cmsService");
     const newRegistration = {
       ...formData,
-      status: '审核中',
+      status: "审核中",
       date: new Date().toLocaleDateString(),
-      phone: formData.contact
+      phone: formData.contact,
     };
 
     try {
       await addCourseRegistration({ ...newRegistration, category: typeParam });
-    } catch(err) {
+    } catch (err) {
       console.error(err);
     }
 
-    const registrations = JSON.parse(localStorage.getItem('my_registrations') || '[]');
-    registrations.unshift({...newRegistration, id: Date.now().toString()});
-    localStorage.setItem('my_registrations', JSON.stringify(registrations));
-    
+    const registrations = JSON.parse(
+      localStorage.getItem("my_registrations") || "[]",
+    );
+    registrations.unshift({ ...newRegistration, id: Date.now().toString() });
+    localStorage.setItem("my_registrations", JSON.stringify(registrations));
+
     addNotification({
-      title: '海选报名成功',
+      title: "海选报名成功",
       content: `您已成功报名参加海选。请保持电话畅通，我们将尽快与您联系。`,
-      type: 'system'
+      type: "system",
     });
 
-    alert('提交成功！已保存到“我的报名”中。');
-    navigate('/user/my-registrations');
+    alert("提交成功！已保存到“我的报名”中。");
+    navigate("/user/my-registrations");
   };
 
   return (
@@ -624,13 +728,20 @@ export function AuditionRegistration() {
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-8 shadow-sm border border-gray-50 dark:border-white/5">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">姓名</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                姓名
+              </label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="text" 
+                <User
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                   placeholder="请输入您的真实姓名"
                 />
@@ -639,10 +750,14 @@ export function AuditionRegistration() {
 
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">性别</label>
-                <select 
+                <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                  性别
+                </label>
+                <select
                   value={formData.gender}
-                  onChange={(e) => setFormData({...formData, gender: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gender: e.target.value })
+                  }
                   className="w-full h-12 px-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white appearance-none"
                 >
                   <option value="男">男</option>
@@ -650,13 +765,20 @@ export function AuditionRegistration() {
                 </select>
               </div>
               <div className="flex-1">
-                <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">年龄</label>
+                <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                  年龄
+                </label>
                 <div className="relative">
-                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                  <input 
-                    type="number" 
+                  <Calendar
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
+                  <input
+                    type="number"
                     value={formData.age}
-                    onChange={(e) => setFormData({...formData, age: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, age: e.target.value })
+                    }
                     className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                     placeholder="您的年龄"
                   />
@@ -665,13 +787,20 @@ export function AuditionRegistration() {
             </div>
 
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">联系方式</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                联系方式
+              </label>
               <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="tel" 
+                <Phone
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="tel"
                   value={formData.contact}
-                  onChange={(e) => setFormData({...formData, contact: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, contact: e.target.value })
+                  }
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                   placeholder="手机号或微信号"
                 />
@@ -679,12 +808,22 @@ export function AuditionRegistration() {
             </div>
 
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">您的特点/专长</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                您的特点/专长
+              </label>
               <div className="relative">
-                <Star className="absolute left-4 top-4 text-gray-400" size={18} />
-                <textarea 
+                <Star
+                  className="absolute left-4 top-4 text-gray-400"
+                  size={18}
+                />
+                <textarea
                   value={formData.characteristics}
-                  onChange={(e) => setFormData({...formData, characteristics: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      characteristics: e.target.value,
+                    })
+                  }
                   className="w-full h-24 pl-12 pr-4 pt-3 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white resize-none"
                   placeholder="例如：擅长舞蹈、武术、反串演戏等"
                 />
@@ -692,13 +831,20 @@ export function AuditionRegistration() {
             </div>
 
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">海选项目名称</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                海选项目名称
+              </label>
               <div className="relative">
-                <LayoutList className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="text" 
+                <LayoutList
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
                   value={formData.projectName}
-                  onChange={(e) => setFormData({...formData, projectName: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, projectName: e.target.value })
+                  }
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                   placeholder="如：中星明日之星海选"
                 />
@@ -706,13 +852,20 @@ export function AuditionRegistration() {
             </div>
 
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">已有作品名称</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                已有作品名称
+              </label>
               <div className="relative">
-                <FileText className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="text" 
+                <FileText
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
                   value={formData.worksName}
-                  onChange={(e) => setFormData({...formData, worksName: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, worksName: e.target.value })
+                  }
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                   placeholder="如有多个请用逗号隔开"
                 />
@@ -720,50 +873,75 @@ export function AuditionRegistration() {
             </div>
 
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">作品播放平台或链接</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                作品播放平台或链接
+              </label>
               <div className="relative">
-                <Link className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="text" 
+                <Link
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
                   value={formData.worksLink}
-                  onChange={(e) => setFormData({...formData, worksLink: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, worksLink: e.target.value })
+                  }
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                   placeholder="作品发布平台或具体URL"
                 />
               </div>
             </div>
 
-<div className="flex items-start gap-2 mt-4 px-1 mb-4">
-              <input 
-                type="checkbox" 
-                checked={agreed} 
+            <div className="flex items-start gap-2 mt-4 px-1 mb-4">
+              <input
+                type="checkbox"
+                checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="mt-1 shrink-0 accent-[#D4AF37]"
               />
               <div className="text-[12px] text-gray-500 leading-tight">
                 我已阅读并同意
-                <span onClick={(e) => { e.preventDefault(); navigate('/doc/terms'); }} className="text-[#D4AF37] cursor-pointer">《用户服务协议》</span>
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/doc/terms");
+                  }}
+                  className="text-[#D4AF37] cursor-pointer"
+                >
+                  《用户服务协议》
+                </span>
                 及
-                <span onClick={(e) => { e.preventDefault(); navigate('/doc/privacy'); }} className="text-[#D4AF37] cursor-pointer">《隐私政策》</span>
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/doc/privacy");
+                  }}
+                  className="text-[#D4AF37] cursor-pointer"
+                >
+                  《隐私政策》
+                </span>
                 ，知晓并授权平台为提供服务所需收集、使用、存储上述填写的个人信息。
               </div>
             </div>
-            <button type="submit"
+            <button
+              type="submit"
               className="w-full h-14 bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px] mt-4"
             >
               提交报名信息
             </button>
             <div className="mt-6 text-center text-[12px] text-red-500 font-bold px-4 leading-relaxed">
               注意：请将素颜生活照和作品发至邮箱：
-              <span 
+              <span
                 onClick={() => {
                   navigator.clipboard.writeText(auditionEmail);
-                  alert('复制成功');
+                  alert("复制成功");
                 }}
                 className="text-blue-600 text-[14px] font-black cursor-pointer underline underline-offset-2 break-all inline-block ml-1"
               >
                 {auditionEmail}
-              </span>。
+              </span>
+              。
             </div>
           </form>
         </div>
@@ -777,53 +955,56 @@ export function GeneralRegistration() {
   const { addCourseRegistration } = useCMS();
   const { addNotification } = useUser();
   const [formData, setFormData] = useState({
-    name: '',
-    gender: '男',
-    age: '',
-    phone: '',
-    address: '',
-    projectName: ''
+    name: "",
+    gender: "男",
+    age: "",
+    phone: "",
+    address: "",
+    projectName: "",
   });
   const [agreed, setAgreed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) {
-      alert('请先阅读并同意用户服务协议及隐私政策');
+      alert("请先阅读并同意用户服务协议及隐私政策");
       return;
     }
     if (!formData.name || !formData.phone || !formData.projectName) {
-      alert('请填写姓名、电话和项目名称');
+      alert("请填写姓名、电话和项目名称");
       return;
     }
 
-    const { addCourseRegistration } = await import('../services/cmsService');
+    const { addCourseRegistration } = await import("../services/cmsService");
 
     const newRegistration = {
       ...formData,
-      status: '已提交',
+      status: "已提交",
       date: new Date().toLocaleDateString(),
-      contact: formData.phone // Mapping phone to contact for list view
+      contact: formData.phone, // Mapping phone to contact for list view
     };
-    
+
     try {
-      const typeParam = new URLSearchParams(window.location.search).get('type') || '一般报名表';
+      const typeParam =
+        new URLSearchParams(window.location.search).get("type") || "一般报名表";
       await addCourseRegistration({ ...newRegistration, category: typeParam });
-    } catch(err) {
+    } catch (err) {
       console.error(err);
     }
 
-    const registrations = JSON.parse(localStorage.getItem('my_registrations') || '[]');
-    registrations.unshift({...newRegistration, id: Date.now().toString()});
-    localStorage.setItem('my_registrations', JSON.stringify(registrations));
-    
+    const registrations = JSON.parse(
+      localStorage.getItem("my_registrations") || "[]",
+    );
+    registrations.unshift({ ...newRegistration, id: Date.now().toString() });
+    localStorage.setItem("my_registrations", JSON.stringify(registrations));
+
     addNotification({
-      title: '报名提交成功',
+      title: "报名提交成功",
       content: `您已成功报名 ${formData.projectName}。请留意后续通知。`,
-      type: 'system'
+      type: "system",
     });
 
-    alert('提交成功！我们将尽快与您联系。');
+    alert("提交成功！我们将尽快与您联系。");
     navigate(-1);
   };
 
@@ -834,13 +1015,20 @@ export function GeneralRegistration() {
         <div className="bg-white dark:bg-[#2A1D0F] rounded-[32px] p-8 shadow-sm border border-gray-50 dark:border-white/5">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">姓名</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                姓名
+              </label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="text" 
+                <User
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                   placeholder="请输入您的姓名"
                   required
@@ -850,10 +1038,14 @@ export function GeneralRegistration() {
 
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">性别</label>
-                <select 
+                <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                  性别
+                </label>
+                <select
                   value={formData.gender}
-                  onChange={(e) => setFormData({...formData, gender: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gender: e.target.value })
+                  }
                   className="w-full h-12 px-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white appearance-none"
                 >
                   <option value="男">男</option>
@@ -861,13 +1053,20 @@ export function GeneralRegistration() {
                 </select>
               </div>
               <div className="flex-1">
-                <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">年龄</label>
+                <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                  年龄
+                </label>
                 <div className="relative">
-                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                  <input 
-                    type="number" 
+                  <Calendar
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
+                  <input
+                    type="number"
                     value={formData.age}
-                    onChange={(e) => setFormData({...formData, age: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, age: e.target.value })
+                    }
                     className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                     placeholder="您的年龄"
                   />
@@ -876,13 +1075,20 @@ export function GeneralRegistration() {
             </div>
 
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">电话</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                电话
+              </label>
               <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="tel" 
+                <Phone
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                   placeholder="请输入您的电话"
                   required
@@ -891,13 +1097,20 @@ export function GeneralRegistration() {
             </div>
 
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">地址</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                地址
+              </label>
               <div className="relative">
-                <Link className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="text" 
+                <Link
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
                   value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                   placeholder="请输入您的地址"
                 />
@@ -905,13 +1118,20 @@ export function GeneralRegistration() {
             </div>
 
             <div>
-              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">报名项目名称</label>
+              <label className="block text-[13px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2 px-1">
+                报名项目名称
+              </label>
               <div className="relative">
-                <LayoutList className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="text" 
+                <LayoutList
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
                   value={formData.projectName}
-                  onChange={(e) => setFormData({...formData, projectName: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, projectName: e.target.value })
+                  }
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 dark:bg-black/20 rounded-2xl text-[14px] outline-none dark:text-white"
                   placeholder="请输入您要报名的项目名称"
                   required
@@ -919,22 +1139,39 @@ export function GeneralRegistration() {
               </div>
             </div>
 
-<div className="flex items-start gap-2 mt-4 px-1 mb-4">
-              <input 
-                type="checkbox" 
-                checked={agreed} 
+            <div className="flex items-start gap-2 mt-4 px-1 mb-4">
+              <input
+                type="checkbox"
+                checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="mt-1 shrink-0 accent-[#D4AF37]"
               />
               <div className="text-[12px] text-gray-500 leading-tight">
                 我已阅读并同意
-                <span onClick={(e) => { e.preventDefault(); navigate('/doc/terms'); }} className="text-[#D4AF37] cursor-pointer">《用户服务协议》</span>
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/doc/terms");
+                  }}
+                  className="text-[#D4AF37] cursor-pointer"
+                >
+                  《用户服务协议》
+                </span>
                 及
-                <span onClick={(e) => { e.preventDefault(); navigate('/doc/privacy'); }} className="text-[#D4AF37] cursor-pointer">《隐私政策》</span>
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/doc/privacy");
+                  }}
+                  className="text-[#D4AF37] cursor-pointer"
+                >
+                  《隐私政策》
+                </span>
                 ，知晓并授权平台为提供服务所需收集、使用、存储上述填写的个人信息。
               </div>
             </div>
-            <button type="submit"
+            <button
+              type="submit"
               className="w-full h-14 bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px] mt-4"
             >
               提交
@@ -950,7 +1187,7 @@ export function MyRegistrations() {
   const [registrations, setRegistrations] = useState<any[]>([]);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('my_registrations') || '[]');
+    const data = JSON.parse(localStorage.getItem("my_registrations") || "[]");
     setRegistrations(data);
   }, []);
 
@@ -966,11 +1203,18 @@ export function MyRegistrations() {
         ) : (
           <div className="space-y-4">
             {registrations.map((reg: any) => (
-              <div key={reg.id} className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[24px] shadow-sm border border-gray-50 dark:border-white/5">
+              <div
+                key={reg.id}
+                className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[24px] shadow-sm border border-gray-50 dark:border-white/5"
+              >
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h4 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-1">{reg.projectName || '未命名海选项目'}</h4>
-                    <p className="text-[12px] text-[#A69984] font-bold">提交时间：{reg.date}</p>
+                    <h4 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-1">
+                      {reg.projectName || "未命名海选项目"}
+                    </h4>
+                    <p className="text-[12px] text-[#A69984] font-bold">
+                      提交时间：{reg.date}
+                    </p>
                   </div>
                   <span className="px-3 py-1 bg-orange-50 dark:bg-orange-900/20 text-orange-500 rounded-full text-[10px] font-black">
                     {reg.status}
@@ -978,16 +1222,28 @@ export function MyRegistrations() {
                 </div>
                 <div className="grid grid-cols-2 gap-y-3 gap-x-4">
                   <div>
-                    <p className="text-[10px] text-[#A69984] font-bold uppercase mb-0.5">姓名</p>
-                    <p className="text-[13px] text-[#1A1108] dark:text-white font-black">{reg.name}</p>
+                    <p className="text-[10px] text-[#A69984] font-bold uppercase mb-0.5">
+                      姓名
+                    </p>
+                    <p className="text-[13px] text-[#1A1108] dark:text-white font-black">
+                      {reg.name}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-[#A69984] font-bold uppercase mb-0.5">联系方式</p>
-                    <p className="text-[13px] text-[#1A1108] dark:text-white font-black">{reg.contact}</p>
+                    <p className="text-[10px] text-[#A69984] font-bold uppercase mb-0.5">
+                      联系方式
+                    </p>
+                    <p className="text-[13px] text-[#1A1108] dark:text-white font-black">
+                      {reg.contact}
+                    </p>
                   </div>
                   <div className="col-span-2">
-                    <p className="text-[10px] text-[#A69984] font-bold uppercase mb-0.5">作品名称</p>
-                    <p className="text-[13px] text-[#1A1108] dark:text-white font-black">{reg.worksName || '无'}</p>
+                    <p className="text-[10px] text-[#A69984] font-bold uppercase mb-0.5">
+                      作品名称
+                    </p>
+                    <p className="text-[13px] text-[#1A1108] dark:text-white font-black">
+                      {reg.worksName || "无"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -999,15 +1255,28 @@ export function MyRegistrations() {
   );
 }
 
-
 export function ClassDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { pages } = useCMS();
   const actorsData = pages.actors || {};
   const classes = actorsData.classes || [
-    { title: '少儿演艺周末班', desc: '形体、台词、表演基础', date: '每月初开班', imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop', details: '通过科学的课程体系，培养孩子的艺术表现力和自信心。' },
-    { title: '青年演员特训营', desc: '剧组实战、进阶表演', date: '寒暑假开班', imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop', details: '为有志于演艺事业的青年提供专业的进阶培训，直接对接剧组资源。' }
+    {
+      title: "少儿演艺周末班",
+      desc: "形体、台词、表演基础",
+      date: "每月初开班",
+      imageUrl:
+        "https://images.unsplash.com/photo-1544208453-ca422f28b7e2?w=100&h=100&fit=crop",
+      details: "通过科学的课程体系，培养孩子的艺术表现力和自信心。",
+    },
+    {
+      title: "青年演员特训营",
+      desc: "剧组实战、进阶表演",
+      date: "寒暑假开班",
+      imageUrl:
+        "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=100&fit=crop",
+      details: "为有志于演艺事业的青年提供专业的进阶培训，直接对接剧组资源。",
+    },
   ];
   const classInfo = classes[Number(id)] || classes[0];
 
@@ -1015,16 +1284,22 @@ export function ClassDetails() {
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
       <Header title="详细介绍" dark />
       <div className="w-full aspect-[16/9] max-h-[40vh] overflow-hidden relative shadow-2xl">
-        <img src={classInfo.imageUrl} className="w-full h-full object-cover" alt="" />
+        <img
+          src={classInfo.imageUrl}
+          className="w-full h-full object-cover"
+          alt=""
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div className="absolute bottom-6 left-6 right-6">
           <div className="text-[12px] text-[#D4AF37] font-bold mb-2 bg-[#D4AF37]/20 px-3 py-1 rounded-full inline-block backdrop-blur-md border border-[#D4AF37]/30">
             {classInfo.date}
           </div>
-          <h1 className="text-[24px] font-black text-white mb-1 leading-tight drop-shadow-md">{classInfo.title}</h1>
+          <h1 className="text-[24px] font-black text-white mb-1 leading-tight drop-shadow-md">
+            {classInfo.title}
+          </h1>
         </div>
       </div>
-      
+
       <div className="p-6 -mt-4 relative z-10 space-y-6">
         <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
           <h3 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-3 flex items-center gap-2">
@@ -1036,8 +1311,8 @@ export function ClassDetails() {
           </p>
         </div>
 
-        <button 
-          onClick={() => navigate('/register?type=培训报名表')}
+        <button
+          onClick={() => navigate("/register?type=培训报名表")}
           className="w-full mt-8 h-14 bg-[#1A1108] text-white font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px] flex items-center justify-center gap-2"
         >
           <CheckCircle2 size={20} />
@@ -1052,32 +1327,38 @@ export function AuditionProjectList() {
   const { pages } = useCMS();
   const navigate = useNavigate();
   const actorsData = pages.actors || {};
-  const auditionProjects = actorsData.auditions && actorsData.auditions.length > 0 ? actorsData.auditions : [
-    {
-      id: '1',
-      title: '逆袭之星途璀璨',
-      imageUrl: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=400&h=600&fit=crop',
-      desc: '一部讲述草根少女通过努力一步步攀登演艺巅峰的励志短剧。正在热招女主角及主要配角。',
-      requirement: '形象气质佳，演技自然，有舞蹈基础者优先。',
-      date: '海选截止：2024-07-30'
-    },
-    {
-      id: '2',
-      title: '总裁的替身娇妻',
-      imageUrl: 'https://images.unsplash.com/photo-1544208453-ca422f28b7e2?q=80&w=400&h=600&fit=crop',
-      desc: '都市情感爽剧，错位人生的爱恨纠葛。寻找气质高冷的男主与灵动可爱的女主。',
-      requirement: '男演员需身高180cm以上，女演员需甜美系。',
-      date: '海选截止：2024-08-15'
-    },
-    {
-      id: '3',
-      title: '重生之我在娱乐圈',
-      imageUrl: 'https://images.unsplash.com/photo-1496337583146-856e6115ddba?q=80&w=400&h=600&fit=crop',
-      desc: '重生爽文改编，带你深度揭秘演艺圈规则。诚邀各具特色的演员加盟。',
-      requirement: '表演爆发力强，能驾驭性格反差巨大的角色。',
-      date: '海选截止：2024-07-20'
-    }
-  ];
+  const auditionProjects =
+    actorsData.auditions && actorsData.auditions.length > 0
+      ? actorsData.auditions
+      : [
+          {
+            id: "1",
+            title: "逆袭之星途璀璨",
+            imageUrl:
+              "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=400&h=600&fit=crop",
+            desc: "一部讲述草根少女通过努力一步步攀登演艺巅峰的励志短剧。正在热招女主角及主要配角。",
+            requirement: "形象气质佳，演技自然，有舞蹈基础者优先。",
+            date: "海选截止：2024-07-30",
+          },
+          {
+            id: "2",
+            title: "总裁的替身娇妻",
+            imageUrl:
+              "https://images.unsplash.com/photo-1544208453-ca422f28b7e2?q=80&w=400&h=600&fit=crop",
+            desc: "都市情感爽剧，错位人生的爱恨纠葛。寻找气质高冷的男主与灵动可爱的女主。",
+            requirement: "男演员需身高180cm以上，女演员需甜美系。",
+            date: "海选截止：2024-08-15",
+          },
+          {
+            id: "3",
+            title: "重生之我在娱乐圈",
+            imageUrl:
+              "https://images.unsplash.com/photo-1496337583146-856e6115ddba?q=80&w=400&h=600&fit=crop",
+            desc: "重生爽文改编，带你深度揭秘演艺圈规则。诚邀各具特色的演员加盟。",
+            requirement: "表演爆发力强，能驾驭性格反差巨大的角色。",
+            date: "海选截止：2024-07-20",
+          },
+        ];
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
@@ -1085,30 +1366,49 @@ export function AuditionProjectList() {
       <div className="p-6">
         <div className="space-y-6">
           {auditionProjects.map((project: any, index: number) => (
-            <div 
-              key={project.id || index} 
-              onClick={() => navigate(`/audition/project/${project.id || index}`)}
+            <div
+              key={project.id || index}
+              onClick={() =>
+                navigate(`/audition/project/${project.id || index}`)
+              }
               className="bg-white dark:bg-[#2A1D0F] rounded-[32px] overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 flex flex-col active:scale-[0.98] transition-transform"
             >
               <div className="flex gap-4 p-5">
                 <div className="w-24 h-36 rounded-2xl overflow-hidden shadow-md flex-shrink-0">
-                  <img src={project.imageUrl} className="w-full h-full object-cover" alt="" />
+                  <img
+                    src={project.imageUrl}
+                    className="w-full h-full object-cover"
+                    alt=""
+                  />
                 </div>
                 <div className="flex-1 flex flex-col justify-between py-1">
                   <div>
-                    <h4 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2">{project.title}</h4>
-                    <p className="text-[12px] text-[#A69984] font-medium line-clamp-2 leading-relaxed">{project.desc}</p>
+                    <h4 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-2">
+                      {project.title}
+                    </h4>
+                    <p className="text-[12px] text-[#A69984] font-medium line-clamp-2 leading-relaxed">
+                      {project.desc}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-[#D4AF37] font-black uppercase mb-1">招募要求</p>
-                    <p className="text-[11px] text-[#4A443E] dark:text-[#A69984] font-bold line-clamp-1">{project.requirement}</p>
+                    <p className="text-[10px] text-[#D4AF37] font-black uppercase mb-1">
+                      招募要求
+                    </p>
+                    <p className="text-[11px] text-[#4A443E] dark:text-[#A69984] font-bold line-clamp-1">
+                      {project.requirement}
+                    </p>
                   </div>
                 </div>
               </div>
               <div className="px-5 py-3 bg-gray-50 dark:bg-black/10 border-t border-gray-50 dark:border-white/5 flex justify-between items-center">
-                <span className="text-[11px] text-[#A69984] font-black">{project.date}</span>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); navigate('/audition/registration?type=海选报名表'); }}
+                <span className="text-[11px] text-[#A69984] font-black">
+                  {project.date}
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate("/audition/registration?type=海选报名表");
+                  }}
                   className="bg-[#1A1108] dark:bg-[#E6D5B8] text-white dark:text-[#1A1108] px-4 py-1.5 rounded-xl text-[11px] font-black"
                 >
                   立即报名
@@ -1117,59 +1417,68 @@ export function AuditionProjectList() {
             </div>
           ))}
         </div>
+        <button 
+          onClick={() => navigate('/help')}
+          className="mt-10 w-full bg-[#8B6E4E] hover:bg-[#6A523A] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg shadow-[#8B6E4E]/20"
+        >
+          <MessageSquare size={18} />
+          立即咨询
+        </button>
       </div>
     </div>
   );
 }
 
-
 export function VisitBooking() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { bases } = useCMS();
-  const currentBases = bases && bases.length > 0 ? bases : [{ id: '1', title: '中国盐田山海都市片场' }];
+  const currentBases =
+    bases && bases.length > 0
+      ? bases
+      : [{ id: "1", title: "中国盐田山海都市片场" }];
   const base = currentBases.find((b: any) => b.id === id) || currentBases[0];
   const { addNotification } = useUser();
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    visitDate: '',
-    teamSize: '',
-    purpose: ''
+    name: "",
+    phone: "",
+    visitDate: "",
+    teamSize: "",
+    purpose: "",
   });
   const [agreed, setAgreed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) {
-      alert('请先阅读并同意用户服务协议及隐私政策');
+      alert("请先阅读并同意用户服务协议及隐私政策");
       return;
     }
     if (!formData.name || !formData.phone || !formData.visitDate) {
-      alert('请填写必填项');
+      alert("请填写必填项");
       return;
     }
 
     try {
-      const { addVisitBooking } = await import('../services/cmsService');
+      const { addVisitBooking } = await import("../services/cmsService");
       const newBooking = {
         ...formData,
         baseId: id,
         baseName: base.title,
-        status: '待审核',
-        date: new Date().toLocaleDateString()
+        status: "待审核",
+        date: new Date().toLocaleDateString(),
       };
-      
+
       await addVisitBooking(newBooking);
       addNotification({
         id: Date.now().toString(),
-        title: '预约成功',
-        message: '您的参观预约已提交，工作人员将尽快与您联系。',
-        time: '刚刚',
+        title: "预约成功",
+        message: "您的参观预约已提交，工作人员将尽快与您联系。",
+        time: "刚刚",
         read: false,
-        type: 'system'
+        type: "system",
       });
-      alert('预约提交成功！');
+      alert("预约提交成功！");
       navigate(-1);
     } catch (e: any) {
       alert("提交失败: " + e.message);
@@ -1182,55 +1491,77 @@ export function VisitBooking() {
       <div className="p-5 space-y-6">
         <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
           <div className="mb-6 pb-6 border-b border-gray-100 dark:border-white/5">
-            <h2 className="text-[18px] font-black text-[#1A1108] dark:text-white mb-2">预约基地</h2>
+            <h2 className="text-[18px] font-black text-[#1A1108] dark:text-white mb-2">
+              预约基地
+            </h2>
             <p className="text-[14px] text-[#A69984]">{base.title}</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">姓名 <span className="text-red-500">*</span></label>
-              <input 
-                type="text" 
+              <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">
+                姓名 <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
                 value={formData.name}
-                onChange={e => setFormData({...formData, name: e.target.value})}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="请输入您的姓名"
                 className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5"
               />
             </div>
             <div>
-              <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">联系电话 <span className="text-red-500">*</span></label>
-              <input 
-                type="tel" 
+              <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">
+                联系电话 <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="tel"
                 value={formData.phone}
-                onChange={e => setFormData({...formData, phone: e.target.value})}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
                 placeholder="请输入联系电话"
                 className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5"
               />
             </div>
             <div>
-              <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">期望参观日期 <span className="text-red-500">*</span></label>
-              <input 
-                type="date" 
+              <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">
+                期望参观日期 <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
                 value={formData.visitDate}
-                onChange={e => setFormData({...formData, visitDate: e.target.value})}
+                onChange={(e) =>
+                  setFormData({ ...formData, visitDate: e.target.value })
+                }
                 className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">参观人数</label>
-                <input 
-                  type="number" 
+                <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">
+                  参观人数
+                </label>
+                <input
+                  type="number"
                   value={formData.teamSize}
-                  onChange={e => setFormData({...formData, teamSize: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, teamSize: e.target.value })
+                  }
                   placeholder="如: 3"
                   className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5"
                 />
               </div>
               <div>
-                <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">参观目的</label>
-                <select 
+                <label className="block text-[13px] font-bold text-[#1A1108] dark:text-white mb-2">
+                  参观目的
+                </label>
+                <select
                   value={formData.purpose}
-                  onChange={e => setFormData({...formData, purpose: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, purpose: e.target.value })
+                  }
                   className="w-full px-5 py-4 bg-gray-50 dark:bg-black/20 rounded-2xl outline-none focus:ring-2 ring-[#D4AF37]/30 text-[14px] dark:text-white border border-transparent dark:border-white/5 appearance-none"
                 >
                   <option value="">请选择</option>
@@ -1241,22 +1572,39 @@ export function VisitBooking() {
                 </select>
               </div>
             </div>
-<div className="flex items-start gap-2 mt-4 px-1 mb-4">
-              <input 
-                type="checkbox" 
-                checked={agreed} 
+            <div className="flex items-start gap-2 mt-4 px-1 mb-4">
+              <input
+                type="checkbox"
+                checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="mt-1 shrink-0 accent-[#D4AF37]"
               />
               <div className="text-[12px] text-gray-500 leading-tight">
                 我已阅读并同意
-                <span onClick={(e) => { e.preventDefault(); navigate('/doc/terms'); }} className="text-[#D4AF37] cursor-pointer">《用户服务协议》</span>
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/doc/terms");
+                  }}
+                  className="text-[#D4AF37] cursor-pointer"
+                >
+                  《用户服务协议》
+                </span>
                 及
-                <span onClick={(e) => { e.preventDefault(); navigate('/doc/privacy'); }} className="text-[#D4AF37] cursor-pointer">《隐私政策》</span>
+                <span
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/doc/privacy");
+                  }}
+                  className="text-[#D4AF37] cursor-pointer"
+                >
+                  《隐私政策》
+                </span>
                 ，知晓并授权平台为提供服务所需收集、使用、存储上述填写的个人信息。
               </div>
             </div>
-            <button type="submit"
+            <button
+              type="submit"
               className="w-full mt-6 h-14 bg-[#1A1108] dark:bg-[#D4AF37] text-white dark:text-[#1A1108] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px]"
             >
               提交预约
@@ -1268,37 +1616,49 @@ export function VisitBooking() {
   );
 }
 
-
 export function AuditionProjectDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { pages } = useCMS();
   const actorsData = pages.actors || {};
-  const auditions = actorsData.auditions && actorsData.auditions.length > 0 ? actorsData.auditions : [
-    {
-      id: '1',
-      title: '逆袭之星途璀璨',
-      imageUrl: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=400&h=600&fit=crop',
-      desc: '一部讲述草根少女通过努力一步步攀登演艺巅峰的励志短剧。',
-      requirement: '形象气质佳，演技自然，有舞蹈基础者优先。',
-      date: '海选截止：2024-07-30'
-    }
-  ];
-  
+  const auditions =
+    actorsData.auditions && actorsData.auditions.length > 0
+      ? actorsData.auditions
+      : [
+          {
+            id: "1",
+            title: "逆袭之星途璀璨",
+            imageUrl:
+              "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=400&h=600&fit=crop",
+            desc: "一部讲述草根少女通过努力一步步攀登演艺巅峰的励志短剧。",
+            requirement: "形象气质佳，演技自然，有舞蹈基础者优先。",
+            date: "海选截止：2024-07-30",
+          },
+        ];
+
   // Try finding by id, otherwise index if id is numeric, otherwise just pick first
-  const project = auditions.find((a: any) => a.id === id) || (isNaN(Number(id)) ? auditions[0] : auditions[Number(id)]) || auditions[0];
+  const project =
+    auditions.find((a: any) => a.id === id) ||
+    (isNaN(Number(id)) ? auditions[0] : auditions[Number(id)]) ||
+    auditions[0];
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-screen pb-24 transition-colors duration-300">
       <Header title="项目介绍" dark />
       <div className="w-full aspect-[3/4] max-h-[60vh] overflow-hidden relative shadow-2xl">
-        <img src={project.imageUrl} className="w-full h-full object-cover" alt="" />
+        <img
+          src={project.imageUrl}
+          className="w-full h-full object-cover"
+          alt=""
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div className="absolute bottom-6 left-6 right-6">
-          <h1 className="text-[28px] font-black text-white mb-2 leading-tight drop-shadow-md">{project.title}</h1>
+          <h1 className="text-[28px] font-black text-white mb-2 leading-tight drop-shadow-md">
+            {project.title}
+          </h1>
         </div>
       </div>
-      
+
       <div className="p-6 -mt-4 relative z-10 space-y-6">
         <div className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[28px] shadow-sm border border-gray-50 dark:border-white/5">
           <h3 className="text-[16px] font-black text-[#1A1108] dark:text-[#E6D5B8] mb-3 flex items-center gap-2">
@@ -1309,7 +1669,9 @@ export function AuditionProjectDetail() {
             {project.requirement || "暂无招募要求"}
           </p>
           <div className="mt-4 pt-4 border-t border-gray-50 dark:border-white/5">
-            <span className="text-[11px] text-[#A69984] font-black">{project.date}</span>
+            <span className="text-[11px] text-[#A69984] font-black">
+              {project.date}
+            </span>
           </div>
         </div>
 
@@ -1319,10 +1681,19 @@ export function AuditionProjectDetail() {
             项目介绍
           </h3>
           {project.introImages && project.introImages.length > 0 && (
-            <div className={`grid gap-2 mb-4 ${project.introImages.length === 1 ? 'grid-cols-1' : project.introImages.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+            <div
+              className={`grid gap-2 mb-4 ${project.introImages.length === 1 ? "grid-cols-1" : project.introImages.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}
+            >
               {project.introImages.map((img: string, idx: number) => (
-                <div key={idx} className="w-full rounded-xl overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 aspect-square">
-                  <img src={img} className="w-full h-full object-cover" alt="" />
+                <div
+                  key={idx}
+                  className="w-full rounded-xl overflow-hidden shadow-sm border border-gray-50 dark:border-white/5 aspect-square"
+                >
+                  <img
+                    src={img}
+                    className="w-full h-full object-cover"
+                    alt=""
+                  />
                 </div>
               ))}
             </div>
@@ -1332,14 +1703,97 @@ export function AuditionProjectDetail() {
           </p>
         </div>
       </div>
-      
+
       {/* Fixed bottom action */}
       <div className="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-white via-white to-transparent dark:from-[#1A1108] dark:via-[#1A1108] z-50">
-        <button 
-          onClick={() => navigate('/audition/registration?type=参演报名表')}
+        <button
+          onClick={() => navigate("/audition/registration?type=参演报名表")}
           className="w-full h-14 bg-[#1A1108] dark:bg-[#D4AF37] text-white dark:text-[#1A1108] font-black rounded-2xl shadow-xl active:scale-95 transition-all text-[16px] flex items-center justify-center gap-2"
         >
           我要参演
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function PurchaseInstructions() {
+  const navigate = useNavigate();
+  const { pages } = useCMS();
+  const steps = pages.copyright?.purchaseInstructions || [
+    { t: '购买须知', d: '购买版权是自己真实意愿的表达，共享收益，共担风险。版权购买需线下签订版权购买合同和版权授权协议，版权销售款不委托任何企业和个人代收，按照正式签订的合同里明确的收款方付款。签订合同时需要明确介绍人的姓名和电话。' },
+    { t: '选择版权', d: '在热销中短剧版权里，购买短剧版权号。版权库里的仅供参考，在截止该部短剧的版权销售开始筹备时，官方平台会即时公布版权号所对应的短剧内容，任何购买版权者不持有异议。' },
+    { t: '签署合约', d: '线下签署正式的版权购买合同和版权授权协议。' },
+    { t: '票房收益', d: '所购买的短剧版权的短剧上线后，根据播放平台的结算收益按照版权购买合同约定支付票房收益。' }
+  ];
+
+  return (
+    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
+      <Header title="购买须知及办法" dark />
+      <div className="p-6">
+        <div className="bg-[#1A1108] dark:bg-[#2A1D0F] p-8 rounded-[32px] mb-8 text-center">
+          <h2 className="text-[20px] font-black text-white mb-2">标准化版权购买流程</h2>
+          <p className="text-[#A69984] text-[13px]">合规、透明、专业的一站式版权转让服务</p>
+        </div>
+        <div className="space-y-6">
+          {steps.map((s, i) => (
+            <div key={i} className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[24px] shadow-sm border border-gray-50 dark:border-white/5 relative overflow-hidden">
+              <div className="absolute -left-2 -top-2 w-12 h-12 bg-[#FAF5EE] dark:bg-black/20 rounded-full flex items-center justify-center -rotate-12">
+                <span className="text-[20px] font-black text-[#D4AF37] opacity-20">{i + 1}</span>
+              </div>
+              <h4 className="text-[16px] font-black text-[#1A1108] dark:text-white mb-2 relative z-10">{s.t}</h4>
+              <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] leading-relaxed font-medium relative z-10">{s.d}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-10 p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+          <h5 className="text-[14px] font-black text-orange-800 dark:text-orange-400 mb-2">特别提醒</h5>
+          <p className="text-[12px] text-orange-700 dark:text-orange-300 leading-relaxed font-bold">
+            所有版权交易均与中星影视生态链官方产生。如遇私下交易请及时反馈和投诉，私下交易产生的所有风险，平台概不负责，同时平台保留追究法律责任的权利。
+          </p>
+        </div>
+        <button 
+          onClick={() => navigate('/help')}
+          className="mt-10 w-full bg-[#8B6E4E] hover:bg-[#6A523A] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg shadow-[#8B6E4E]/20"
+        >
+          <MessageSquare size={18} />
+          立即咨询
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function FullCopyrightInstructions() {
+  const navigate = useNavigate();
+  const { pages } = useCMS();
+  const items = pages.copyright?.fullPurchaseInstructions || [
+    { t: '定制流程', d: '全版权定制需要线下当面洽谈，确定题材、剧本、拍摄地、演员等要求。' },
+    { t: '制作周期', d: '短剧从开机到上线一般需要45-60天，请提前安排时间。' }
+  ];
+
+  return (
+    <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full pb-10 transition-colors duration-300">
+      <Header title="全版权购买说明" dark />
+      <div className="p-6">
+        <div className="bg-[#1A1108] dark:bg-[#2A1D0F] p-8 rounded-[32px] mb-8 text-center">
+          <h2 className="text-[20px] font-black text-white mb-2">全版权定制说明</h2>
+          <p className="text-[#A69984] text-[13px]">打造属于您的专属爆款短剧</p>
+        </div>
+        <div className="space-y-6">
+          {items.map((s, i) => (
+            <div key={i} className="bg-white dark:bg-[#2A1D0F] p-6 rounded-[24px] shadow-sm border border-gray-50 dark:border-white/5 relative overflow-hidden">
+              <h4 className="text-[16px] font-black text-[#1A1108] dark:text-white mb-2 relative z-10">{s.t}</h4>
+              <p className="text-[13px] text-[#4A443E] dark:text-[#A69984] leading-relaxed font-medium relative z-10">{s.d}</p>
+            </div>
+          ))}
+        </div>
+        <button 
+          onClick={() => navigate('/help')}
+          className="mt-10 w-full bg-[#8B6E4E] hover:bg-[#6A523A] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg shadow-[#8B6E4E]/20"
+        >
+          <MessageSquare size={18} />
+          立即咨询
         </button>
       </div>
     </div>

@@ -108,11 +108,11 @@ export default function Copyright() {
         <div className="space-y-3">
           <div className="flex justify-between items-center text-[13px]">
             <span className="text-[#A69984]">已售罄短剧版权:</span>
-            <ScrollingText items={["ZXDJ (A) 0021", "ZXDJ (B) 0101", "ZXDJ (C) 0201"]} />
+            <ScrollingText items={pages.copyright?.salesDynamics?.soldOut ? pages.copyright.salesDynamics.soldOut.split('\n').filter(Boolean) : ["暂无"]} />
           </div>
           <div className="flex justify-between items-center text-[13px]">
             <span className="text-[#A69984]">热销中短剧版权:</span>
-            <ScrollingText items={["ZXDJ (A) 0023", "ZXDJ (B) 0102", "ZXDJ (C) 0202"]} />
+            <ScrollingText items={pages.copyright?.salesDynamics?.hotSelling ? pages.copyright.salesDynamics.hotSelling.split('\n').filter(Boolean) : ["暂无"]} />
           </div>
         </div>
       </div>
