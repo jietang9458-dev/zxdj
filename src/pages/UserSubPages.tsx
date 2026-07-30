@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
-import { User, ChevronRight, Shield, Bell, Trash2, Moon, Sun, Wallet, Star, Clock, HelpCircle, MessageSquare, Send, Film, ShoppingBag } from 'lucide-react';
+import { User, ChevronRight, Shield, Bell, Trash2, Moon, Sun, Wallet, Star, Clock, HelpCircle, MessageSquare, Send, Film, ShoppingBag, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useCMS } from '../context/CMSContext';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -202,10 +202,24 @@ export function MyWallet() {
 // 3. 我的收藏
 export function Favorites() {
   const [tab, setTab] = useState('短剧');
+  const [savedDramas, setSavedDramas] = useState(HOT_DRAMAS);
+  const [savedProducts, setSavedProducts] = useState(MALL_PRODUCTS);
+
+  const removeDrama = (index) => {
+    setSavedDramas(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeProduct = (index) => {
+    setSavedProducts(prev => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
+      <Header title="我的收藏" dark showBack />
       <div className="flex px-6 py-0 gap-6 border-b border-gray-100 dark:border-white/5 bg-white dark:bg-[#1A1108] sticky top-24 z-20 overflow-x-auto scrollbar-hide">
         {[
+          { label: '短剧', ic: <Film size={18} /> },
+          { label: '商品', ic: <ShoppingBag size={18} /> }
         ].map(item => (
           <button 
             key={item.label}
@@ -225,42 +239,58 @@ export function Favorites() {
       </div>
       <div className="p-5 grid grid-cols-1 gap-4">
         {tab === '短剧' ? (
-          HOT_DRAMAS.length > 0 ? (
-            HOT_DRAMAS.map((item, i) => (
+          savedDramas.length > 0 ? (
+            savedDramas.map((item, i) => (
               <motion.div 
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
-                key={i} 
-                className="bg-white dark:bg-[#2A1D0F] p-4 rounded-[28px] shadow-sm border border-gray-100 dark:border-white/5 flex gap-4 active:scale-[0.98] transition-transform"
+                key={item.id || i} 
+                className="bg-white dark:bg-[#2A1D0F] p-4 rounded-[28px] shadow-sm border border-gray-100 dark:border-white/5 flex gap-4 active:scale-[0.98] transition-transform relative group"
               >
-                <div className="flex flex-col justify-center gap-2">
-                  <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white">{item.title}</h4>
+                <div className="flex flex-col justify-center gap-2 flex-1">
+                  <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white pr-8">{item.title}</h4>
                   <p className="text-[12px] text-[#A69984] font-bold">更新至 第80集</p>
                 </div>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); removeDrama(i); }} 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
               </motion.div>
             ))
           ) : (
             <div className="text-center text-gray-400 font-bold py-10">暂无收藏</div>
           )
         ) : tab === '商品' ? (
-          MALL_PRODUCTS.map((prod, i) => (
-            <motion.div 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
-              key={i} 
-              className="bg-white dark:bg-[#2A1D0F] p-4 rounded-[28px] shadow-sm border border-gray-100 dark:border-white/5 flex gap-4 active:scale-[0.98] transition-transform"
-            >
-              <div className="flex flex-col justify-center gap-1">
-                <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white line-clamp-1">{prod.title}</h4>
-                <div className="flex items-center gap-2">
-                  <span className="text-[16px] font-black text-[#8B6E4E] dark:text-[#E6D5B8]">¥ {prod.price}</span>
-                  <span className="text-[10px] text-[#A69984] font-bold line-through opacity-50">¥ {Math.floor(prod.price * 1.5)}</span>
+          savedProducts.length > 0 ? (
+            savedProducts.map((prod, i) => (
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                key={prod.id || i} 
+                className="bg-white dark:bg-[#2A1D0F] p-4 rounded-[28px] shadow-sm border border-gray-100 dark:border-white/5 flex gap-4 active:scale-[0.98] transition-transform relative group"
+              >
+                <div className="flex flex-col justify-center gap-1 flex-1 pr-8">
+                  <h4 className="text-[14px] font-black text-[#1A1108] dark:text-white line-clamp-1">{prod.title}</h4>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[16px] font-black text-[#8B6E4E] dark:text-[#E6D5B8]">¥ {prod.price}</span>
+                    <span className="text-[10px] text-[#A69984] font-bold line-through opacity-50">¥ {Math.floor(prod.price * 1.5)}</span>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))
+                <button 
+                  onClick={(e) => { e.stopPropagation(); removeProduct(i); }} 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </motion.div>
+            ))
+          ) : (
+            <div className="text-center text-gray-400 font-bold py-10">暂无收藏</div>
+          )
         ) : (
           <motion.div 
             initial={{ opacity: 0 }}
@@ -364,6 +394,7 @@ export function Settings() {
 
 // 5. 帮助中心
 export function HelpCenter() {
+  const { pages } = useCMS();
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState([
     { text: '您好，我是中星影视生态链小助手，很高兴为您服务！', sender: 'bot' }
@@ -439,7 +470,8 @@ export function HelpCenter() {
             <h3 className="text-[18px] font-black mb-1">在线客服</h3>
             <p className="text-[12px] opacity-70 font-bold">每日 09:00 - 22:00 在线为您服务</p>
           </div>
-          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
+          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 overflow-hidden">
+            <img src={pages?.settings?.customerAvatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&fit=crop"} alt="" className="w-full h-full object-cover" />
           </div>
         </div>
 
@@ -476,7 +508,8 @@ export function HelpCenter() {
             >
               <div className="p-6 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#8B6E4E] flex items-center justify-center text-white">
+                  <div className="w-10 h-10 rounded-full bg-[#8B6E4E] flex items-center justify-center text-white overflow-hidden">
+                    <img src={pages?.settings?.customerAvatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&fit=crop"} alt="" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <h4 className="text-[15px] font-black text-[#1A1108] dark:text-white">中星影视生态链小助手</h4>
@@ -487,8 +520,9 @@ export function HelpCenter() {
                 </div>
                 <button 
                   onClick={() => setShowChat(false)}
-                  className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400"
+                  className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
                 >
+                  <X size={18} />
                 </button>
               </div>
 
@@ -521,9 +555,10 @@ export function HelpCenter() {
                     className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
                       input.trim() 
                         ? 'bg-[#8B6E4E] text-white shadow-lg active:scale-90' 
-                        : 'bg-gray-200 text-gray-400'
+                        : 'bg-gray-200 text-gray-400 dark:bg-white/10 dark:text-gray-500'
                     }`}
                   >
+                    <Send size={18} />
                   </button>
                 </div>
               </div>

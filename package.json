@@ -30,6 +30,7 @@
     "react-router-dom": "^7.14.2",
     "tailwind-merge": "^3.5.0",
     "vite": "^6.2.3",
+    "weixin-js-sdk": "^1.6.5",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

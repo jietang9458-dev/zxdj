@@ -23,7 +23,7 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onCancel, 
   const handleCrop = async () => {
     try {
       setIsCropping(true);
-      const croppedImageFile = await getCroppedImg(imageSrc, croppedAreaPixels, 2); // Compress to under 2MB
+      const croppedImageFile = await getCroppedImg(imageSrc, croppedAreaPixels, 1); // Compress to under 1MB
       onCropComplete(croppedImageFile);
     } catch (e) {
       console.error(e);
@@ -36,7 +36,7 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onCancel, 
   return (
     <div className="fixed inset-0 z-[200] flex flex-col bg-black/90">
       <div className="flex justify-between items-center p-4 text-white">
-        <h3 className="font-bold text-sm">图片裁剪 (自动压缩至2MB内)</h3>
+        <h3 className="font-bold text-sm">图片裁剪 (自动压缩至1MB内)</h3>
         <button onClick={onCancel} className="p-2 hover:bg-white/20 rounded-full">
           <X size={20} />
         </button>

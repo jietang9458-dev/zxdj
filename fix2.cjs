@@ -1,6 +1,29 @@
 const fs = require('fs');
-let code = fs.readFileSync('src/pages/UserSubPages.tsx', 'utf-8');
+let content = fs.readFileSync('miniprogram/pages/index/index.js', 'utf-8');
 
-code = code.replace(/\) : \(\s*\)/g, ') : (\n            <div className="text-center text-gray-400 font-bold py-10">暂无收藏</div>\n          )');
+// Replace the very end of the file which is "})"
+const lastBracket = content.lastIndexOf('})');
+if (lastBracket !== -1) {
+  content = content.substring(0, lastBracket) + `,
 
-fs.writeFileSync('src/pages/UserSubPages.tsx', code);
+  onShareAppMessage(options) {
+    let sharePath = '/pages/index/index';
+    if (options.webViewUrl) {
+      sharePath += '?h5url=' + encodeURIComponent(options.webViewUrl);
+    }
+    return {
+      title: '中星影视生态链',
+      path: sharePath
+    };
+  },
+  
+  onShareTimeline() {
+    return {
+      title: '中星影视生态链',
+      query: ''
+    };
+  }
+})
+`;
+  fs.writeFileSync('miniprogram/pages/index/index.js', content);
+}

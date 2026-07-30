@@ -9,6 +9,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import { BASES } from '../constants';
 import Header from "../components/Header";
 import {
   CheckCircle2,
@@ -339,10 +340,13 @@ export function CopyrightLibrary() {
     pages.copyright?.libraryItems || HOT_DRAMAS.concat(HOT_DRAMAS);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("全部");
-  const cats = ["全部", "现代都市", "古装玄幻", "悬疑惊悚", "年代励志"];
+  
+  const configuredCats = pages.copyright?.libraryCategories?.map((c: any) => c.name) || ["现代都市", "古装玄幻", "悬疑惊悚", "年代励志"];
+  const cats = ["全部", ...configuredCats];
+
   const baseDramas = libraryItems.map((d: any, i: number) => ({
     ...d,
-    cat: d.cat || cats[(i % 4) + 1],
+    cat: d.cat || configuredCats[i % configuredCats.length],
   }));
 
   const filtered = baseDramas.filter((d: any) => {
@@ -1433,10 +1437,7 @@ export function VisitBooking() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { bases } = useCMS();
-  const currentBases =
-    bases && bases.length > 0
-      ? bases
-      : [{ id: "1", title: "中国盐田山海都市片场" }];
+  const currentBases = bases && bases.length > 0 ? bases : BASES;
   const base = currentBases.find((b: any) => b.id === id) || currentBases[0];
   const { addNotification } = useUser();
   const [formData, setFormData] = useState({

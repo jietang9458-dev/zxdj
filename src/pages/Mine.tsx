@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import { User, ClipboardList, Star, ShoppingBag, Calendar, Crown, Headset, UserPlus, Settings, Edit3, Wallet } from 'lucide-react';
+import { postShareToMiniProgram } from '../utils/wechat';
 
 import { useUser } from '../context/UserContext';
 
@@ -19,9 +20,29 @@ export default function Mine() {
   const RightsIcons = [
     { label: '会员中心', Icon: Crown, path: '/starclub' },
     { label: '设置', Icon: Settings, path: '/settings' },
-    { label: '邀请好友', Icon: UserPlus, path: '/service/flow' },
+    { label: '邀请好友', Icon: UserPlus, action: 'share' },
     { label: '我的报名', Icon: ClipboardList, path: '/user/my-registrations' },
   ];
+
+  const handleShare = () => {
+    if ((window as any).__wxjs_environment === 'miniprogram' || (window as any).wx?.miniProgram) {
+      postShareToMiniProgram({
+        title: '邀请您加入中星影视生态链',
+        link: window.location.origin,
+      });
+      alert('点击右上角分享给好友');
+    } else {
+      if (navigator.share) {
+        navigator.share({
+          title: '中星影视生态链',
+          text: '邀请您加入中星影视生态链',
+          url: window.location.origin
+        }).catch(console.error);
+      } else {
+        alert('当前环境不支持直接分享，请复制链接分享给好友');
+      }
+    }
+  };
 
   return (
     <div className="bg-[#FAF9F6] dark:bg-[#1A1108] min-h-full transition-colors duration-300">
@@ -73,7 +94,7 @@ export default function Mine() {
         <h3 className="text-[16px] font-black text-[#1A1108] dark:text-white mb-8">我的权益</h3>
         <div className="grid grid-cols-4 gap-4">
           {RightsIcons.map((item, idx) => (
-            <div key={idx} onClick={() => navigate(item.path)} className="flex flex-col items-center gap-3 cursor-pointer group">
+            <div key={idx} onClick={() => item.action === 'share' ? handleShare() : navigate(item.path!)} className="flex flex-col items-center gap-3 cursor-pointer group">
               <item.Icon className="text-[#3D3832] dark:text-[#E6D5B8] group-active:scale-90 transition-transform" size={24} />
               <span className="text-[12px] font-bold text-[#4A443E] dark:text-white/60">{item.label}</span>
             </div>

@@ -258,6 +258,16 @@ const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: a
                     </button>
                   </div>
                 </div>
+              ) : field.type === 'select' ? (
+                <select 
+                  value={data[field.key] || (field.options?.[0]?.value || '')}
+                  onChange={(e) => setData({...data, [field.key]: e.target.value})}
+                  className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200"
+                >
+                  {field.options?.map((opt: any) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
               ) : field.type === 'textarea' ? (
                 <textarea 
                   value={data[field.key] || ''}
@@ -398,6 +408,7 @@ export default function Admin() {
   const [homeBanners, setHomeBanners] = useState(pages.home?.banners || []);
   const [homeCategories, setHomeCategories] = useState(pages.home?.categories || []);
   const [appLogo, setAppLogo] = useState(pages.settings?.logo || '');
+  const [customerAvatar, setCustomerAvatar] = useState(pages.settings?.customerAvatar || '');
   const [appName, setAppName] = useState(pages.settings?.name || '中星短剧');
   const [appSlogan, setAppSlogan] = useState(pages.settings?.slogan || '联动你我 · 链接未来');
   const [auditionEmail, setAuditionEmail] = useState(pages.settings?.auditionEmail || 'szfyuan@163.com');
@@ -442,8 +453,8 @@ export default function Admin() {
   }, [pages]);
 
   const handleLogin = () => {
-    const pwd = prompt("请输入管理员密码 (admin123):");
-    if (pwd === 'admin123') {
+    const pwd = prompt("请输入管理员密码:");
+    if (pwd === 'fy18038060388') {
       localStorage.setItem('isAdmin', 'true');
       setIsAuthorized(true);
     } else {
@@ -707,7 +718,7 @@ export default function Admin() {
           <h1 className="text-2xl font-black text-[#1A1108] mb-2">中星后台登录</h1>
           <p className="text-[#A69984] text-center mb-6">请登录系统以管理应用内容</p>
           <div className="w-full bg-orange-50/50 p-4 rounded-2xl mb-8 border border-orange-100/50 text-center">
-            <p className="text-xs text-orange-600 font-medium">请输入管理员密码进行操作 (admin123)</p>
+            <p className="text-xs text-orange-600 font-medium">请输入管理员密码进行操作</p>
           </div>
           <button 
             onClick={handleLogin}
@@ -871,7 +882,25 @@ export default function Admin() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[12px] font-bold text-[#A69984] ml-2">Logo 图片 URL</label>
+                <label className="text-[12px] font-bold text-[#A69984] ml-2">客服头像 URL</label>
+                <div className="flex gap-3">
+                  <input 
+                    value={customerAvatar}
+                    onChange={(e) => setCustomerAvatar(e.target.value)}
+                    className="flex-1 px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 transition-all border border-gray-50"
+                  />
+                  <ImageUploadButton 
+                    value={customerAvatar}
+                    onChange={setCustomerAvatar}
+                    className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                    aspectRatio={1}
+                  >
+                    {customerAvatar ? <img src={customerAvatar} className="w-full h-full object-cover" alt="" /> : <ImageIcon className="text-gray-300" />}
+                  </ImageUploadButton>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[12px] font-bold text-[#A69984] ml-2">Logo 图片 URL (支持PNG透明)</label>
                 <div className="flex gap-3">
                   <input 
                     value={appLogo}
@@ -1311,6 +1340,20 @@ export default function Admin() {
                     />
 
                     <AdminListEditor 
+                      title="版权库类目管理"
+                      items={copyrightData.libraryCategories || [
+                        { name: '现代都市' },
+                        { name: '古装玄幻' },
+                        { name: '悬疑惊悚' },
+                        { name: '年代励志' }
+                      ]}
+                      onChange={(items: any) => setCopyrightData({...copyrightData, libraryCategories: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'name', label: '类目名称', type: 'text' }
+                      ]}
+                    />
+                    <AdminListEditor 
                       title="版权库内容管理"
                       items={copyrightData.libraryItems || []}
                       onChange={(items: any) => setCopyrightData({...copyrightData, libraryItems: items})}
@@ -1318,6 +1361,7 @@ export default function Admin() {
                       schema={[
                         { key: 'imageUrl', label: '海报 (建议3:4)', type: 'image', aspectRatio: 3/4 },
                         { key: 'title', label: '片名 (必填)', type: 'text' },
+                        { key: 'cat', label: '所属类目', type: 'select', options: (copyrightData.libraryCategories || [{name:'现代都市'},{name:'古装玄幻'},{name:'悬疑惊悚'},{name:'年代励志'}]).map((c: any) => ({ label: c.name, value: c.name })) },
                         { key: 'synopsis', label: '故事梗概', type: 'textarea' },
                         { key: 'desc', label: '相关介绍', type: 'textarea' }
                       ]}

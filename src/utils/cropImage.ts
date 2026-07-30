@@ -10,7 +10,7 @@ export const createImage = (url: string): Promise<HTMLImageElement> =>
 export async function getCroppedImg(
   imageSrc: string,
   pixelCrop: { x: number, y: number, width: number, height: number },
-  maxSizeMB: number = 2
+  maxSizeMB: number = 1
 ): Promise<File> {
   const image = await createImage(imageSrc)
   const canvas = document.createElement('canvas')
@@ -35,6 +35,10 @@ export async function getCroppedImg(
     pixelCrop.height
   )
 
+  const isPng = imageSrc.startsWith('data:image/png');
+  const mimeType = isPng ? 'image/png' : 'image/jpeg';
+  const ext = isPng ? 'png' : 'jpg';
+
   return new Promise((resolve, reject) => {
     let quality = 0.9;
     const attemptCompress = () => {
@@ -43,13 +47,13 @@ export async function getCroppedImg(
           reject(new Error('Canvas is empty'));
           return;
         }
-        if (blob.size / 1024 / 1024 > maxSizeMB && quality > 0.1) {
+        if (blob.size / 1024 / 1024 > maxSizeMB && quality > 0.1 && !isPng) {
           quality -= 0.1;
           attemptCompress();
         } else {
-          resolve(new File([blob], 'cropped.jpg', { type: 'image/jpeg' }));
+          resolve(new File([blob], `cropped.${ext}`, { type: mimeType }));
         }
-      }, 'image/jpeg', quality);
+      }, mimeType, isPng ? undefined : quality);
     };
     attemptCompress();
   });

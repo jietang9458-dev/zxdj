@@ -137,13 +137,11 @@ export default function Home() {
         <div className="flex justify-between items-start mb-6">
           <div className="flex flex-col">
             <div className="flex items-center gap-4 mb-2">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#2A1D0F] to-[#1A1108] backdrop-blur-xl rounded-3xl flex items-center justify-center p-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 ring-1 ring-[#D4AF37]/40 overflow-hidden group relative">
-                {/* Shine effect */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+              <div className="w-16 h-16 flex items-center justify-center group relative z-10">
                 <img 
                   src={appSettings.logo || APP_LOGO} 
                   alt="logo" 
-                  className="w-full h-full object-cover filter drop-shadow-[0_0_15px_rgba(212,175,55,0.8)] transform group-hover:scale-110 transition-transform duration-700 rounded-xl" 
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 max-w-none object-contain filter drop-shadow-[0_0_15px_rgba(212,175,55,0.8)] group-hover:scale-110 transition-transform duration-700" 
                   onError={(e) => {
                     // Fallback to internal icon if logo fails to load
                     (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNENEFGMzciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWdvbiBwb2ludHM9IjEyIDIgMTUgOC41IDIyIDkuMjcgMTcgMTQuMTQgMTguMTggMjEgMTIgMTcuMjcgNS44MiAyMSA3IDE0LjE0IDIgOS4yNyA5IDguNSAxMiAyIi8+PC9zdmc+';
@@ -196,7 +194,7 @@ export default function Home() {
         </form>
 
         {/* Banner Area - Carousel implementation */}
-        <div className="h-[210px] w-full rounded-[32px] overflow-hidden relative border border-white/10 shadow-2xl bg-black">
+        <div className="h-[210px] w-full rounded-[32px] overflow-hidden relative shadow-2xl bg-black">
           <AnimatePresence initial={false}>
             <motion.div
               key={currentBanner}
@@ -253,7 +251,7 @@ export default function Home() {
 
       {/* Main Grid Categories */}
       <div className="px-5 mt-[-25px]">
-        <div className="bg-white dark:bg-[#2A1D0F] rounded-[40px] p-7 shadow-sm border border-gray-50 dark:border-white/5 grid grid-cols-3 gap-y-8 gap-x-2">
+        <div className="bg-white dark:bg-[#2A1D0F] rounded-[40px] p-7 shadow-sm border-[0.5px] border-gray-200 dark:border-white/5 grid grid-cols-3 gap-y-8 gap-x-2">
           {(() => {
             const defaultCats = [
               { id: 'copyright', label: '版权销售', icon: <BookOpen />, path: '/copyright', color: 'bg-orange-50 text-orange-500' },
