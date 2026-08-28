@@ -24,12 +24,12 @@ Page({
   },
   fetchSettings() {
     wx.request({
-      url: this.data.appUrl + '/api/pages/settings',
+      url: this.data.appUrl + '/api/pages/settings?_t=' + Date.now(),
       success: (res) => {
         if (res.data && res.data.splashUrl) {
           this.setData({
             showSplash: true,
-            splashUrl: res.data.splashUrl,
+            splashUrl: res.data.splashUrl.startsWith('/') ? (this.data.appUrl + res.data.splashUrl) : res.data.splashUrl,
             splashType: res.data.splashType || 'image',
             countdown: 5
           });

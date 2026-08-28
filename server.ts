@@ -104,6 +104,10 @@ app.use('/uploads', express.static(uploadDir));
 
 // Pages
 app.get('/api/pages/:id', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   const row = db.prepare('SELECT data FROM pages WHERE id = ?').get(req.params.id) as any;
   if (row) {
     res.json(JSON.parse(row.data));

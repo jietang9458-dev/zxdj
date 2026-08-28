@@ -484,6 +484,8 @@ export default function Admin() {
     setAppName(pages.settings?.name || '中星短剧');
     setAppSlogan(pages.settings?.slogan || '联动你我 · 链接未来');
     setAppEnName(pages.settings?.enName || 'ZX Eco-Chain Premium');
+    setCustomerAvatar(pages.settings?.customerAvatar || '');
+    setAuditionEmail(pages.settings?.auditionEmail || 'szfyuan@163.com');
     setCopyrightData(pages.copyright || { banner: '', title: '', subtitle: '', news: [] });
     setProductionData(pages.production || { banner: '', title: '', subtitle: '', projects: [] });
     setActorsData(pages.actors || { banner: '', banners: [], title: '', subtitle: '' });
@@ -521,16 +523,19 @@ export default function Admin() {
   const handleSaveSettings = async () => {
     setLoading(true);
     try {
+      const makeAbsolute = (url) => url && url.startsWith('/') ? window.location.origin + url : url;
+
       await updatePageContent('settings', { 
-        logo: appLogo, 
+        logo: makeAbsolute(appLogo), 
         name: appName,
         slogan: appSlogan,
         enName: appEnName,
         auditionEmail: auditionEmail,
-        splashUrl: splashUrl,
+        splashUrl: makeAbsolute(splashUrl),
         splashType: splashType,
         welcomeTitle: welcomeTitle,
-        welcomeNavTitle: welcomeNavTitle
+        welcomeNavTitle: welcomeNavTitle,
+        customerAvatar: makeAbsolute(customerAvatar)
       });
       alert("全局设置保存成功！");
       refresh();

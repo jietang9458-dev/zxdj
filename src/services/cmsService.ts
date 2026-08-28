@@ -26,7 +26,11 @@ export async function uploadFile(file: File): Promise<string> {
   });
   if (!res.ok) throw new Error("Upload failed");
   const json = await res.json();
-  return json.url;
+  const path = json.url;
+  if (path && path.startsWith('/')) {
+    return window.location.origin + path;
+  }
+  return path;
 }
 
 // Generic Content CMS
