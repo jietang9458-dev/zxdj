@@ -1,3 +1,8 @@
+page {
+  background-color: #1A1108;
+  height: 100%;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -9,44 +14,36 @@
   padding: 20px;
   box-sizing: border-box;
 }
+
 .header {
   margin-bottom: 40px;
   text-align: center;
 }
+
 .title {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: bold;
   color: #D4AF37;
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
 }
+
 .subtitle {
-  font-size: 16px;
-  color: #999;
+  font-size: 15px;
+  color: #A69984;
 }
+
 .enter-btn {
   background-color: #D4AF37;
   color: #1A1108;
-  border-radius: 24px;
+  border-radius: 28px;
   width: 80%;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: bold;
   margin-bottom: 50px;
-  padding: 10px 0;
-}
-.tips {
-  font-size: 13px;
-  color: #888;
-  line-height: 1.6;
-  width: 100%;
-  padding: 15px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  box-sizing: border-box;
-}
-.tips text {
-  display: block;
-  margin-bottom: 6px;
+  padding: 12px 0;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
 
 .splash-container {
@@ -56,7 +53,7 @@
   width: 100vw;
   height: 100vh;
   z-index: 9999;
-  background-color: #000;
+  background-color: #1A1108;
 }
 
 .splash-media {
@@ -67,13 +64,55 @@
 
 .skip-btn {
   position: absolute;
-  top: 60px; /* Safe area */
+  top: 54px; /* Safe area */
   right: 20px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.45);
   color: #fff;
   padding: 6px 14px;
   border-radius: 20px;
-  font-size: 14px;
-  border: 1px solid rgba(255,255,255,0.3);
+  font-size: 13px;
+  font-weight: bold;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   z-index: 10000;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.skip-countdown {
+  color: #D4AF37;
+  font-weight: 900;
+  margin-left: 2px;
+}
+
+.splash-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 40px 20px 48px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 10000;
+}
+
+.splash-title-text {
+  font-size: 22px;
+  font-weight: 900;
+  color: #D4AF37;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.splash-slogan-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }

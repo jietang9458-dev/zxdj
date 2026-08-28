@@ -1,19 +1,52 @@
+<!-- 5秒开屏欢迎页 (图片/视频) -->
 <view class="splash-container" wx:if="{{showSplash && !showWebview}}">
-  <video wx:if="{{splashType === 'video'}}" src="{{splashUrl}}" autoplay="{{true}}" controls="{{false}}" show-fullscreen-btn="{{false}}" show-play-btn="{{false}}" show-center-play-btn="{{false}}" object-fit="cover" class="splash-media" muted="{{false}}"></video>
-  <image wx:if="{{splashType === 'image'}}" src="{{splashUrl}}" mode="aspectFill" class="splash-media"></image>
+  <video 
+    wx:if="{{splashType === 'video'}}" 
+    id="splashVideo"
+    src="{{splashUrl}}" 
+    autoplay="{{true}}" 
+    loop="{{true}}" 
+    muted="{{true}}"
+    controls="{{false}}" 
+    show-fullscreen-btn="{{false}}" 
+    show-play-btn="{{false}}" 
+    show-center-play-btn="{{false}}" 
+    enable-progress-gesture="{{false}}" 
+    object-fit="cover" 
+    class="splash-media"
+    binderror="onMediaError"
+  ></video>
   
+  <image 
+    wx:if="{{splashType === 'image'}}" 
+    src="{{splashUrl}}" 
+    mode="aspectFill" 
+    class="splash-media"
+    binderror="onMediaError"
+  ></image>
+  
+  <!-- 顶部右上角跳过按钮 -->
   <view class="skip-btn" bindtap="skipSplash">
-    跳过 {{countdown}}s
+    <text>跳过</text>
+    <text class="skip-countdown">{{countdown}}s</text>
+  </view>
+
+  <!-- 底部标题与Slogan渐变蒙层 -->
+  <view class="splash-bottom-bar" wx:if="{{welcomeTitle}}">
+    <text class="splash-title-text">{{welcomeTitle}}</text>
+    <text class="splash-slogan-text" wx:if="{{slogan}}">{{slogan}}</text>
   </view>
 </view>
 
+<!-- 备用欢迎卡片 (未配置欢迎媒体时显示) -->
 <view class="container" wx:if="{{!showWebview && !showSplash}}">
   <view class="header">
     <text class="title">{{welcomeTitle}}</text>
-    <text class="subtitle">欢迎体验</text>
+    <text class="subtitle">{{slogan || '欢迎体验'}}</text>
   </view>
   
   <button class="enter-btn" bindtap="enterApp">点击进入应用</button>
-  
 </view>
+
+<!-- H5 核心主视图 -->
 <web-view wx:if="{{showWebview}}" src="{{finalUrl}}" bindload="onWebviewLoad" binderror="onWebviewError"></web-view>

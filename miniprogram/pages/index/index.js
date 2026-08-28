@@ -7,110 +7,160 @@ Page({
     splashUrl: "",
     splashType: "image",
     welcomeTitle: "中星影视生态链",
+    welcomeNavTitle: "中星影视生态链",
+    slogan: "联动你我 · 链接未来",
     countdown: 5,
     timer: null
   },
-  onLoad(options) {
-    console.log('小程序初始化完毕，等待用户点击进入');
-    wx.clearStorageSync(); 
 
-    if (options.h5url) {
+  onLoad(options) {
+    console.log('小程序初始化 onLoad');
+    if (options && options.h5url) {
       this.setData({
         appUrl: decodeURIComponent(options.h5url)
       });
     }
-
     this.fetchSettings();
   },
+
   fetchSettings() {
+    const that = this;
+    const requestUrl = this.data.appUrl + '/api/pages/settings?_t=' + Date.now();
+
     wx.request({
-      url: this.data.appUrl + '/api/pages/settings?_t=' + Date.now(),
+      url: requestUrl,
+      method: 'GET',
+      header: {
+        'Cache-Control': 'no-cache'
+      },
       success: (res) => {
-        if (res.data && res.data.splashUrl) {
-          this.setData({
-            showSplash: true,
-            splashUrl: res.data.splashUrl.startsWith('/') ? (this.data.appUrl + res.data.splashUrl) : res.data.splashUrl,
-            splashType: res.data.splashType || 'image',
-            countdown: 5
-          });
-          this.startCountdown();
-        }
-        if (res.data.welcomeTitle) {
-          this.setData({ welcomeTitle: res.data.welcomeTitle });
-        }
-        if (res.data.welcomeNavTitle) {
-          wx.setNavigationBarTitle({ title: res.data.welcomeNavTitle });
+        console.log('获取全局设置返回:', res.data);
+        if (res.data) {
+          const data = res.data;
+          const wTitle = data.welcomeTitle || '中星影视生态链';
+          const wNav = data.welcomeNavTitle || '中星影视生态链';
+          const slogan = data.slogan || '联动你我 · 链接未来';
+
+          if (wNav) {
+            wx.setNavigationBarTitle({ title: wNav });
+          }
+
+          let splash = data.splashUrl;
+          if (splash && typeof splash === 'string' && splash.trim().length > 0) {
+            if (splash.startsWith('/')) {
+              splash = that.data.appUrl + splash;
+            }
+            that.setData({
+              showSplash: true,
+              splashUrl: splash,
+              splashType: data.splashType || 'image',
+              welcomeTitle: wTitle,
+              welcomeNavTitle: wNav,
+              slogan: slogan,
+              countdown: 5
+            });
+            that.startCountdown();
+          } else {
+            that.setData({
+              welcomeTitle: wTitle,
+              welcomeNavTitle: wNav,
+              slogan: slogan
+            });
+          }
         }
       },
       fail: (err) => {
-        console.error('获取设置失败', err);
+        console.error('获取设置失败:', err);
       }
     });
   },
+
   startCountdown() {
+    const that = this;
+    if (this.data.timer) {
+      clearInterval(this.data.timer);
+    }
     const timer = setInterval(() => {
-      let current = this.data.countdown - 1;
+      let current = that.data.countdown - 1;
       if (current <= 0) {
-        clearInterval(this.data.timer);
-        this.skipSplash();
+        clearInterval(that.data.timer);
+        that.enterApp();
       } else {
-        this.setData({ countdown: current });
+        that.setData({ countdown: current });
       }
     }, 1000);
-    this.setData({ timer });
+    this.setData({ timer: timer });
   },
+
   skipSplash() {
     if (this.data.timer) {
       clearInterval(this.data.timer);
     }
-    this.setData({ showSplash: false });
+    this.enterApp();
   },
+
   enterApp() {
+    if (this.data.timer) {
+      clearInterval(this.data.timer);
+    }
     let url = this.data.appUrl;
     let params = [];
-    params.push(`source=miniprogram`);
-    params.push(`t=${Date.now()}`); 
+    params.push('source=miniprogram');
+    params.push('t=' + Date.now());
     
     if (url.includes('?')) {
       url += '&' + params.join('&');
     } else {
       url += '?' + params.join('&');
     }
-    
-    console.log('准备进入 Webview，URL:', url);
+
+    console.log('进入应用 Webview:', url);
     wx.showLoading({ title: '加载中...' });
+
+    this.setData({
+      showSplash: false,
+      showWebview: true,
+      finalUrl: url
+    });
     
     setTimeout(() => {
-      this.setData({ showWebview: true, finalUrl: url });
       wx.hideLoading();
-    }, 500);
+    }, 600);
   },
+
+  onMediaError(e) {
+    console.error('欢迎页媒体加载出错:', e);
+  },
+
   onWebviewLoad() {
     console.log('H5页面加载成功');
   },
+
   onWebviewError(e) {
     console.error('H5页面加载失败:', e.detail);
     wx.showToast({
-      title: '网页加载失败，请检查网络代理',
+      title: '页面加载失败，请检查网络',
       icon: 'none',
       duration: 3000
     });
     this.setData({ showWebview: false });
   },
+
   onShareAppMessage(options) {
     let sharePath = '/pages/index/index';
     if (options.webViewUrl) {
       sharePath += '?h5url=' + encodeURIComponent(options.webViewUrl);
     }
     return {
-      title: '中星影视生态链',
+      title: this.data.welcomeTitle || '中星影视生态链',
       path: sharePath
     };
   },
+
   onShareTimeline() {
     return {
-      title: '中星影视生态链',
+      title: this.data.welcomeTitle || '中星影视生态链',
       query: ''
     };
   }
-})
+});
