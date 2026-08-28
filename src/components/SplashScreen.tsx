@@ -62,7 +62,7 @@ export default function SplashScreen() {
         key="splash-screen"
         initial={{ opacity: 1 }}
         exit={{ opacity: 0, transition: { duration: 0.45, ease: 'easeOut' } }}
-        className="fixed inset-0 z-[99999] bg-[#120B05] flex flex-col justify-between overflow-hidden select-none"
+        className="absolute inset-0 z-[100] bg-[#120B05] flex flex-col justify-between overflow-hidden select-none"
         id="global-splash-screen"
       >
         {/* Background Media (Video with Muted Autoplay or High Quality Image) */}

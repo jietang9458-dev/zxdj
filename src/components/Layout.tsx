@@ -5,6 +5,7 @@ import { TAB_BAR } from '../constants';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useTheme } from '../context/ThemeContext';
+import SplashScreen from './SplashScreen';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -29,6 +30,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         "w-full h-full sm:max-w-[430px] sm:h-[844px] shadow-[0_0_100px_rgba(0,0,0,0.1)] relative flex flex-col overflow-hidden sm:rounded-[3.5rem] border-0 sm:border-[12px] border-[#1A1A1A] transition-colors duration-300",
         theme === 'dark' ? "bg-[#1A1108]" : "bg-white"
       )}>
+        {/* Splash Ad Overlay (Strictly inside Phone Screen) */}
+        <SplashScreen />
         
         {/* Dynamic Island Area */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[#1A1A1A] rounded-b-2xl z-[60] pointer-events-none sm:block hidden" />

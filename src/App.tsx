@@ -10,7 +10,6 @@ function cn(...inputs: ClassValue[]) {
 }
 
 import Layout from './components/Layout';
-import SplashScreen from './components/SplashScreen';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Copyright from './pages/Copyright';
@@ -41,7 +40,6 @@ export default function App() {
     <ThemeProvider>
       <UserProvider>
         <CMSProvider>
-          <SplashScreen />
           <Router>
             <Routes>
               <Route path="/admin/*" element={<Admin />} />
