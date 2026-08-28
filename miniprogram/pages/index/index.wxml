@@ -1,7 +1,8 @@
-<!-- 5秒开屏欢迎页 (图片/视频) -->
-<view class="splash-container" wx:if="{{showSplash && !showWebview}}">
+<!-- 第一阶段：5秒广告开屏页面 (最前面显示) -->
+<view class="ad-container" wx:if="{{currentStep === 'ad'}}">
+  <!-- 视频广告 -->
   <video 
-    wx:if="{{splashType === 'video'}}" 
+    wx:if="{{splashType === 'video' && splashUrl}}" 
     id="splashVideo"
     src="{{splashUrl}}" 
     autoplay="{{true}}" 
@@ -12,41 +13,86 @@
     show-play-btn="{{false}}" 
     show-center-play-btn="{{false}}" 
     enable-progress-gesture="{{false}}" 
+    show-progress="{{false}}"
     object-fit="cover" 
-    class="splash-media"
+    class="ad-media"
+    custom-cache="{{false}}"
+    playsinline="{{true}}"
+    webkit-playsinline="{{true}}"
+    x5-video-player-type="h5-page"
+    x5-video-player-fullscreen="false"
+    x5-playsinline="true"
+    bindloadedmetadata="onVideoLoaded"
+    bindplay="onVideoPlay"
+    bindwaiting="onVideoWaiting"
     binderror="onMediaError"
   ></video>
-  
+
+  <!-- 图片广告 -->
   <image 
-    wx:if="{{splashType === 'image'}}" 
+    wx:elif="{{splashType === 'image' && splashUrl}}" 
     src="{{splashUrl}}" 
     mode="aspectFill" 
-    class="splash-media"
+    class="ad-media"
     binderror="onMediaError"
   ></image>
-  
+
   <!-- 顶部右上角跳过按钮 -->
-  <view class="skip-btn" bindtap="skipSplash">
+  <view class="skip-btn" bindtap="skipAd">
     <text>跳过</text>
     <text class="skip-countdown">{{countdown}}s</text>
   </view>
 
-  <!-- 底部标题与Slogan渐变蒙层 -->
-  <view class="splash-bottom-bar" wx:if="{{welcomeTitle}}">
-    <text class="splash-title-text">{{welcomeTitle}}</text>
-    <text class="splash-slogan-text" wx:if="{{slogan}}">{{slogan}}</text>
+  <!-- 底部品牌与Slogan展示条 -->
+  <view class="ad-bottom-bar" wx:if="{{welcomeTitle}}">
+    <text class="ad-title-text">{{welcomeTitle}}</text>
+    <text class="ad-slogan-text" wx:if="{{slogan}}">{{slogan}}</text>
   </view>
 </view>
 
-<!-- 备用欢迎卡片 (未配置欢迎媒体时显示) -->
-<view class="container" wx:if="{{!showWebview && !showSplash}}">
-  <view class="header">
-    <text class="title">{{welcomeTitle}}</text>
-    <text class="subtitle">{{slogan || '欢迎体验'}}</text>
-  </view>
+<!-- 第二阶段：欢迎页面 (广告结束后展示) -->
+<view class="welcome-container" wx:if="{{currentStep === 'welcome'}}">
+  <!-- 装饰光晕与背景 -->
+  <view class="glow-bg"></view>
   
-  <button class="enter-btn" bindtap="enterApp">点击进入应用</button>
+  <view class="welcome-card">
+    <!-- 品牌 Logo 或 徽章 -->
+    <view class="brand-logo-wrapper">
+      <image wx:if="{{logo}}" src="{{logo}}" mode="aspectFit" class="brand-logo"></image>
+      <view wx:else class="brand-badge">
+        <text class="badge-text">ZX</text>
+      </view>
+    </view>
+
+    <!-- 欢迎标题与副标题 -->
+    <view class="welcome-header">
+      <text class="welcome-main-title">{{welcomeTitle}}</text>
+      <text class="welcome-sub-title">{{slogan}}</text>
+    </view>
+
+    <!-- 生态特性标签 -->
+    <view class="feature-tags">
+      <text class="feature-tag">短剧版权</text>
+      <text class="feature-dot">·</text>
+      <text class="feature-tag">影视基地</text>
+      <text class="feature-dot">·</text>
+      <text class="feature-tag">演员孵化</text>
+      <text class="feature-dot">·</text>
+      <text class="feature-tag">文创体验</text>
+    </view>
+
+    <!-- 进入应用主按钮 -->
+    <button class="enter-app-btn" hover-class="enter-app-btn-hover" bindtap="enterApp">
+      <text class="btn-text">点击进入应用</text>
+      <text class="btn-arrow">→</text>
+    </button>
+  </view>
+
+  <!-- 底部安全服务标识 -->
+  <view class="welcome-footer">
+    <text class="footer-text">中星短剧 · 官方生态链服务平台</text>
+  </view>
 </view>
 
-<!-- H5 核心主视图 -->
-<web-view wx:if="{{showWebview}}" src="{{finalUrl}}" bindload="onWebviewLoad" binderror="onWebviewError"></web-view>
+<!-- 第三阶段：H5 核心主视图 -->
+<web-view wx:if="{{currentStep === 'webview'}}" src="{{finalUrl}}" bindload="onWebviewLoad" binderror="onWebviewError"></web-view>

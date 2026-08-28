@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+const fs = require('fs');
+
+const splashCode = `import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useCMS } from '../context/CMSContext';
 
@@ -109,3 +111,7 @@ export default function SplashScreen() {
     </AnimatePresence>
   );
 }
+`;
+
+fs.writeFileSync('src/components/SplashScreen.tsx', splashCode);
+console.log('Updated src/components/SplashScreen.tsx');

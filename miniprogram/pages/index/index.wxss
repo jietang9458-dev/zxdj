@@ -1,80 +1,43 @@
 page {
-  background-color: #1A1108;
+  background-color: #120B05;
   height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #1A1108;
-  color: #fff;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.header {
-  margin-bottom: 40px;
-  text-align: center;
-}
-
-.title {
-  font-size: 26px;
-  font-weight: bold;
-  color: #D4AF37;
-  display: block;
-  margin-bottom: 12px;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-size: 15px;
-  color: #A69984;
-}
-
-.enter-btn {
-  background-color: #D4AF37;
-  color: #1A1108;
-  border-radius: 28px;
-  width: 80%;
-  font-size: 17px;
-  font-weight: bold;
-  margin-bottom: 50px;
-  padding: 12px 0;
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-}
-
-.splash-container {
+/* ================= 广告阶段样式 ================= */
+.ad-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 9999;
-  background-color: #1A1108;
+  z-index: 99999;
+  background-color: #000000;
+  overflow: hidden;
 }
 
-.splash-media {
-  width: 100vw;
-  height: 100vh;
+.ad-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
 .skip-btn {
   position: absolute;
-  top: 54px; /* Safe area */
+  top: 54px; /* 避开刘海屏与胶囊按钮 */
   right: 20px;
-  background: rgba(0, 0, 0, 0.45);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  color: #FFFFFF;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 13px;
   font-weight: bold;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  z-index: 10000;
-  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 100000;
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -86,33 +49,189 @@ page {
   margin-left: 2px;
 }
 
-.splash-bottom-bar {
+.ad-bottom-bar {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 40px 20px 48px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+  padding: 50px 24px 44px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.45) 60%, transparent 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  z-index: 10000;
+  z-index: 100000;
 }
 
-.splash-title-text {
+.ad-title-text {
   font-size: 22px;
   font-weight: 900;
   color: #D4AF37;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   margin-bottom: 6px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
 }
 
-.splash-slogan-text {
+.ad-slogan-text {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
   letter-spacing: 0.5px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* ================= 欢迎页面阶段样式 ================= */
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 100vh;
+  background-color: #120B05;
+  color: #FFFFFF;
+  padding: 60px 24px 36px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-bg {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.welcome-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 40px;
+  z-index: 10;
+}
+
+.brand-logo-wrapper {
+  margin-bottom: 24px;
+}
+
+.brand-logo {
+  width: 84px;
+  height: 84px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.brand-badge {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #D4AF37 0%, #8B6E4E 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+}
+
+.badge-text {
+  font-size: 28px;
+  font-weight: 900;
+  color: #120B05;
+  letter-spacing: 2px;
+}
+
+.welcome-header {
+  margin-bottom: 20px;
+}
+
+.welcome-main-title {
+  font-size: 26px;
+  font-weight: 900;
+  color: #D4AF37;
+  display: block;
+  margin-bottom: 8px;
+  letter-spacing: 1.5px;
+}
+
+.welcome-sub-title {
+  font-size: 14px;
+  color: #A69984;
+  font-weight: 500;
+  display: block;
+  letter-spacing: 0.5px;
+}
+
+.feature-tags {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 44px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.feature-tag {
+  font-size: 12px;
+  color: #D4AF37;
+  font-weight: 600;
+}
+
+.feature-dot {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.enter-app-btn {
+  background: linear-gradient(135deg, #D4AF37 0%, #C59A27 100%);
+  color: #120B05;
+  border-radius: 30px;
+  width: 100%;
+  height: 54px;
+  font-size: 17px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.enter-app-btn-hover {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+.btn-text {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.btn-arrow {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.welcome-footer {
+  text-align: center;
+  z-index: 10;
+}
+
+.footer-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.5px;
 }

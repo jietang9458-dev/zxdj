@@ -31,8 +31,12 @@ import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
 import { CMSProvider } from './context/CMSContext';
 import Admin from './pages/Admin';
+import { initIdlePreload } from './utils/idlePreload';
 
 export default function App() {
+  React.useEffect(() => {
+    initIdlePreload();
+  }, []);
   return (
     <ThemeProvider>
       <UserProvider>
