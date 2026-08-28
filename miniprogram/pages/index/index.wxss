@@ -48,3 +48,32 @@
   display: block;
   margin-bottom: 6px;
 }
+
+.splash-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background-color: #000;
+}
+
+.splash-media {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+
+.skip-btn {
+  position: absolute;
+  top: 60px; /* Safe area */
+  right: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  border: 1px solid rgba(255,255,255,0.3);
+  z-index: 10000;
+}

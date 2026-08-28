@@ -153,7 +153,7 @@ export default function Home() {
                   {appSettings.name || '中星影视生态链'}
                 </h1>
                 <p className="text-[10px] text-[#D4AF37] font-black tracking-[0.3em] opacity-80 uppercase pl-0.5">
-                  ZX Eco-Chain Premium
+                  {appSettings.enName || 'ZX Eco-Chain Premium'}
                 </p>
               </div>
             </div>

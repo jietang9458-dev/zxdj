@@ -13,14 +13,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const DISCOVER_POSTS = [
-  { id: 'dp_0', t: '中星影视生态链战略发布会圆满成功', u: '官方小助手', d: '2小时前', l: 124, c: 56, img: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400', cat: '推荐' },
-  { id: 'dp_1', t: '如何高效完成短剧拍摄？资深导演经验分享', u: '影人周刊', d: '5小时前', l: 89, c: 23, img: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=400', cat: '互动交流' },
-  { id: 'dp_2', t: '短剧版权保护进入新阶段：AI技术赋能监测', u: '法务观察', d: '1天前', l: 456, c: 120, img: 'https://images.unsplash.com/photo-1589252392322-450144a11b05?w=400', cat: '短剧资讯' },
-  { id: 'dp_3', t: '新兴短剧演员招募计划正式启动！', u: '演员孵化中心', d: '1天前', l: 1200, c: 340, img: 'https://images.unsplash.com/photo-1543533966-70e9f09280a6?w=400', cat: '拍摄花絮' },
-  { id: 'dp_4', t: '《总裁的秘密》斩获年度最具潜力短剧奖', u: '成功案例库', d: '3天前', l: 780, c: 156, img: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400', cat: '成功案例' },
-  { id: 'dp_5', t: '片场花絮：为了一个镜头重拍30次背后的故事', u: '幕后人', d: '4天前', l: 234, c: 45, img: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400', cat: '拍摄花絮' }
-];
+
 
 export default function Discover() {
   const navigate = useNavigate();
@@ -40,17 +33,18 @@ export default function Discover() {
 
   const newsData = pages.news || {};
   const cmsPosts = [
-    ...(newsData.shortDramaNews || []).map((n: any, i: number) => ({ id: `sd_${i}`, t: n.title, d: n.desc, blocks: n.blocks, img: n.imageUrl, cat: '短剧资讯', isRecommended: !!n.isRecommended })),
-    ...(newsData.bts || []).map((n: any, i: number) => ({ id: `bts_${i}`, t: n.title, d: n.desc, blocks: n.blocks, img: n.imageUrl, cat: '拍摄花絮', isRecommended: !!n.isRecommended })),
-    ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, d: n.desc, blocks: n.blocks, img: n.imageUrl, cat: '成功案例', isRecommended: !!n.isRecommended }))
+    ...(newsData.shortDramaNews || []).map((n: any, i: number) => ({ id: `sd_${i}`, t: n.title, u: n.desc, d: '刚刚', blocks: n.blocks, img: n.imageUrl, cat: '行业资讯', isRecommended: !!n.isRecommended })),
+    ...(newsData.ecosystemNews || []).map((n: any, i: number) => ({ id: `eco_${i}`, t: n.title, u: n.desc, d: '刚刚', blocks: n.blocks, img: n.imageUrl, cat: '生态链资讯', isRecommended: !!n.isRecommended })),
+    ...(newsData.bts || []).map((n: any, i: number) => ({ id: `bts_${i}`, t: n.title, u: n.desc, d: '刚刚', blocks: n.blocks, img: n.imageUrl, cat: '拍摄花絮', isRecommended: !!n.isRecommended })),
+    ...(newsData.successCases || []).map((n: any, i: number) => ({ id: `sc_${i}`, t: n.title, u: n.desc, d: '刚刚', blocks: n.blocks, img: n.imageUrl, cat: '成功案例', isRecommended: !!n.isRecommended }))
   ];
   
    
 
-  const allPosts = [...cmsPosts, ...DISCOVER_POSTS];
+  const allPosts = [...cmsPosts];
 
   const filteredPosts = (activeTab === '推荐' 
-    ? allPosts.filter((p: any) => p.isRecommended || DISCOVER_POSTS.includes(p) || false) 
+    ? allPosts.filter((p: any) => p.isRecommended  || false) 
     : allPosts.filter(p => p.cat === activeTab)
   ).filter(p => !urlSearchQuery || p.t?.includes(urlSearchQuery) || p.u?.includes(urlSearchQuery));
 
@@ -92,7 +86,7 @@ export default function Discover() {
 
       {/* Categories / Tabs */}
       <div className="flex gap-8 px-6 overflow-x-auto scrollbar-hide bg-white dark:bg-[#1A1108] mt-6 py-4 sticky top-24 z-30 border-b border-gray-50 dark:border-white/5">
-        {['推荐', '短剧资讯', '拍摄花絮', '成功案例'].map((t) => (
+        {['推荐', '行业资讯', '生态链资讯', '拍摄花絮', '成功案例'].map((t) => (
           <button 
             key={t} 
             onClick={() => setActiveTab(t)}

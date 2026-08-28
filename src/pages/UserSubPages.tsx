@@ -202,15 +202,29 @@ export function MyWallet() {
 // 3. 我的收藏
 export function Favorites() {
   const [tab, setTab] = useState('短剧');
-  const [savedDramas, setSavedDramas] = useState(HOT_DRAMAS);
-  const [savedProducts, setSavedProducts] = useState(MALL_PRODUCTS);
+  const [savedDramas, setSavedDramas] = useState(() => {
+    const local = localStorage.getItem('app_saved_dramas');
+    return local ? JSON.parse(local) : HOT_DRAMAS;
+  });
+  const [savedProducts, setSavedProducts] = useState(() => {
+    const local = localStorage.getItem('app_saved_products');
+    return local ? JSON.parse(local) : MALL_PRODUCTS;
+  });
 
   const removeDrama = (index) => {
-    setSavedDramas(prev => prev.filter((_, i) => i !== index));
+    setSavedDramas(prev => {
+      const updated = prev.filter((_, i) => i !== index);
+      localStorage.setItem('app_saved_dramas', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const removeProduct = (index) => {
-    setSavedProducts(prev => prev.filter((_, i) => i !== index));
+    setSavedProducts(prev => {
+      const updated = prev.filter((_, i) => i !== index);
+      localStorage.setItem('app_saved_products', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (
@@ -319,11 +333,13 @@ function EmptyState() {
 export function Settings() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [cacheSize, setCacheSize] = useState('128 MB');
+  const [cacheSize, setCacheSize] = useState(() => {
+    return localStorage.getItem('app_cache_cleared') ? '0 MB' : '128 MB';
+  });
   const [showToast, setShowToast] = useState(false);
 
   const handleClearCache = () => {
-    localStorage.clear();
+    localStorage.setItem('app_cache_cleared', 'true');
     setCacheSize('0 MB');
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);

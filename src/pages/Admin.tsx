@@ -63,6 +63,39 @@ const ImageUploadButton = ({ value, onChange, className, children, aspectRatio }
   );
 };
 
+
+const MediaUploadButton = ({ value, onChange, className, children, accept = "image/*,video/*" }: { value: string, onChange: (url: string) => void, className?: string, children?: React.ReactNode, accept?: string }) => {
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 100 * 1024 * 1024) {
+        alert("文件太大，请选择 100MB 以下的文件");
+        return;
+      }
+      setUploading(true);
+      try {
+        const url = await uploadFile(file);
+        onChange(url);
+      } catch (err: any) {
+        alert("上传失败: " + err.message);
+      } finally {
+        setUploading(false);
+      }
+    }
+    e.target.value = '';
+  };
+
+  return (
+    <label className={`cursor-pointer ${className || ''} ${uploading ? 'opacity-50 pointer-events-none relative' : ''}`}>
+      {children}
+      {uploading && <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10 font-bold text-xs">...</div>}
+      <input type="file" accept={accept} onChange={handleFileUpload} className="hidden" disabled={uploading} />
+    </label>
+  );
+};
+
 const FormDialog = ({ isOpen, onClose, title, fields, initialData, onSubmit }: any) => {
   const [data, setData] = React.useState<any>(initialData || {});
   
@@ -408,8 +441,13 @@ export default function Admin() {
   const [homeBanners, setHomeBanners] = useState(pages.home?.banners || []);
   const [homeCategories, setHomeCategories] = useState(pages.home?.categories || []);
   const [appLogo, setAppLogo] = useState(pages.settings?.logo || '');
+  const [splashUrl, setSplashUrl] = useState(pages.settings?.splashUrl || '');
+  const [splashType, setSplashType] = useState(pages.settings?.splashType || 'image');
+  const [welcomeTitle, setWelcomeTitle] = useState(pages.settings?.welcomeTitle || '中星影视生态链');
+  const [welcomeNavTitle, setWelcomeNavTitle] = useState(pages.settings?.welcomeNavTitle || '中星影视生态链');
   const [customerAvatar, setCustomerAvatar] = useState(pages.settings?.customerAvatar || '');
   const [appName, setAppName] = useState(pages.settings?.name || '中星短剧');
+  const [appEnName, setAppEnName] = useState(pages.settings?.enName || 'ZX Eco-Chain Premium');
   const [appSlogan, setAppSlogan] = useState(pages.settings?.slogan || '联动你我 · 链接未来');
   const [auditionEmail, setAuditionEmail] = useState(pages.settings?.auditionEmail || 'szfyuan@163.com');
 
@@ -421,7 +459,7 @@ export default function Admin() {
   const [tourismData, setTourismData] = useState(pages.tourism || { banner: '', title: '', subtitle: '', groups: [] });
   const [investData, setInvestData] = useState(pages.invest || { banner: '', title: '', subtitle: '' });
   const [starclubData, setStarclubData] = useState(pages.starclub || { banner: '', title: '', subtitle: '' });
-  const [newsData, setNewsData] = useState(pages.news || { shortDramaNews: [], bts: [], successCases: [] });
+  const [newsData, setNewsData] = useState(pages.news || { shortDramaNews: [], ecosystemNews: [], bts: [], successCases: [] });
   const [documentsData, setDocumentsData] = useState(pages.documents || { features: '', privacy: '', terms: '' });
   
   const [dialogState, setDialogState] = useState<{isOpen: boolean; config?: any}>({ isOpen: false, config: null });
@@ -439,8 +477,13 @@ export default function Admin() {
     setHomeBanners(pages.home?.banners || []);
     setHomeCategories(pages.home?.categories || []);
     setAppLogo(pages.settings?.logo || '');
+    setSplashUrl(pages.settings?.splashUrl || '');
+    setSplashType(pages.settings?.splashType || 'image');
+    setWelcomeTitle(pages.settings?.welcomeTitle || '中星影视生态链');
+    setWelcomeNavTitle(pages.settings?.welcomeNavTitle || '中星影视生态链');
     setAppName(pages.settings?.name || '中星短剧');
     setAppSlogan(pages.settings?.slogan || '联动你我 · 链接未来');
+    setAppEnName(pages.settings?.enName || 'ZX Eco-Chain Premium');
     setCopyrightData(pages.copyright || { banner: '', title: '', subtitle: '', news: [] });
     setProductionData(pages.production || { banner: '', title: '', subtitle: '', projects: [] });
     setActorsData(pages.actors || { banner: '', banners: [], title: '', subtitle: '' });
@@ -482,7 +525,12 @@ export default function Admin() {
         logo: appLogo, 
         name: appName,
         slogan: appSlogan,
-        auditionEmail: auditionEmail
+        enName: appEnName,
+        auditionEmail: auditionEmail,
+        splashUrl: splashUrl,
+        splashType: splashType,
+        welcomeTitle: welcomeTitle,
+        welcomeNavTitle: welcomeNavTitle
       });
       alert("全局设置保存成功！");
       refresh();
@@ -871,6 +919,17 @@ export default function Admin() {
                   placeholder="例如: 联动你我 · 链接未来"
                 />
               </div>
+
+              <div className="space-y-2">
+                <label className="text-[12px] font-bold text-[#A69984] ml-2">首页英文副标题</label>
+                <input 
+                  value={appEnName}
+                  onChange={(e) => setAppEnName(e.target.value)}
+                  className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 transition-all border border-gray-50"
+                  placeholder="ZX Eco-Chain Premium"
+                />
+              </div>
+
               <div className="space-y-2">
                 <label className="text-[12px] font-bold text-[#A69984] ml-2">海选报名接收邮箱</label>
                 <input 
@@ -916,6 +975,72 @@ export default function Admin() {
                     {appLogo ? <img src={appLogo} className="w-full h-full object-cover" alt="" /> : <ImageIcon className="text-gray-300" />}
                   </ImageUploadButton>
                 </div>
+              </div>
+            </div>
+
+
+            <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-500">
+                  <Image size={20} />
+                </div>
+                <h2 className="text-[18px] font-black text-[#1A1108]">小程序欢迎页 (Splash Screen)</h2>
+              </div>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[12px] font-bold text-[#A69984] ml-2">媒体类型</label>
+                  <div className="flex gap-4">
+                    <button onClick={() => setSplashType('image')} className={`flex-1 py-3 rounded-xl font-bold transition-all ${splashType === 'image' ? 'bg-[#1A1108] text-white' : 'bg-gray-100 text-gray-500'}`}>图片</button>
+                    <button onClick={() => setSplashType('video')} className={`flex-1 py-3 rounded-xl font-bold transition-all ${splashType === 'video' ? 'bg-[#1A1108] text-white' : 'bg-gray-100 text-gray-500'}`}>视频 (9:16, 5秒内)</button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[12px] font-bold text-[#A69984] ml-2">{splashType === 'video' ? '视频 URL' : '图片 URL'} (9:16)</label>
+                  <div className="flex gap-3">
+                    <input 
+                      value={splashUrl}
+                      onChange={(e) => setSplashUrl(e.target.value)}
+                      className="flex-1 px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 transition-all border border-gray-50"
+                    />
+                    <MediaUploadButton 
+                      value={splashUrl}
+                      onChange={setSplashUrl}
+                      accept={splashType === 'video' ? 'video/*' : 'image/*'}
+                      className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition-colors shrink-0"
+                    >
+                      {splashUrl ? (splashType === 'video' ? <Video className="text-blue-400" /> : <img src={splashUrl} className="w-full h-full object-cover" alt="" />) : <ImageIcon className="text-gray-300" />}
+                    </MediaUploadButton>
+                    <button 
+                      onClick={() => setSplashUrl('')}
+                      className="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center hover:bg-red-100 transition-colors shrink-0"
+                      title="删除媒体"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-4 border-t border-gray-100">
+                  <div className="space-y-2">
+                    <label className="text-[12px] font-bold text-[#A69984] ml-2">顶部导航栏标题</label>
+                    <input 
+                      value={welcomeNavTitle}
+                      onChange={(e) => setWelcomeNavTitle(e.target.value)}
+                      className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 transition-all border border-gray-50"
+                      placeholder="中星影视生态链"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[12px] font-bold text-[#A69984] ml-2">欢迎页面中间主标题</label>
+                    <input 
+                      value={welcomeTitle}
+                      onChange={(e) => setWelcomeTitle(e.target.value)}
+                      className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-200 transition-all border border-gray-50"
+                      placeholder="中星影视生态链"
+                    />
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -1491,13 +1616,27 @@ export default function Admin() {
                 {activeTab === 'news' && (
                   <>
                     <AdminListEditor 
-                      title="短剧资讯"
+                      title="行业资讯"
                       items={(newsData as any).shortDramaNews || []}
                       onChange={(items: any) => setNewsData({...(newsData as any), shortDramaNews: items})}
                       setDialogState={setDialogState}
                       schema={[
                         { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
                         { key: 'title', label: '资讯标题 (必填)', type: 'text' },
+                        { key: 'desc', label: '发布者', type: 'text' },
+                        { key: 'blocks', label: '图文详情', type: 'content_blocks' },
+                        { key: 'isRecommended', label: '设为推荐', type: 'boolean' }
+                      ]}
+                    />
+                    <AdminListEditor 
+                      title="生态链资讯"
+                      items={(newsData as any).ecosystemNews || []}
+                      onChange={(items: any) => setNewsData({...(newsData as any), ecosystemNews: items})}
+                      setDialogState={setDialogState}
+                      schema={[
+                        { key: 'imageUrl', label: '图片 (建议16:9)', type: 'image', aspectRatio: 16/9 },
+                        { key: 'title', label: '资讯标题 (必填)', type: 'text' },
+                        { key: 'desc', label: '发布者', type: 'text' },
                         { key: 'blocks', label: '图文详情', type: 'content_blocks' },
                         { key: 'isRecommended', label: '设为推荐', type: 'boolean' }
                       ]}

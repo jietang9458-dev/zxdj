@@ -1,3 +1,7 @@
+const fs = require('fs');
+let content = fs.readFileSync('miniprogram/pages/index/index.js', 'utf-8');
+
+const newCode = `
 Page({
   data: {
     appUrl: "https://ais-dev-msndmjbx4cyt5wbu7ntfdc-472421389681.asia-northeast1.run.app",
@@ -6,7 +10,6 @@ Page({
     showSplash: false,
     splashUrl: "",
     splashType: "image",
-    welcomeTitle: "中星影视生态链",
     countdown: 5,
     timer: null
   },
@@ -35,12 +38,6 @@ Page({
           });
           this.startCountdown();
         }
-        if (res.data.welcomeTitle) {
-          this.setData({ welcomeTitle: res.data.welcomeTitle });
-        }
-        if (res.data.welcomeNavTitle) {
-          wx.setNavigationBarTitle({ title: res.data.welcomeNavTitle });
-        }
       },
       fail: (err) => {
         console.error('获取设置失败', err);
@@ -68,8 +65,8 @@ Page({
   enterApp() {
     let url = this.data.appUrl;
     let params = [];
-    params.push(`source=miniprogram`);
-    params.push(`t=${Date.now()}`); 
+    params.push(\`source=miniprogram\`);
+    params.push(\`t=\${Date.now()}\`); 
     
     if (url.includes('?')) {
       url += '&' + params.join('&');
@@ -114,3 +111,6 @@ Page({
     };
   }
 })
+`;
+
+fs.writeFileSync('miniprogram/pages/index/index.js', newCode.trim());
