@@ -982,7 +982,7 @@ export default function Admin() {
             <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-500">
-                  <Image size={20} />
+                  <ImageIcon size={20} />
                 </div>
                 <h2 className="text-[18px] font-black text-[#1A1108]">小程序欢迎页 (Splash Screen)</h2>
               </div>
