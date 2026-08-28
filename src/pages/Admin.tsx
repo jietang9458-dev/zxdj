@@ -995,8 +995,31 @@ export default function Admin() {
                 <div className="space-y-2">
                   <label className="text-[12px] font-bold text-[#A69984] ml-2">媒体类型</label>
                   <div className="flex gap-4">
-                    <button onClick={() => setSplashType('image')} className={`flex-1 py-3 rounded-xl font-bold transition-all ${splashType === 'image' ? 'bg-[#1A1108] text-white' : 'bg-gray-100 text-gray-500'}`}>图片</button>
-                    <button onClick={() => setSplashType('video')} className={`flex-1 py-3 rounded-xl font-bold transition-all ${splashType === 'video' ? 'bg-[#1A1108] text-white' : 'bg-gray-100 text-gray-500'}`}>视频 (9:16, 5秒内)</button>
+                    <button onClick={() => setSplashType('image')} className={`flex-1 py-3 rounded-xl font-bold transition-all ${splashType === 'image' ? 'bg-[#1A1108] text-white' : 'bg-gray-100 text-gray-500'}`}>图片广告</button>
+                    <button onClick={() => setSplashType('video')} className={`flex-1 py-3 rounded-xl font-bold transition-all ${splashType === 'video' ? 'bg-[#1A1108] text-white' : 'bg-gray-100 text-gray-500'}`}>视频广告 (9:16, 5秒)</button>
+                  </div>
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="text-[11px] text-gray-400 font-medium">快速预设:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSplashType('video');
+                        setSplashUrl('/uploads/splash_ad.mp4');
+                      }}
+                      className="px-2.5 py-1 text-xs font-semibold bg-amber-50 text-amber-800 rounded-lg border border-amber-200 hover:bg-amber-100 transition-colors"
+                    >
+                      🎬 填入官方5秒视频
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSplashType('image');
+                        setSplashUrl('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=1080&h=1920&fit=crop');
+                      }}
+                      className="px-2.5 py-1 text-xs font-semibold bg-blue-50 text-blue-800 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+                    >
+                      🖼️ 填入9:16海报图片
+                    </button>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -1025,6 +1048,29 @@ export default function Admin() {
                   </div>
                 </div>
 
+                {splashUrl && (
+                  <div className="p-3 bg-gray-900 rounded-2xl overflow-hidden flex flex-col items-center">
+                    <span className="text-xs text-gray-400 mb-2 font-bold">广告媒体实时预览</span>
+                    <div className="w-48 h-80 bg-black rounded-xl overflow-hidden relative shadow-lg border border-white/10 flex items-center justify-center">
+                      {splashType === 'video' ? (
+                        <video
+                          src={splashUrl}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <img
+                          src={splashUrl}
+                          alt="Splash Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-4 pt-4 border-t border-gray-100">
                   <div className="space-y-2">
                     <label className="text-[12px] font-bold text-[#A69984] ml-2">顶部导航栏标题</label>

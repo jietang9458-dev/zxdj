@@ -2,9 +2,10 @@
 <view class="ad-container" wx:if="{{currentStep === 'ad'}}">
   <!-- 视频广告 -->
   <video 
-    wx:if="{{splashType === 'video' && splashUrl}}" 
+    wx:if="{{splashType === 'video' && splashUrl && !videoError}}" 
     id="splashVideo"
     src="{{splashUrl}}" 
+    poster="{{splashPoster || defaultPosterUrl}}"
     autoplay="{{true}}" 
     loop="{{true}}" 
     muted="{{true}}"
@@ -28,13 +29,13 @@
     binderror="onMediaError"
   ></video>
 
-  <!-- 图片广告 -->
+  <!-- 图片广告 / 视频出错自动兜底图片 -->
   <image 
-    wx:elif="{{splashType === 'image' && splashUrl}}" 
-    src="{{splashUrl}}" 
+    wx:else
+    src="{{splashUrl || splashPoster || defaultPosterUrl}}" 
     mode="aspectFill" 
     class="ad-media"
-    binderror="onMediaError"
+    binderror="onImageError"
   ></image>
 
   <!-- 顶部右上角跳过按钮 -->

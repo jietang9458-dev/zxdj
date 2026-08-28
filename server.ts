@@ -130,16 +130,40 @@ app.use('/uploads', (req, res, next) => {
 }));
 
 // Pages
+const DEFAULT_PAGE_SETTINGS = {
+  logo: '/logo_main.png',
+  appName: '中星影视生态链',
+  slogan: '联动你我 · 链接未来',
+  welcomeNavTitle: '中星影视生态链',
+  welcomeTitle: '中星影视生态链',
+  splashType: 'video',
+  splashUrl: '/uploads/splash_ad.mp4',
+  splashPoster: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=1080&h=1920&fit=crop'
+};
+
 app.get('/api/pages/:id', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
 
   const row = db.prepare('SELECT data FROM pages WHERE id = ?').get(req.params.id) as any;
-  if (row) {
-    res.json(JSON.parse(row.data));
+  if (row && row.data) {
+    try {
+      const parsed = JSON.parse(row.data);
+      if (req.params.id === 'settings') {
+        res.json({ ...DEFAULT_PAGE_SETTINGS, ...parsed });
+      } else {
+        res.json(parsed);
+      }
+    } catch (e) {
+      res.json(req.params.id === 'settings' ? DEFAULT_PAGE_SETTINGS : null);
+    }
   } else {
-    res.json(null);
+    if (req.params.id === 'settings') {
+      res.json(DEFAULT_PAGE_SETTINGS);
+    } else {
+      res.json(null);
+    }
   }
 });
 

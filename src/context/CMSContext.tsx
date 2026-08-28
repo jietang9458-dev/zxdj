@@ -51,7 +51,16 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
         production: productionContent || {},
         actors: actorsContent || {},
         mall: mallContent || {},
-        settings: settingsContent || { logo: '' },
+        settings: settingsContent || {
+          logo: '/logo_main.png',
+          appName: '中星影视生态链',
+          slogan: '联动你我 · 链接未来',
+          welcomeNavTitle: '中星影视生态链',
+          welcomeTitle: '中星影视生态链',
+          splashType: 'video',
+          splashUrl: '/uploads/splash_ad.mp4',
+          splashPoster: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=1080&h=1920&fit=crop'
+        },
         tourism: tourismContent || {},
         invest: investContent || {},
         starclub: starclubContent || {},
