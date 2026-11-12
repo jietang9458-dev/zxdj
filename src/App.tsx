@@ -34,6 +34,7 @@ import { initIdlePreload } from './utils/idlePreload';
 
 export default function App() {
   React.useEffect(() => {
+    document.title = '中星生态链';
     initIdlePreload();
   }, []);
   return (
